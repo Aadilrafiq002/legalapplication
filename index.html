@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Professional Hindi Legal Editor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body {
             background-color: #525659;
@@ -23,9 +24,11 @@
             border-radius: 50px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             display: flex;
+            flex-wrap: wrap;
             gap: 10px;
             margin-bottom: 30px;
             z-index: 1000;
+            justify-content: center;
         }
 
         button {
@@ -66,15 +69,18 @@
             text-align: justify;
         }
 
+        /* FIXED: Court name is now editable */
         .header { 
-            text-align: center; font-weight: bold; font-size: 1.3rem; margin-bottom: 15px; 
-            pointer-events: none; user-select: none; 
+            text-align: center; 
+            font-weight: bold; 
+            font-size: 1.3rem; 
+            margin-bottom: 15px; 
+            cursor: text;
         }
         
-        /* FIXED TYPING LIMIT: This ensures space is left for footer/buttons */
         .document-body { 
             width: 100%;
-            max-height: 250mm; /* Adjust this to leave more or less bottom space */
+            max-height: 250mm; 
             overflow: hidden;
         }
 
@@ -90,12 +96,18 @@
             padding-top: 20px; 
             width: 100%;
             background: white;
-            min-height: 40mm; /* Reserved space for Signature */
+            min-height: 40mm;
         }
 
         .del-page {
             position: absolute; right: 10px; top: 10px;
             background: #ff4757; font-size: 10px; padding: 5px 10px; border-radius: 5px;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
         }
 
         @media print {
@@ -108,17 +120,20 @@
 </head>
 <body>
 
-    <div class="toolbar">
+    <div class="toolbar no-print">
         <button onclick="startVoice()" id="micBtn">🎤 आवाज़ (Voice)</button>
         <button onclick="addPoint()">🔢 पॉइंट जोड़ें</button>
         <button onclick="insertNewPageManual()" style="background-color: #8e44ad;">📄 नया पेज</button>
         <button onclick="changeAlignment()" style="background-color: #3498db;">↔️ संरेखण</button>
-        <button onclick="window.print()" style="background-color: #27ae60;">💾 प्रिंट / PDF</button>
+        <button onclick="saveAsPDF()" style="background-color: #e67e22;">📕 Save PDF</button>
+        <button onclick="saveAsWord()" style="background-color: #2980b9;">📘 Save Word</button>
+        <button onclick="window.print()" style="background-color: #27ae60;">💾 प्रिंट</button>
     </div>
 
     <div id="main-container">
         <div class="paper" id="page-1">
-            <div class="header">न्यायालय किराया अधिकरण, जयपुर महानगर (द्वितीय)</div>
+            <div class="header" contenteditable="true">न्यायालय किराया अधिकरण, जयपुर महानगर (द्वितीय)</div>
+            
             <div class="case-info" contenteditable="true">मुकदमा नं. ________ / 2026</div>
             <div class="parties" contenteditable="true">उदय सिंह शेखावत बनाम रामचन्द्र</div>
             <div class="subject" contenteditable="true">दावा बाबत् बेदखली व किराया</div>
@@ -145,10 +160,8 @@
         let recognition;
         let isListening = false;
 
-        // FIXED LIMIT CHECK
         function checkLimit(el) {
             const body = el.closest('.document-body');
-            // If the content height exceeds our fixed max-height (250mm)
             if (body.scrollHeight > body.offsetHeight) {
                 const paper = el.closest('.paper');
                 insertNewPageAfter(paper);
@@ -160,7 +173,7 @@
             newPage.className = 'paper';
             newPage.innerHTML = `
                 <button class="del-page no-print" onclick="deleteThisPage(this)">डिलीट</button>
-                <div class="header"></div>
+                <div class="header" contenteditable="true"></div>
                 <div class="document-body next-page-body" contenteditable="true" oninput="checkLimit(this)"></div>
             `;
             
@@ -188,7 +201,7 @@
             document.querySelectorAll('.point-number').forEach((num, i) => { num.innerText = (i + 1) + "."; });
             document.querySelectorAll('.paper').forEach((page, i) => {
                 const h = page.querySelector('.header');
-                if(i > 0) h.innerText = `- ${i + 1} -`;
+                if(i > 0 && h.innerText.trim() === "") h.innerText = `- ${i + 1} -`;
             });
         }
 
@@ -224,6 +237,35 @@
             }
         }
 
+        // SAVE AS PDF
+        function saveAsPDF() {
+            const element = document.getElementById('main-container');
+            const opt = {
+                margin: 0,
+                filename: 'Legal_Document.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'legal', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        // SAVE AS WORD (.doc)
+        function saveAsWord() {
+            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML to Word</title></head><body>";
+            const footer = "</body></html>";
+            const sourceHTML = header + document.getElementById("main-container").innerHTML + footer;
+            
+            const source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+            const fileDownload = document.createElement("a");
+            document.body.appendChild(fileDownload);
+            fileDownload.href = source;
+            fileDownload.download = 'Document.doc';
+            fileDownload.click();
+            document.body.removeChild(fileDownload);
+        }
+
+        // Voice Recognition
         if ('webkitSpeechRecognition' in window) {
             recognition = new webkitSpeechRecognition();
             recognition.lang = 'hi-IN';
