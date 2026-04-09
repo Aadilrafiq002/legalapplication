@@ -6,7 +6,7 @@
     <title>Professional Hindi Legal Editor</title>
     <style>
         body {
-            background-color: #e0e0e0;
+            background-color: #525659;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
@@ -42,130 +42,101 @@
         button:hover { background-color: #34495e; transform: translateY(-2px); }
         button#micBtn.active { background-color: #e74c3c; animation: pulse 1.5s infinite; }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
-
         .paper {
             background: white;
             width: 215.9mm; 
-            min-height: 355.6mm; 
-            padding: 25mm 20mm;
+            height: 355.6mm; 
+            padding: 25mm 20mm 30px 20mm; 
             box-shadow: 0 0 20px rgba(0,0,0,0.15);
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             color: #000;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden; 
         }
 
-        [contenteditable="true"] { outline: none; }
-
-        .section { margin-bottom: 15px; width: 100%; }
-        .header { text-align: center; font-weight: bold; font-size: 1.3rem; }
-        .case-info { margin-top: 20px; text-align: left; }
-        .parties { text-align: center; margin: 30px 0; }
-        .subject { text-align: center; font-weight: bold; text-decoration: underline; margin-bottom: 25px; }
-        
-        /* HANGING INDENT STRUCTURE */
-        .point-container {
-            display: flex;
-            align-items: flex-start;
-            margin-top: 10px;
-            text-align: justify;
+        [contenteditable="true"] { 
+            outline: none; 
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            overflow-wrap: break-word;
             line-height: 1.8;
+            text-align: justify;
         }
 
-        .point-number {
-            min-width: 35px;
-            font-weight: bold;
+        .header { 
+            text-align: center; font-weight: bold; font-size: 1.3rem; margin-bottom: 15px; 
+            pointer-events: none; user-select: none; 
+        }
+        
+        /* FIXED TYPING LIMIT: This ensures space is left for footer/buttons */
+        .document-body { 
+            width: 100%;
+            max-height: 250mm; /* Adjust this to leave more or less bottom space */
+            overflow: hidden;
         }
 
-        .point-text {
-            flex: 1;
-            outline: none;
-            min-height: 1.8em;
-        }
+        .point-container { display: flex; align-items: flex-start; margin-top: 12px; width: 100%; }
+        .point-number { min-width: 35px; font-weight: bold; }
+        .point-text { flex: 1; display: block; width: 100%; }
 
         .footer-container {
-            margin-top: auto;
+            margin-top: auto; 
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            padding-top: 60px;
+            padding-top: 20px; 
+            width: 100%;
+            background: white;
+            min-height: 40mm; /* Reserved space for Signature */
+        }
+
+        .del-page {
+            position: absolute; right: 10px; top: 10px;
+            background: #ff4757; font-size: 10px; padding: 5px 10px; border-radius: 5px;
         }
 
         @media print {
             @page { size: legal; margin: 0; }
-            .toolbar, .no-print { display: none !important; }
+            .toolbar, .no-print, .del-page { display: none !important; }
             body { background: white; padding: 0; }
-            .paper { box-shadow: none; margin: 0; width: 215.9mm; height: 355.6mm; padding: 20mm; }
-        }
-
-        #date-field {
-            border: none;
-            border-bottom: 1px dashed #ccc;
-            font-size: 18px;
-            width: 130px;
-            outline: none;
-            background: transparent;
+            .paper { box-shadow: none; margin: 0; page-break-after: always; height: 355.6mm !important; }
         }
     </style>
 </head>
 <body>
 
     <div class="toolbar">
-        <button onclick="startVoice()" id="micBtn">🎤 हिंदी आवाज़ (Voice)</button>
+        <button onclick="startVoice()" id="micBtn">🎤 आवाज़ (Voice)</button>
         <button onclick="addPoint()">🔢 पॉइंट जोड़ें</button>
-        <button onclick="changeAlignment()" style="background-color: #3498db;">↔️ संरेखण (Alignment)</button>
-        <button onclick="window.print()" style="background-color: #27ae60;">💾 PDF / प्रिंट</button>
+        <button onclick="insertNewPageManual()" style="background-color: #8e44ad;">📄 नया पेज</button>
+        <button onclick="changeAlignment()" style="background-color: #3498db;">↔️ संरेखण</button>
+        <button onclick="window.print()" style="background-color: #27ae60;">💾 प्रिंट / PDF</button>
     </div>
 
-    <div class="paper">
-        <div class="section header" contenteditable="true">
-            न्यायालय किराया अधिकरण <br>
-            जयपुर महानगर (द्वितीय) जयपुर
-        </div>
+    <div id="main-container">
+        <div class="paper" id="page-1">
+            <div class="header">न्यायालय किराया अधिकरण, जयपुर महानगर (द्वितीय)</div>
+            <div class="case-info" contenteditable="true">मुकदमा नं. ________ / 2026</div>
+            <div class="parties" contenteditable="true">उदय सिंह शेखावत बनाम रामचन्द्र</div>
+            <div class="subject" contenteditable="true">दावा बाबत् बेदखली व किराया</div>
 
-        <div class="section case-info" contenteditable="true">
-            मुकदमा नं. ________ / 2026
-        </div>
-
-        <div class="section parties" contenteditable="true">
-            उदय सिंह शेखावत ............ बनाम ............ रामचन्द्र
-        </div>
-
-        <div class="section subject" contenteditable="true">
-            दावा बाबत् बेदखली व किराया
-        </div>
-
-        <div id="document-body" class="section">
-            <div contenteditable="true" style="margin-bottom: 10px;">
-                प्रार्थना पत्र बाबत प्रदर्श-7 ता प्रदर्श 9 दस्तावेज मूल दस्तावेज से कम्पेयर करने की अनुमति दिये जाने एवं मूल दस्तावेज वापस लौटाये जाने <br><br>
-                श्रीमान जी,<br>
-                प्रार्थिया/अर्जीदार की ओर से प्रार्थना पत्र निम्न प्रकार से प्रस्तुत है :-
-            </div>
-
-            <div class="point-container">
-                <div class="point-number">1.</div>
-                <div class="point-text" contenteditable="true" onkeydown="handleDelete(event, this)">यह कि उक्त उनवानी अर्जी आज माननीय न्यायालय के समक्ष नियत है।</div>
-            </div>
-        </div>
-
-        <div class="footer-container">
-            <div class="location-date">
-                <div contenteditable="true">जयपुर</div>
-                <div>
-                    दिनांक : <input type="text" id="date-field" placeholder="DD/MM/YYYY" maxlength="10">
-                    <button class="no-print" onclick="setToday()" style="padding: 2px 8px; font-size: 10px;">Today</button>
+            <div class="document-body">
+                <div contenteditable="true" style="margin-bottom: 10px;">श्रीमान जी, <br> प्रार्थिया की ओर से निवेदन निम्न प्रकार है :-</div>
+                <div class="point-container">
+                    <div class="point-number">1.</div>
+                    <div class="point-text" contenteditable="true" oninput="checkLimit(this)">यह कि उक्त उनवानी अर्जी आज माननीय न्यायालय के समक्ष नियत है।</div>
                 </div>
             </div>
-            <div class="signature" contenteditable="true">
-                <b>प्रार्थी / अर्जीदार</b><br><br><br>
-                ( उदय सिंह शेखावत ) <br>
-                जरिये अधिवक्ता <br>
-                (मो. रफीक खान एण्ड एसोसिएट्स)
+
+            <div id="master-footer" class="footer-container">
+                <div class="location-date">
+                    <div contenteditable="true">जयपुर</div>
+                    <div>दिनांक : <input type="text" id="date-field" placeholder="DD/MM/YYYY" style="border:none; border-bottom:1px dashed #ccc;"></div>
+                </div>
+                <div class="signature" contenteditable="true" style="text-align: right;"><b>प्रार्थी</b><br><br>( उदय सिंह शेखावत )</div>
             </div>
         </div>
     </div>
@@ -174,52 +145,83 @@
         let recognition;
         let isListening = false;
 
-        // --- NEW: AUTO-RENUMBERING LOGIC ---
-        function renumberPoints() {
-            const numbers = document.querySelectorAll('.point-number');
-            numbers.forEach((num, index) => {
-                num.innerText = (index + 1) + ".";
+        // FIXED LIMIT CHECK
+        function checkLimit(el) {
+            const body = el.closest('.document-body');
+            // If the content height exceeds our fixed max-height (250mm)
+            if (body.scrollHeight > body.offsetHeight) {
+                const paper = el.closest('.paper');
+                insertNewPageAfter(paper);
+            }
+        }
+
+        function insertNewPageAfter(currentPaper) {
+            const newPage = document.createElement('div');
+            newPage.className = 'paper';
+            newPage.innerHTML = `
+                <button class="del-page no-print" onclick="deleteThisPage(this)">डिलीट</button>
+                <div class="header"></div>
+                <div class="document-body next-page-body" contenteditable="true" oninput="checkLimit(this)"></div>
+            `;
+            
+            currentPaper.after(newPage);
+            moveFooterToLastPage();
+            renumberAll();
+            
+            const nextBody = newPage.querySelector('.next-page-body');
+            nextBody.focus();
+        }
+
+        function insertNewPageManual() {
+            const papers = document.querySelectorAll('.paper');
+            insertNewPageAfter(papers[papers.length - 1]);
+        }
+
+        function moveFooterToLastPage() {
+            const footer = document.getElementById('master-footer');
+            const papers = document.querySelectorAll('.paper');
+            const lastPage = papers[papers.length - 1];
+            if (footer && lastPage) lastPage.appendChild(footer);
+        }
+
+        function renumberAll() {
+            document.querySelectorAll('.point-number').forEach((num, i) => { num.innerText = (i + 1) + "."; });
+            document.querySelectorAll('.paper').forEach((page, i) => {
+                const h = page.querySelector('.header');
+                if(i > 0) h.innerText = `- ${i + 1} -`;
             });
         }
 
-        // --- NEW: DELETE HANDLER ---
-        function handleDelete(event, element) {
-            // If Backspace is pressed and text is empty
-            if (event.key === "Backspace" && element.innerText.trim() === "") {
-                const container = element.parentElement;
-                const allPoints = document.querySelectorAll('.point-container');
-                
-                // Don't delete if it's the only point left
-                if (allPoints.length > 1) {
-                    event.preventDefault();
-                    container.remove();
-                    renumberPoints(); // Fix numbers after deletion
-                }
+        function deleteThisPage(btn) {
+            if(confirm("पेज डिलीट करें?")) {
+                btn.parentElement.remove();
+                moveFooterToLastPage();
+                renumberAll();
             }
+        }
+
+        function addPoint() {
+            const papers = document.querySelectorAll('.paper');
+            const lastPaper = papers[papers.length - 1];
+            const body = lastPaper.querySelector('.document-body');
+            const div = document.createElement('div');
+            div.className = "point-container";
+            div.innerHTML = `<div class="point-number"></div><div class="point-text" contenteditable="true" oninput="checkLimit(this)"></div>`;
+            body.appendChild(div);
+            renumberAll();
+            div.querySelector('.point-text').focus();
         }
 
         function changeAlignment() {
             let sel = window.getSelection();
-            if (!sel.rangeCount) return;
-            let target = sel.anchorNode.parentElement.closest('[contenteditable="true"]');
-            if (!target) return;
-            const aligns = ['left', 'center', 'right', 'justify'];
-            let current = target.style.textAlign || 'left';
-            target.style.textAlign = aligns[(aligns.indexOf(current) + 1) % aligns.length];
-        }
-
-        const dateInput = document.getElementById('date-field');
-        dateInput.addEventListener('input', function() {
-            let v = this.value.replace(/\D/g, '');
-            if (v.length > 8) v = v.substring(0, 8);
-            if (v.length >= 5) this.value = v.substring(0,2)+'/'+v.substring(2,4)+'/'+v.substring(4,8);
-            else if (v.length >= 3) this.value = v.substring(0,2)+'/'+v.substring(2,4);
-            else this.value = v;
-        });
-
-        function setToday() {
-            const t = new Date();
-            dateInput.value = `${String(t.getDate()).padStart(2,'0')}/${String(t.getMonth()+1).padStart(2,'0')}/${t.getFullYear()}`;
+            if (sel.rangeCount > 0) {
+                let target = sel.anchorNode.parentElement.closest('[contenteditable="true"]');
+                if (target) {
+                    const aligns = ['left', 'center', 'right', 'justify'];
+                    const current = target.style.textAlign || 'left';
+                    target.style.textAlign = aligns[(aligns.indexOf(current) + 1) % 4];
+                }
+            }
         }
 
         if ('webkitSpeechRecognition' in window) {
@@ -227,39 +229,19 @@
             recognition.lang = 'hi-IN';
             recognition.continuous = true;
             recognition.onresult = (e) => {
-                const txt = e.results[e.results.length - 1][0].transcript;
-                document.execCommand('insertText', false, txt + ' ');
+                document.execCommand('insertText', false, e.results[e.results.length - 1][0].transcript + ' ');
+                const active = document.activeElement;
+                if(active) checkLimit(active);
             };
             recognition.onend = () => {
                 isListening = false;
                 document.getElementById('micBtn').classList.remove('active');
-                document.getElementById('micBtn').innerText = "🎤 हिंदी आवाज़ (Voice)";
             };
         }
 
         function startVoice() {
             if (isListening) recognition.stop();
-            else { 
-                recognition.start(); 
-                isListening = true; 
-                document.getElementById('micBtn').classList.add('active');
-                document.getElementById('micBtn').innerText = "🛑 सुनना जारी है...";
-            }
-        }
-
-        function addPoint() {
-            const body = document.getElementById('document-body');
-            const container = document.createElement('div');
-            container.className = "point-container";
-            
-            container.innerHTML = `
-                <div class="point-number"></div>
-                <div class="point-text" contenteditable="true" onkeydown="handleDelete(event, this)"></div>
-            `;
-            
-            body.appendChild(container);
-            renumberPoints();
-            container.querySelector('.point-text').focus();
+            else { recognition.start(); isListening = true; document.getElementById('micBtn').classList.add('active'); }
         }
     </script>
 </body>
