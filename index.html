@@ -13,91 +13,86 @@
 
         body {
             background-color: #525659;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            display: flex; flex-direction: column; align-items: center; 
-            padding: 10px; margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0;
             overflow-x: hidden;
         }
 
         /* Responsive Toolbar */
         .toolbar {
-            position: sticky; top: 10px; background: #ffffff; 
-            padding: 10px; border-radius: 15px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            display: flex; flex-wrap: wrap; gap: 8px; 
-            margin-bottom: 20px; z-index: 1000;
-            justify-content: center; width: 95%;
+            position: sticky; top: 10px; background: #ffffff; padding: 12px;
+            border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; z-index: 2000;
+            justify-content: center; width: 95%; max-width: 800px;
         }
 
         button {
-            padding: 12px 15px; border: none; border-radius: 8px;
+            padding: 12px 14px; border: none; border-radius: 8px;
             background-color: #2c3e50; color: white; cursor: pointer;
-            font-weight: bold; font-size: 14px; flex: 1 1 auto;
-            min-width: 80px; transition: 0.2s;
-            touch-action: manipulation;
+            font-weight: bold; font-size: 14px; transition: 0.2s;
+            touch-action: manipulation; flex-grow: 1;
         }
 
         button:active { background-color: #34495e; transform: scale(0.95); }
         button#micBtn.active { background-color: #e74c3c; animation: pulse 1.5s infinite; }
 
-        /* Mobile Scaling Logic */
+        /* Mobile Scaling Container */
         #main-container {
-            width: 100%;
-            display: flex; flex-direction: column; align-items: center;
+            width: 100%; display: flex; flex-direction: column; align-items: center;
         }
 
         .paper {
             background: white; width: var(--paper-width); height: var(--paper-height); 
-            padding: 15mm 15mm 30mm 15mm; box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            padding: 20mm 20mm 40mm 20mm; box-shadow: 0 0 20px rgba(0,0,0,0.2);
             box-sizing: border-box; display: flex; flex-direction: column;
             color: #000; margin-bottom: 20px; position: relative; overflow: hidden;
             transform-origin: top center;
         }
 
-        /* Android/Phone Screen Fit */
+        /* Scale down the legal paper to fit mobile screens */
         @media screen and (max-width: 850px) {
-            .paper { 
-                transform: scale(0.42); /* Scales the legal page to fit phone width */
-                margin-bottom: -200mm; /* Pulls content up to remove scaling gap */
-            }
-            .toolbar { border-radius: 10px; }
+            .paper { transform: scale(0.42); margin-bottom: -200mm; }
         }
-
         @media screen and (max-width: 480px) {
             .paper { transform: scale(0.32); margin-bottom: -240mm; }
-            button { font-size: 12px; padding: 10px 5px; }
         }
 
         [contenteditable="true"] { 
-            outline: none; white-space: pre-wrap; word-wrap: break-word; 
-            line-height: 1.8; text-align: justify;
-            -webkit-tap-highlight-color: transparent;
+            outline: none; white-wrap: pre-wrap; word-wrap: break-word; 
+            line-height: 2.0; text-align: justify;
         }
 
         .header { text-align: center; font-weight: bold; font-size: 1.3rem; margin-bottom: 15px; }
-        .document-body { width: 100%; max-height: 260mm; overflow: hidden; flex-grow: 1; }
+        .document-body { width: 100%; max-height: 250mm; overflow: hidden; flex-grow: 1; }
 
-        .point-container { display: flex; align-items: flex-start; margin-top: 10px; position: relative; }
-        .point-number { min-width: 30px; font-weight: bold; }
-        .point-text { flex: 1; min-height: 1.5em; width: 100%; }
-
-        /* Mobile Delete Buttons (Larger for touch) */
-        .del-point-btn {
-            position: absolute; left: -45px; color: white; background: #e74c3c;
-            width: 28px; height: 28px; display: flex; align-items: center; 
-            justify-content: center; border-radius: 50%; font-size: 20px;
+        .point-container { 
+            display: flex; align-items: flex-start; margin-top: 12px; 
+            width: 100%; position: relative; 
         }
 
+        .point-number { min-width: 35px; font-weight: bold; }
+        .point-text { flex: 1; display: block; width: 100%; min-height: 1.5em; }
+
+        /* FIXED: Bigger delete button for touch screens */
+        .del-point-btn {
+            position: absolute; left: -45px; color: #e74c3c; cursor: pointer;
+            font-weight: bold; width: 30px; height: 30px; 
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; background: #ffeaea; 
+            z-index: 100; transition: 0.2s;
+            border: 1px solid #ffcccc;
+        }
+        
         .footer-container {
             margin-top: auto; display: flex; justify-content: space-between;
-            align-items: flex-end; padding-top: 15px; width: 100%; background: white;
-            min-height: 35mm; border-top: 1px dashed #ccc;
+            align-items: flex-end; padding-top: 20px; width: 100%; background: white;
+            min-height: 35mm; border-top: 1px dashed #eee;
         }
 
         .del-page {
-            position: absolute; right: 10px; top: 10px; z-index: 10;
-            background: #ff4757; padding: 8px 12px; border-radius: 5px;
-            color: white; border: none; font-size: 14px;
+            position: absolute; right: 10px; top: 10px; z-index: 100;
+            background: #ff4757; font-size: 12px; padding: 8px 12px; 
+            border-radius: 5px; color: white; border: none; cursor: pointer;
         }
 
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
@@ -106,7 +101,7 @@
             @page { size: legal; margin: 0; }
             .toolbar, .no-print, .del-page, .del-point-btn { display: none !important; }
             body { background: white; padding: 0; }
-            .paper { transform: scale(1) !important; margin: 0 !important; box-shadow: none; page-break-after: always; }
+            .paper { transform: scale(1) !important; margin: 0 !important; box-shadow: none; page-break-after: always; height: 355.6mm !important; }
         }
     </style>
 </head>
@@ -116,6 +111,7 @@
         <button onclick="startVoice()" id="micBtn">🎤 आवाज़</button>
         <button onclick="addPoint()">🔢 पॉइंट</button>
         <button onclick="insertNewPageManual()" style="background-color: #8e44ad;">📄 +पेज</button>
+        <button onclick="changeAlignment()" style="background-color: #3498db;">↔️ संरेखण</button>
         <button onclick="saveAsPDF()" style="background-color: #e67e22;">📕 PDF</button>
         <button onclick="saveAsWord()" style="background-color: #2980b9;">📘 Word</button>
         <button onclick="window.print()" style="background-color: #27ae60;">💾 प्रिंट</button>
@@ -141,7 +137,7 @@
             <div id="master-footer" class="footer-container">
                 <div class="location-date">
                     <div contenteditable="true">जयपुर</div>
-                    <div>दिनांक : <input type="text" placeholder="DD/MM/YYYY" style="border:none; border-bottom:1px dashed #ccc; width: 100px; background: transparent;"></div>
+                    <div>दिनांक : <input type="text" id="date-field" placeholder="DD/MM/YYYY" style="border:none; border-bottom:1px dashed #ccc; width: 100px; background: transparent;"></div>
                 </div>
                 <div class="signature" contenteditable="true" style="text-align: right;"><b>प्रार्थी</b><br><br>( उदय सिंह शेखावत )</div>
             </div>
@@ -155,11 +151,14 @@
         function checkLimit(el) {
             const currentPaper = el.closest('.paper');
             const body = currentPaper.querySelector('.document-body');
+            const isOverHeight = body.scrollHeight > body.clientHeight;
             
-            // If text overflows page height
-            if (body.scrollHeight > body.clientHeight) {
+            if (isOverHeight) {
                 const nextPaper = currentPaper.nextElementSibling;
-                if (!nextPaper || !nextPaper.classList.contains('paper')) {
+                if (nextPaper && nextPaper.classList.contains('paper')) {
+                    const target = nextPaper.querySelector('.continuation-text') || nextPaper.querySelector('.point-text');
+                    if (target) target.focus();
+                } else {
                     if (!currentPaper.dataset.pagingLock) {
                         currentPaper.dataset.pagingLock = "true";
                         insertNewPageAfter(currentPaper);
@@ -170,12 +169,25 @@
         }
 
         function handleKey(e, el) {
+            if (e.key === "Backspace" && el.innerText.trim() === "") {
+                const container = el.closest('.point-container');
+                if (container) {
+                    const prev = container.previousElementSibling;
+                    if (prev && (prev.querySelector('.point-text') || prev.classList.contains('continuation-text'))) {
+                        e.preventDefault();
+                        container.remove();
+                        reindexPoints();
+                        const target = prev.querySelector('.point-text') || prev;
+                        target.focus();
+                    }
+                }
+            }
             if (e.key === "Enter") {
-                // Smooth scroll to keep typing area visible above Android keyboard
                 setTimeout(() => {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     checkLimit(el);
-                }, 50);
+                    // On mobile, scroll to the cursor
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 10);
             }
         }
 
@@ -183,12 +195,12 @@
             const newPage = document.createElement('div');
             newPage.className = 'paper';
             newPage.innerHTML = `
-                <button class="del-page no-print" onclick="deleteThisPage(this)">डिलीट</button>
+                <button class="del-page no-print" onclick="deleteThisPage(this)">डिलीट पेज</button>
                 <div class="header page-header-label" contenteditable="true"></div>
                 <div class="document-body">
                     <div class="continuation-text" contenteditable="true" onkeydown="handleKey(event, this)" oninput="checkLimit(this)"></div>
-                </div>`;
-            
+                </div>
+            `;
             currentPaper.after(newPage);
             reindexPages();
             moveFooterToLastPage();
@@ -209,6 +221,37 @@
             });
         }
 
+        function insertNewPageManual() {
+            const papers = document.querySelectorAll('.paper');
+            insertNewPageAfter(papers[papers.length - 1]);
+        }
+
+        function moveFooterToLastPage() {
+            const footer = document.getElementById('master-footer');
+            const papers = document.querySelectorAll('.paper');
+            if (footer && papers.length > 0) papers[papers.length - 1].appendChild(footer);
+        }
+
+        function deleteThisPage(btn) {
+            if(confirm("क्या आप इस पेज को डिलीट करना चाहते हैं?")) {
+                btn.parentElement.remove();
+                reindexPages();
+                moveFooterToLastPage();
+                reindexPoints();
+            }
+        }
+
+        function deletePoint(btn) {
+            btn.closest('.point-container').remove();
+            reindexPoints();
+        }
+
+        function reindexPoints() {
+            document.querySelectorAll('.point-number').forEach((num, i) => {
+                num.innerText = (i + 1) + ".";
+            });
+        }
+
         function addPoint() {
             const papers = document.querySelectorAll('.paper');
             const body = papers[papers.length - 1].querySelector('.document-body');
@@ -225,80 +268,33 @@
             target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        function reindexPoints() {
-            document.querySelectorAll('.point-number').forEach((num, i) => {
-                num.innerText = (i + 1) + ".";
-            });
-        }
-
-        function moveFooterToLastPage() {
-            const footer = document.getElementById('master-footer');
-            const papers = document.querySelectorAll('.paper');
-            if (footer && papers.length > 0) papers[papers.length - 1].appendChild(footer);
-        }
-
-        function deleteThisPage(btn) {
-            if(confirm("डिलीट करें?")) {
-                btn.parentElement.remove();
-                reindexPages();
-                moveFooterToLastPage();
-            }
-        }
-
-        function deletePoint(btn) {
-            btn.closest('.point-container').remove();
-            reindexPoints();
-        }
-
-        function insertNewPageManual() {
-            const papers = document.querySelectorAll('.paper');
-            insertNewPageAfter(papers[papers.length - 1]);
-        }
-
-        // Improved Voice Recognition for Android Chrome
-        if ('webkitSpeechRecognition' in window || 'speechRecognition' in window) {
-            const SpeechAPI = window.webkitSpeechRecognition || window.speechRecognition;
-            recognition = new SpeechAPI();
-            recognition.lang = 'hi-IN';
-            recognition.continuous = true;
-            recognition.interimResults = false;
-
-            recognition.onresult = (e) => {
-                const transcript = e.results[e.results.length - 1][0].transcript;
-                document.execCommand('insertText', false, transcript + ' ');
-            };
-
-            recognition.onend = () => {
-                isListening = false;
-                document.getElementById('micBtn').classList.remove('active');
-            };
-        }
-
-        function startVoice() {
-            if (!recognition) return alert("आवाज़ टाइपिंग इस ब्राउज़र में उपलब्ध नहीं है।");
-            if (isListening) recognition.stop();
-            else { 
-                recognition.start(); 
-                isListening = true; 
-                document.getElementById('micBtn').classList.add('active'); 
+        function changeAlignment() {
+            let sel = window.getSelection();
+            if (sel.rangeCount > 0) {
+                let node = sel.anchorNode;
+                let target = node.nodeType === 3 ? node.parentElement : node;
+                let editor = target.closest('[contenteditable="true"]');
+                if (editor) {
+                    const aligns = ['left', 'center', 'right', 'justify'];
+                    const current = editor.style.textAlign || 'left';
+                    editor.style.textAlign = aligns[(aligns.indexOf(current) + 1) % 4];
+                }
             }
         }
 
         function saveAsPDF() {
-            const element = document.getElementById('main-container');
-            // Remove CSS transforms temporarily for PDF capture
             const papers = document.querySelectorAll('.paper');
-            papers.forEach(p => p.style.transform = 'none');
-            
+            papers.forEach(p => p.style.transform = "none"); // Remove scaling for PDF
+            const element = document.getElementById('main-container');
             const opt = {
                 margin: 0,
                 filename: 'Legal_Document.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true },
                 jsPDF: { unit: 'mm', format: 'legal', orientation: 'portrait' }
             };
             html2pdf().set(opt).from(element).save().then(() => {
-                // Reload to restore mobile view scaling
-                location.reload();
+                location.reload(); // Restore scaling
             });
         }
 
@@ -313,6 +309,36 @@
             link.download = 'Legal_Doc.doc';
             link.click();
         }
+
+        // Voice Recognition Support
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.lang = 'hi-IN';
+            recognition.continuous = true;
+            recognition.interimResults = false;
+            recognition.onresult = (e) => {
+                const transcript = e.results[e.results.length - 1][0].transcript;
+                document.execCommand('insertText', false, transcript + ' ');
+            };
+            recognition.onend = () => {
+                isListening = false;
+                document.getElementById('micBtn').classList.remove('active');
+            };
+        }
+
+        function startVoice() {
+            if (!recognition) return alert("आपका ब्राउज़र वॉइस टाइपिंग सपोर्ट नहीं करता।");
+            if (isListening) recognition.stop();
+            else { recognition.start(); isListening = true; document.getElementById('micBtn').classList.add('active'); }
+        }
+
+        document.addEventListener('paste', (e) => {
+            setTimeout(() => {
+                const active = document.activeElement;
+                if (active && active.hasAttribute('contenteditable')) checkLimit(active);
+            }, 100);
+        });
     </script>
 </body>
 </html>
