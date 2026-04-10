@@ -2,87 +2,86 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Professional Hindi Legal Editor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        :root {
-            --paper-width: 215.9mm;
-            --paper-height: 355.6mm;
-        }
-
         body {
             background-color: #525659;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0;
-            overflow-x: hidden;
+            display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0;
         }
 
-        /* Responsive Toolbar */
+        /* Fixed toolbar adjustment */
         .toolbar {
-            position: sticky; top: 10px; background: #ffffff; padding: 12px;
-            border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; z-index: 2000;
-            justify-content: center; width: 95%; max-width: 800px;
+            position: fixed; 
+            top: 10px; 
+            background: #ffffff; 
+            padding: 15px 25px;
+            border-radius: 50px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 10px; 
+            z-index: 2000;
+            justify-content: center;
         }
 
         button {
-            padding: 12px 14px; border: none; border-radius: 8px;
+            padding: 10px 18px; border: none; border-radius: 25px;
             background-color: #2c3e50; color: white; cursor: pointer;
-            font-weight: bold; font-size: 14px; transition: 0.2s;
-            touch-action: manipulation; flex-grow: 1;
+            font-weight: bold; transition: 0.3s;
         }
 
-        button:active { background-color: #34495e; transform: scale(0.95); }
+        button:hover { background-color: #34495e; transform: translateY(-2px); }
         button#micBtn.active { background-color: #e74c3c; animation: pulse 1.5s infinite; }
 
-        /* Mobile Scaling Container */
+        /* Added margin to container to account for fixed toolbar */
         #main-container {
-            width: 100%; display: flex; flex-direction: column; align-items: center;
+            margin-top: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .paper {
-            background: white; width: var(--paper-width); height: var(--paper-height); 
-            padding: 20mm 20mm 40mm 20mm; box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            background: white; width: 215.9mm; height: 355.6mm; 
+            padding: 20mm 20mm 40mm 20mm; box-shadow: 0 0 20px rgba(0,0,0,0.15);
             box-sizing: border-box; display: flex; flex-direction: column;
-            color: #000; margin-bottom: 20px; position: relative; overflow: hidden;
-            transform-origin: top center;
-        }
-
-        /* Scale down the legal paper to fit mobile screens */
-        @media screen and (max-width: 850px) {
-            .paper { transform: scale(0.42); margin-bottom: -200mm; }
-        }
-        @media screen and (max-width: 480px) {
-            .paper { transform: scale(0.32); margin-bottom: -240mm; }
+            color: #000; margin-bottom: 20px; position: relative; overflow: hidden; 
         }
 
         [contenteditable="true"] { 
-            outline: none; white-wrap: pre-wrap; word-wrap: break-word; 
-            line-height: 2.0; text-align: justify;
+            outline: none; white-space: pre-wrap; word-wrap: break-word; 
+            overflow-wrap: break-word; line-height: 2.0; text-align: justify;
         }
 
         .header { text-align: center; font-weight: bold; font-size: 1.3rem; margin-bottom: 15px; }
-        .document-body { width: 100%; max-height: 250mm; overflow: hidden; flex-grow: 1; }
+        
+        .document-body { 
+            width: 100%; 
+            max-height: 250mm; 
+            overflow: hidden; 
+            flex-grow: 1;
+        }
 
         .point-container { 
             display: flex; align-items: flex-start; margin-top: 12px; 
-            width: 100%; position: relative; 
+            width: 100%; position: relative;
         }
 
         .point-number { min-width: 35px; font-weight: bold; }
         .point-text { flex: 1; display: block; width: 100%; min-height: 1.5em; }
 
-        /* FIXED: Bigger delete button for touch screens */
+        .continuation-text { margin-top: 10px; width: 100%; min-height: 50px; }
+
         .del-point-btn {
-            position: absolute; left: -45px; color: #e74c3c; cursor: pointer;
-            font-weight: bold; width: 30px; height: 30px; 
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 50%; background: #ffeaea; 
-            z-index: 100; transition: 0.2s;
-            border: 1px solid #ffcccc;
+            position: absolute; left: -35px; color: #e74c3c; cursor: pointer;
+            font-weight: bold; padding: 0 5px; border-radius: 50%;
+            background: #ffeaea; opacity: 0; transition: 0.2s;
         }
-        
+        .point-container:hover .del-point-btn { opacity: 1; }
+
         .footer-container {
             margin-top: auto; display: flex; justify-content: space-between;
             align-items: flex-end; padding-top: 20px; width: 100%; background: white;
@@ -90,9 +89,9 @@
         }
 
         .del-page {
-            position: absolute; right: 10px; top: 10px; z-index: 100;
-            background: #ff4757; font-size: 12px; padding: 8px 12px; 
-            border-radius: 5px; color: white; border: none; cursor: pointer;
+            position: absolute; right: 10px; top: 10px;
+            background: #ff4757; font-size: 10px; padding: 5px 10px; border-radius: 5px;
+            color: white; border: none; cursor: pointer;
         }
 
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
@@ -101,7 +100,8 @@
             @page { size: legal; margin: 0; }
             .toolbar, .no-print, .del-page, .del-point-btn { display: none !important; }
             body { background: white; padding: 0; }
-            .paper { transform: scale(1) !important; margin: 0 !important; box-shadow: none; page-break-after: always; height: 355.6mm !important; }
+            #main-container { margin-top: 0; }
+            .paper { box-shadow: none; margin: 0; page-break-after: always; height: 355.6mm !important; }
         }
     </style>
 </head>
@@ -109,8 +109,8 @@
 
     <div class="toolbar no-print">
         <button onclick="startVoice()" id="micBtn">🎤 आवाज़</button>
-        <button onclick="addPoint()">🔢 पॉइंट</button>
-        <button onclick="insertNewPageManual()" style="background-color: #8e44ad;">📄 +पेज</button>
+        <button onclick="addPoint()">🔢 पॉइंट जोड़ें</button>
+        <button onclick="insertNewPageManual()" style="background-color: #8e44ad;">📄 नया पेज</button>
         <button onclick="changeAlignment()" style="background-color: #3498db;">↔️ संरेखण</button>
         <button onclick="saveAsPDF()" style="background-color: #e67e22;">📕 PDF</button>
         <button onclick="saveAsWord()" style="background-color: #2980b9;">📘 Word</button>
@@ -137,7 +137,7 @@
             <div id="master-footer" class="footer-container">
                 <div class="location-date">
                     <div contenteditable="true">जयपुर</div>
-                    <div>दिनांक : <input type="text" id="date-field" placeholder="DD/MM/YYYY" style="border:none; border-bottom:1px dashed #ccc; width: 100px; background: transparent;"></div>
+                    <div>दिनांक : <input type="text" id="date-field" placeholder="DD/MM/YYYY" style="border:none; border-bottom:1px dashed #ccc; width: 100px;"></div>
                 </div>
                 <div class="signature" contenteditable="true" style="text-align: right;"><b>प्रार्थी</b><br><br>( उदय सिंह शेखावत )</div>
             </div>
@@ -151,13 +151,26 @@
         function checkLimit(el) {
             const currentPaper = el.closest('.paper');
             const body = currentPaper.querySelector('.document-body');
-            const isOverHeight = body.scrollHeight > body.clientHeight;
             
-            if (isOverHeight) {
+            const isOverHeight = body.scrollHeight > body.clientHeight;
+            const selection = window.getSelection();
+            let isNearBottom = false;
+
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                const paperRect = currentPaper.getBoundingClientRect();
+                
+                if (rect.bottom > (paperRect.bottom - 120)) { 
+                    isNearBottom = true;
+                }
+            }
+
+            if (isOverHeight || isNearBottom) {
                 const nextPaper = currentPaper.nextElementSibling;
                 if (nextPaper && nextPaper.classList.contains('paper')) {
-                    const target = nextPaper.querySelector('.continuation-text') || nextPaper.querySelector('.point-text');
-                    if (target) target.focus();
+                    const targetInput = nextPaper.querySelector('.continuation-text') || nextPaper.querySelector('.point-text');
+                    if (targetInput) targetInput.focus();
                 } else {
                     if (!currentPaper.dataset.pagingLock) {
                         currentPaper.dataset.pagingLock = "true";
@@ -170,30 +183,25 @@
 
         function handleKey(e, el) {
             if (e.key === "Backspace" && el.innerText.trim() === "") {
-                const container = el.closest('.point-container');
-                if (container) {
-                    const prev = container.previousElementSibling;
-                    if (prev && (prev.querySelector('.point-text') || prev.classList.contains('continuation-text'))) {
-                        e.preventDefault();
-                        container.remove();
-                        reindexPoints();
-                        const target = prev.querySelector('.point-text') || prev;
-                        target.focus();
-                    }
+                const container = el.closest('.point-container') || el.closest('.continuation-text');
+                const prev = container.previousElementSibling;
+                if (prev) {
+                    e.preventDefault();
+                    container.remove();
+                    reindexPoints();
+                    const target = prev.querySelector('.point-text') || prev;
+                    target.focus();
                 }
             }
             if (e.key === "Enter") {
-                setTimeout(() => {
-                    checkLimit(el);
-                    // On mobile, scroll to the cursor
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 10);
+                setTimeout(() => checkLimit(el), 10);
             }
         }
 
         function insertNewPageAfter(currentPaper) {
             const newPage = document.createElement('div');
             newPage.className = 'paper';
+            
             newPage.innerHTML = `
                 <button class="del-page no-print" onclick="deleteThisPage(this)">डिलीट पेज</button>
                 <div class="header page-header-label" contenteditable="true"></div>
@@ -201,9 +209,11 @@
                     <div class="continuation-text" contenteditable="true" onkeydown="handleKey(event, this)" oninput="checkLimit(this)"></div>
                 </div>
             `;
+            
             currentPaper.after(newPage);
             reindexPages();
             moveFooterToLastPage();
+            
             newPage.querySelector('.continuation-text').focus();
         }
 
@@ -229,7 +239,8 @@
         function moveFooterToLastPage() {
             const footer = document.getElementById('master-footer');
             const papers = document.querySelectorAll('.paper');
-            if (footer && papers.length > 0) papers[papers.length - 1].appendChild(footer);
+            const lastPage = papers[papers.length - 1];
+            if (footer && lastPage) lastPage.appendChild(footer);
         }
 
         function deleteThisPage(btn) {
@@ -263,28 +274,22 @@
                 <div class="point-text" contenteditable="true" onkeydown="handleKey(event, this)" oninput="checkLimit(this)"></div>`;
             body.appendChild(div);
             reindexPoints();
-            const target = div.querySelector('.point-text');
-            target.focus();
-            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            div.querySelector('.point-text').focus();
         }
 
         function changeAlignment() {
             let sel = window.getSelection();
             if (sel.rangeCount > 0) {
-                let node = sel.anchorNode;
-                let target = node.nodeType === 3 ? node.parentElement : node;
-                let editor = target.closest('[contenteditable="true"]');
-                if (editor) {
+                let target = sel.anchorNode.parentElement.closest('[contenteditable="true"]');
+                if (target) {
                     const aligns = ['left', 'center', 'right', 'justify'];
-                    const current = editor.style.textAlign || 'left';
-                    editor.style.textAlign = aligns[(aligns.indexOf(current) + 1) % 4];
+                    const current = target.style.textAlign || 'left';
+                    target.style.textAlign = aligns[(aligns.indexOf(current) + 1) % 4];
                 }
             }
         }
 
         function saveAsPDF() {
-            const papers = document.querySelectorAll('.paper');
-            papers.forEach(p => p.style.transform = "none"); // Remove scaling for PDF
             const element = document.getElementById('main-container');
             const opt = {
                 margin: 0,
@@ -293,9 +298,7 @@
                 html2canvas: { scale: 2, useCORS: true },
                 jsPDF: { unit: 'mm', format: 'legal', orientation: 'portrait' }
             };
-            html2pdf().set(opt).from(element).save().then(() => {
-                location.reload(); // Restore scaling
-            });
+            html2pdf().set(opt).from(element).save();
         }
 
         function saveAsWord() {
@@ -310,16 +313,15 @@
             link.click();
         }
 
-        // Voice Recognition Support
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            recognition = new SpeechRecognition();
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
             recognition.lang = 'hi-IN';
             recognition.continuous = true;
             recognition.interimResults = false;
             recognition.onresult = (e) => {
                 const transcript = e.results[e.results.length - 1][0].transcript;
                 document.execCommand('insertText', false, transcript + ' ');
+                if(document.activeElement) checkLimit(document.activeElement);
             };
             recognition.onend = () => {
                 isListening = false;
@@ -328,7 +330,6 @@
         }
 
         function startVoice() {
-            if (!recognition) return alert("आपका ब्राउज़र वॉइस टाइपिंग सपोर्ट नहीं करता।");
             if (isListening) recognition.stop();
             else { recognition.start(); isListening = true; document.getElementById('micBtn').classList.add('active'); }
         }
