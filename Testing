@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Hindi Legal Editor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --legal-width: 215.9mm;
+            --legal-height: 355.6mm;
+        }
+
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding-bottom: 80px; /* Space for bottom nav on mobile */
+        }
+
+        /* Mobile Toolbar - Bottom Sticky for better thumb reach */
+        .mobile-toolbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            box-shadow: 0 -2px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            z-index: 3000;
+            overflow-x: auto;
+        }
+
+        /* Desktop Top Toolbar */
+        @media (min-width: 992px) {
+            .mobile-toolbar {
+                top: 0;
+                bottom: auto;
+                background: #2c3e50;
+                padding: 15px;
+            }
+            .mobile-toolbar button { color: white; border: 1px solid rgba(255,255,255,0.2); }
+            #main-container { margin-top: 100px; }
+        }
+
+        /* Paper Container scaling for Mobile */
+        #main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .paper {
+            background: white;
+            width: var(--legal-width);
+            min-height: var(--legal-height);
+            padding: 20mm;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            position: relative;
+            transform-origin: top center;
+            overflow: hidden;
+        }
+
+        /* Responsive Scaling for small screens */
+        @media (max-width: 800px) {
+            #main-container { padding: 5px; }
+            .paper {
+                transform: scale(0.45); /* Scales the legal page to fit phone width */
+                margin-bottom: -180mm; /* Pulls up next page due to scale */
+            }
+        }
+        @media (max-width: 500px) {
+            .paper { transform: scale(0.38); margin-bottom: -210mm; }
+        }
+
+        [contenteditable="true"] {
+            outline: none;
+            line-height: 2.0;
+            text-align: justify;
+        }
+
+        .header { text-align: center; font-weight: bold; font-size: 1.4rem; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+        .point-container { display: flex; position: relative; margin-bottom: 10px; }
+        .point-number { min-width: 40px; font-weight: bold; }
+        .point-text { flex: 1; min-height: 1.5em; }
+
+        /* Mic Button Animation */
+        .btn-mic-active {
+            background-color: #dc3545 !important;
+            animation: pulse 1.5s infinite;
+            color: white !important;
+        }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        .footer-container {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+        }
+
+        @media print {
+            .mobile-toolbar, .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .paper { transform: scale(1); margin: 0; box-shadow: none; page-break-after: always; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-toolbar no-print px-2">
+        <button class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="startVoice()" id="micBtn">🎤 आवाज़</button>
+        <button class="btn btn-outline-dark btn-sm rounded-pill px-3" onclick="addPoint()">🔢 पॉइंट</button>
+        <button class="btn btn-outline-dark btn-sm rounded-pill px-3" onclick="insertNewPageManual()">📄 नया पेज</button>
+        <div class="dropdown">
+            <button class="btn btn-success btn-sm rounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                💾 सेव
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="saveAsPDF()">PDF (Legal)</a></li>
+                <li><a class="dropdown-item" href="#" onclick="saveAsWord()">Word Doc</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#" onclick="window.print()">Print</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="main-container">
+        <div class="paper" id="page-1">
+            <div class="header" contenteditable="true">न्यायालय किराया अधिकरण, जयपुर महानगर (द्वितीय)</div>
+            
+            <div class="mb-3">
+                <div class="fw-bold" contenteditable="true">मुकदमा नं. ________ / 2026</div>
+                <div class="fw-bold" contenteditable="true">उदय सिंह शेखावत बनाम रामचन्द्र</div>
+                <div class="text-decoration-underline" contenteditable="true">दावा बाबत् बेदखली व किराया</div>
+            </div>
+
+            <div class="document-body">
+                <div contenteditable="true" class="mb-2">श्रीमान जी, <br> प्रार्थिया की ओर से निवेदन निम्न प्रकार है :-</div>
+                
+                <div class="point-container">
+                    <div class="point-number">1.</div>
+                    <div class="point-text" contenteditable="true" oninput="checkLimit(this)">यह कि उक्त उनवानी अर्जी आज माननीय न्यायालय के समक्ष नियत है।</div>
+                </div>
+            </div>
+
+            <div id="master-footer" class="footer-container">
+                <div>
+                    <div contenteditable="true">जयपुर</div>
+                    <div contenteditable="true">दिनांक : 10/04/2026</div>
+                </div>
+                <div class="text-end">
+                    <div contenteditable="true"><b>प्रार्थी</b><br><br><br>( उदय सिंह शेखावत )</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let recognition;
+        let isListening = false;
+
+        // Auto-pagination logic
+        function checkLimit(el) {
+            const currentPaper = el.closest('.paper');
+            const body = currentPaper.querySelector('.document-body');
+            
+            // If text exceeds roughly 80% of legal height, trigger new page
+            if (body.scrollHeight > 900) { 
+                const nextPaper = currentPaper.nextElementSibling;
+                if (!nextPaper || !nextPaper.classList.contains('paper')) {
+                    insertNewPageAfter(currentPaper);
+                }
+            }
+        }
+
+        function insertNewPageAfter(currentPaper) {
+            const newPage = document.createElement('div');
+            newPage.className = 'paper';
+            newPage.innerHTML = `
+                <div class="header text-muted" contenteditable="true">- जारी -</div>
+                <div class="document-body">
+                    <div class="point-text mt-3" contenteditable="true" oninput="checkLimit(this)"></div>
+                </div>
+            `;
+            currentPaper.after(newPage);
+            moveFooterToLastPage();
+        }
+
+        function insertNewPageManual() {
+            const papers = document.querySelectorAll('.paper');
+            insertNewPageAfter(papers[papers.length - 1]);
+        }
+
+        function addPoint() {
+            const papers = document.querySelectorAll('.paper');
+            const body = papers[papers.length - 1].querySelector('.document-body');
+            const count = document.querySelectorAll('.point-container').length + 1;
+            
+            const div = document.createElement('div');
+            div.className = "point-container";
+            div.innerHTML = `
+                <div class="point-number">${count}.</div>
+                <div class="point-text" contenteditable="true" oninput="checkLimit(this)"></div>`;
+            body.appendChild(div);
+            div.querySelector('.point-text').focus();
+        }
+
+        function moveFooterToLastPage() {
+            const footer = document.getElementById('master-footer');
+            const papers = document.querySelectorAll('.paper');
+            papers[papers.length - 1].appendChild(footer);
+        }
+
+        // Voice Recognition (Android Chrome compatible)
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.lang = 'hi-IN';
+            recognition.continuous = true;
+            
+            recognition.onresult = (e) => {
+                const transcript = e.results[e.results.length - 1][0].transcript;
+                document.execCommand('insertText', false, transcript + ' ');
+            };
+            
+            recognition.onend = () => {
+                isListening = false;
+                document.getElementById('micBtn').classList.remove('btn-mic-active');
+            };
+        }
+
+        function startVoice() {
+            if (isListening) {
+                recognition.stop();
+            } else {
+                recognition.start();
+                isListening = true;
+                document.getElementById('micBtn').classList.add('btn-mic-active');
+            }
+        }
+
+        function saveAsPDF() {
+            const element = document.getElementById('main-container');
+            const opt = {
+                margin: 0,
+                filename: 'Legal_Draft_Hindi.pdf',
+                jsPDF: { unit: 'mm', format: 'legal', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function saveAsWord() {
+            const content = document.getElementById("main-container").innerHTML;
+            const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = 'Legal_Doc.doc';
+            link.click();
+        }
+    </script>
+</body>
+</html>
