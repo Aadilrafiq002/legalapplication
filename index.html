@@ -2,137 +2,128 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Professional Hindi Legal Editor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        body {
-            background-color: #525659;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            margin: 0;
+        :root {
+            --paper-width: 215.9mm;
+            --paper-height: 355.6mm;
         }
 
+        body {
+            background-color: #525659;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex; flex-direction: column; align-items: center; 
+            padding: 10px; margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Responsive Toolbar */
         .toolbar {
-            position: sticky;
-            top: 10px;
-            background: #ffffff;
-            padding: 15px 25px;
-            border-radius: 50px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 30px;
-            z-index: 1000;
-            justify-content: center;
+            position: sticky; top: 10px; background: #ffffff; 
+            padding: 10px; border-radius: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex; flex-wrap: wrap; gap: 8px; 
+            margin-bottom: 20px; z-index: 1000;
+            justify-content: center; width: 95%;
         }
 
         button {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 25px;
-            background-color: #2c3e50;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
+            padding: 12px 15px; border: none; border-radius: 8px;
+            background-color: #2c3e50; color: white; cursor: pointer;
+            font-weight: bold; font-size: 14px; flex: 1 1 auto;
+            min-width: 80px; transition: 0.2s;
+            touch-action: manipulation;
         }
 
-        button:hover { background-color: #34495e; transform: translateY(-2px); }
+        button:active { background-color: #34495e; transform: scale(0.95); }
         button#micBtn.active { background-color: #e74c3c; animation: pulse 1.5s infinite; }
 
+        /* Mobile Scaling Logic */
+        #main-container {
+            width: 100%;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
         .paper {
-            background: white;
-            width: 215.9mm; 
-            height: 355.6mm; 
-            padding: 25mm 20mm 30px 20mm; 
-            box-shadow: 0 0 20px rgba(0,0,0,0.15);
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            color: #000;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden; 
+            background: white; width: var(--paper-width); height: var(--paper-height); 
+            padding: 15mm 15mm 30mm 15mm; box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            box-sizing: border-box; display: flex; flex-direction: column;
+            color: #000; margin-bottom: 20px; position: relative; overflow: hidden;
+            transform-origin: top center;
+        }
+
+        /* Android/Phone Screen Fit */
+        @media screen and (max-width: 850px) {
+            .paper { 
+                transform: scale(0.42); /* Scales the legal page to fit phone width */
+                margin-bottom: -200mm; /* Pulls content up to remove scaling gap */
+            }
+            .toolbar { border-radius: 10px; }
+        }
+
+        @media screen and (max-width: 480px) {
+            .paper { transform: scale(0.32); margin-bottom: -240mm; }
+            button { font-size: 12px; padding: 10px 5px; }
         }
 
         [contenteditable="true"] { 
-            outline: none; 
-            white-space: pre-wrap; 
-            word-wrap: break-word; 
-            overflow-wrap: break-word;
-            line-height: 1.8;
-            text-align: justify;
+            outline: none; white-space: pre-wrap; word-wrap: break-word; 
+            line-height: 1.8; text-align: justify;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* FIXED: Court name is now editable */
-        .header { 
-            text-align: center; 
-            font-weight: bold; 
-            font-size: 1.3rem; 
-            margin-bottom: 15px; 
-            cursor: text;
-        }
-        
-        .document-body { 
-            width: 100%;
-            max-height: 250mm; 
-            overflow: hidden;
-        }
+        .header { text-align: center; font-weight: bold; font-size: 1.3rem; margin-bottom: 15px; }
+        .document-body { width: 100%; max-height: 260mm; overflow: hidden; flex-grow: 1; }
 
-        .point-container { display: flex; align-items: flex-start; margin-top: 12px; width: 100%; }
-        .point-number { min-width: 35px; font-weight: bold; }
-        .point-text { flex: 1; display: block; width: 100%; }
+        .point-container { display: flex; align-items: flex-start; margin-top: 10px; position: relative; }
+        .point-number { min-width: 30px; font-weight: bold; }
+        .point-text { flex: 1; min-height: 1.5em; width: 100%; }
+
+        /* Mobile Delete Buttons (Larger for touch) */
+        .del-point-btn {
+            position: absolute; left: -45px; color: white; background: #e74c3c;
+            width: 28px; height: 28px; display: flex; align-items: center; 
+            justify-content: center; border-radius: 50%; font-size: 20px;
+        }
 
         .footer-container {
-            margin-top: auto; 
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            padding-top: 20px; 
-            width: 100%;
-            background: white;
-            min-height: 40mm;
+            margin-top: auto; display: flex; justify-content: space-between;
+            align-items: flex-end; padding-top: 15px; width: 100%; background: white;
+            min-height: 35mm; border-top: 1px dashed #ccc;
         }
 
         .del-page {
-            position: absolute; right: 10px; top: 10px;
-            background: #ff4757; font-size: 10px; padding: 5px 10px; border-radius: 5px;
+            position: absolute; right: 10px; top: 10px; z-index: 10;
+            background: #ff4757; padding: 8px 12px; border-radius: 5px;
+            color: white; border: none; font-size: 14px;
         }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
-        }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
 
         @media print {
             @page { size: legal; margin: 0; }
-            .toolbar, .no-print, .del-page { display: none !important; }
+            .toolbar, .no-print, .del-page, .del-point-btn { display: none !important; }
             body { background: white; padding: 0; }
-            .paper { box-shadow: none; margin: 0; page-break-after: always; height: 355.6mm !important; }
+            .paper { transform: scale(1) !important; margin: 0 !important; box-shadow: none; page-break-after: always; }
         }
     </style>
 </head>
 <body>
 
     <div class="toolbar no-print">
-        <button onclick="startVoice()" id="micBtn">🎤 आवाज़ (Voice)</button>
-        <button onclick="addPoint()">🔢 पॉइंट जोड़ें</button>
-        <button onclick="insertNewPageManual()" style="background-color: #8e44ad;">📄 नया पेज</button>
-        <button onclick="changeAlignment()" style="background-color: #3498db;">↔️ संरेखण</button>
-        <button onclick="saveAsPDF()" style="background-color: #e67e22;">📕 Save PDF</button>
-        <button onclick="saveAsWord()" style="background-color: #2980b9;">📘 Save Word</button>
+        <button onclick="startVoice()" id="micBtn">🎤 आवाज़</button>
+        <button onclick="addPoint()">🔢 पॉइंट</button>
+        <button onclick="insertNewPageManual()" style="background-color: #8e44ad;">📄 +पेज</button>
+        <button onclick="saveAsPDF()" style="background-color: #e67e22;">📕 PDF</button>
+        <button onclick="saveAsWord()" style="background-color: #2980b9;">📘 Word</button>
         <button onclick="window.print()" style="background-color: #27ae60;">💾 प्रिंट</button>
     </div>
 
     <div id="main-container">
         <div class="paper" id="page-1">
-            <div class="header" contenteditable="true">न्यायालय किराया अधिकरण, जयपुर महानगर (द्वितीय)</div>
+            <div class="header page-header-label" contenteditable="true">न्यायालय किराया अधिकरण, जयपुर महानगर (द्वितीय)</div>
             
             <div class="case-info" contenteditable="true">मुकदमा नं. ________ / 2026</div>
             <div class="parties" contenteditable="true">उदय सिंह शेखावत बनाम रामचन्द्र</div>
@@ -141,15 +132,16 @@
             <div class="document-body">
                 <div contenteditable="true" style="margin-bottom: 10px;">श्रीमान जी, <br> प्रार्थिया की ओर से निवेदन निम्न प्रकार है :-</div>
                 <div class="point-container">
+                    <span class="del-point-btn no-print" onclick="deletePoint(this)">×</span>
                     <div class="point-number">1.</div>
-                    <div class="point-text" contenteditable="true" oninput="checkLimit(this)">यह कि उक्त उनवानी अर्जी आज माननीय न्यायालय के समक्ष नियत है।</div>
+                    <div class="point-text" contenteditable="true" onkeydown="handleKey(event, this)" oninput="checkLimit(this)">यह कि उक्त उनवानी अर्जी आज माननीय न्यायालय के समक्ष नियत है।</div>
                 </div>
             </div>
 
             <div id="master-footer" class="footer-container">
                 <div class="location-date">
                     <div contenteditable="true">जयपुर</div>
-                    <div>दिनांक : <input type="text" id="date-field" placeholder="DD/MM/YYYY" style="border:none; border-bottom:1px dashed #ccc;"></div>
+                    <div>दिनांक : <input type="text" placeholder="DD/MM/YYYY" style="border:none; border-bottom:1px dashed #ccc; width: 100px; background: transparent;"></div>
                 </div>
                 <div class="signature" contenteditable="true" style="text-align: right;"><b>प्रार्थी</b><br><br>( उदय सिंह शेखावत )</div>
             </div>
@@ -161,10 +153,29 @@
         let isListening = false;
 
         function checkLimit(el) {
-            const body = el.closest('.document-body');
-            if (body.scrollHeight > body.offsetHeight) {
-                const paper = el.closest('.paper');
-                insertNewPageAfter(paper);
+            const currentPaper = el.closest('.paper');
+            const body = currentPaper.querySelector('.document-body');
+            
+            // If text overflows page height
+            if (body.scrollHeight > body.clientHeight) {
+                const nextPaper = currentPaper.nextElementSibling;
+                if (!nextPaper || !nextPaper.classList.contains('paper')) {
+                    if (!currentPaper.dataset.pagingLock) {
+                        currentPaper.dataset.pagingLock = "true";
+                        insertNewPageAfter(currentPaper);
+                        setTimeout(() => { delete currentPaper.dataset.pagingLock; }, 600);
+                    }
+                }
+            }
+        }
+
+        function handleKey(e, el) {
+            if (e.key === "Enter") {
+                // Smooth scroll to keep typing area visible above Android keyboard
+                setTimeout(() => {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    checkLimit(el);
+                }, 50);
             }
         }
 
@@ -173,16 +184,70 @@
             newPage.className = 'paper';
             newPage.innerHTML = `
                 <button class="del-page no-print" onclick="deleteThisPage(this)">डिलीट</button>
-                <div class="header" contenteditable="true"></div>
-                <div class="document-body next-page-body" contenteditable="true" oninput="checkLimit(this)"></div>
-            `;
+                <div class="header page-header-label" contenteditable="true"></div>
+                <div class="document-body">
+                    <div class="continuation-text" contenteditable="true" onkeydown="handleKey(event, this)" oninput="checkLimit(this)"></div>
+                </div>`;
             
             currentPaper.after(newPage);
+            reindexPages();
             moveFooterToLastPage();
-            renumberAll();
-            
-            const nextBody = newPage.querySelector('.next-page-body');
-            nextBody.focus();
+            newPage.querySelector('.continuation-text').focus();
+        }
+
+        function reindexPages() {
+            const papers = document.querySelectorAll('.paper');
+            papers.forEach((paper, index) => {
+                const header = paper.querySelector('.page-header-label');
+                if (index === 0) {
+                    if (header.innerText.trim() === "" || header.innerText.includes("-")) {
+                        header.innerText = "न्यायालय किराया अधिकरण, जयपुर महानगर (द्वितीय)";
+                    }
+                } else {
+                    header.innerText = `- ${index + 1} -`;
+                }
+            });
+        }
+
+        function addPoint() {
+            const papers = document.querySelectorAll('.paper');
+            const body = papers[papers.length - 1].querySelector('.document-body');
+            const div = document.createElement('div');
+            div.className = "point-container";
+            div.innerHTML = `
+                <span class="del-point-btn no-print" onclick="deletePoint(this)">×</span>
+                <div class="point-number"></div>
+                <div class="point-text" contenteditable="true" onkeydown="handleKey(event, this)" oninput="checkLimit(this)"></div>`;
+            body.appendChild(div);
+            reindexPoints();
+            const target = div.querySelector('.point-text');
+            target.focus();
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function reindexPoints() {
+            document.querySelectorAll('.point-number').forEach((num, i) => {
+                num.innerText = (i + 1) + ".";
+            });
+        }
+
+        function moveFooterToLastPage() {
+            const footer = document.getElementById('master-footer');
+            const papers = document.querySelectorAll('.paper');
+            if (footer && papers.length > 0) papers[papers.length - 1].appendChild(footer);
+        }
+
+        function deleteThisPage(btn) {
+            if(confirm("डिलीट करें?")) {
+                btn.parentElement.remove();
+                reindexPages();
+                moveFooterToLastPage();
+            }
+        }
+
+        function deletePoint(btn) {
+            btn.closest('.point-container').remove();
+            reindexPoints();
         }
 
         function insertNewPageManual() {
@@ -190,91 +255,19 @@
             insertNewPageAfter(papers[papers.length - 1]);
         }
 
-        function moveFooterToLastPage() {
-            const footer = document.getElementById('master-footer');
-            const papers = document.querySelectorAll('.paper');
-            const lastPage = papers[papers.length - 1];
-            if (footer && lastPage) lastPage.appendChild(footer);
-        }
-
-        function renumberAll() {
-            document.querySelectorAll('.point-number').forEach((num, i) => { num.innerText = (i + 1) + "."; });
-            document.querySelectorAll('.paper').forEach((page, i) => {
-                const h = page.querySelector('.header');
-                if(i > 0 && h.innerText.trim() === "") h.innerText = `- ${i + 1} -`;
-            });
-        }
-
-        function deleteThisPage(btn) {
-            if(confirm("पेज डिलीट करें?")) {
-                btn.parentElement.remove();
-                moveFooterToLastPage();
-                renumberAll();
-            }
-        }
-
-        function addPoint() {
-            const papers = document.querySelectorAll('.paper');
-            const lastPaper = papers[papers.length - 1];
-            const body = lastPaper.querySelector('.document-body');
-            const div = document.createElement('div');
-            div.className = "point-container";
-            div.innerHTML = `<div class="point-number"></div><div class="point-text" contenteditable="true" oninput="checkLimit(this)"></div>`;
-            body.appendChild(div);
-            renumberAll();
-            div.querySelector('.point-text').focus();
-        }
-
-        function changeAlignment() {
-            let sel = window.getSelection();
-            if (sel.rangeCount > 0) {
-                let target = sel.anchorNode.parentElement.closest('[contenteditable="true"]');
-                if (target) {
-                    const aligns = ['left', 'center', 'right', 'justify'];
-                    const current = target.style.textAlign || 'left';
-                    target.style.textAlign = aligns[(aligns.indexOf(current) + 1) % 4];
-                }
-            }
-        }
-
-        // SAVE AS PDF
-        function saveAsPDF() {
-            const element = document.getElementById('main-container');
-            const opt = {
-                margin: 0,
-                filename: 'Legal_Document.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'mm', format: 'legal', orientation: 'portrait' }
-            };
-            html2pdf().set(opt).from(element).save();
-        }
-
-        // SAVE AS WORD (.doc)
-        function saveAsWord() {
-            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML to Word</title></head><body>";
-            const footer = "</body></html>";
-            const sourceHTML = header + document.getElementById("main-container").innerHTML + footer;
-            
-            const source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
-            const fileDownload = document.createElement("a");
-            document.body.appendChild(fileDownload);
-            fileDownload.href = source;
-            fileDownload.download = 'Document.doc';
-            fileDownload.click();
-            document.body.removeChild(fileDownload);
-        }
-
-        // Voice Recognition
-        if ('webkitSpeechRecognition' in window) {
-            recognition = new webkitSpeechRecognition();
+        // Improved Voice Recognition for Android Chrome
+        if ('webkitSpeechRecognition' in window || 'speechRecognition' in window) {
+            const SpeechAPI = window.webkitSpeechRecognition || window.speechRecognition;
+            recognition = new SpeechAPI();
             recognition.lang = 'hi-IN';
             recognition.continuous = true;
+            recognition.interimResults = false;
+
             recognition.onresult = (e) => {
-                document.execCommand('insertText', false, e.results[e.results.length - 1][0].transcript + ' ');
-                const active = document.activeElement;
-                if(active) checkLimit(active);
+                const transcript = e.results[e.results.length - 1][0].transcript;
+                document.execCommand('insertText', false, transcript + ' ');
             };
+
             recognition.onend = () => {
                 isListening = false;
                 document.getElementById('micBtn').classList.remove('active');
@@ -282,8 +275,43 @@
         }
 
         function startVoice() {
+            if (!recognition) return alert("आवाज़ टाइपिंग इस ब्राउज़र में उपलब्ध नहीं है।");
             if (isListening) recognition.stop();
-            else { recognition.start(); isListening = true; document.getElementById('micBtn').classList.add('active'); }
+            else { 
+                recognition.start(); 
+                isListening = true; 
+                document.getElementById('micBtn').classList.add('active'); 
+            }
+        }
+
+        function saveAsPDF() {
+            const element = document.getElementById('main-container');
+            // Remove CSS transforms temporarily for PDF capture
+            const papers = document.querySelectorAll('.paper');
+            papers.forEach(p => p.style.transform = 'none');
+            
+            const opt = {
+                margin: 0,
+                filename: 'Legal_Document.pdf',
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'legal', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Reload to restore mobile view scaling
+                location.reload();
+            });
+        }
+
+        function saveAsWord() {
+            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body>";
+            const content = document.getElementById("main-container").innerHTML;
+            const sourceHTML = header + content + "</body></html>";
+            const blob = new Blob(['\ufeff', sourceHTML], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = 'Legal_Doc.doc';
+            link.click();
         }
     </script>
 </body>
