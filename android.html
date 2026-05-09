@@ -6,7 +6,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>हिंदी कानूनी संपादक | Kruti Dev 010</title>
+<title></title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -141,6 +141,16 @@ button:active { background: #3a4560; transform: scale(0.97); }
 
 /* Responsive scaling of paper on small screens */
 @media (max-width: 600px) {
+  @page {
+    size: legal; /* Forces Legal Paper */
+    margin: 0;    /* Removes Browser Headers/Footers (URL/Title) */
+  }
+
+  body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
   #main-container {
     padding: 12px 0 120px;
     overflow-x: auto;
@@ -174,7 +184,7 @@ button:active { background: #3a4560; transform: scale(0.97); }
   min-height: 1.2em;
 }
 .page-meta:focus { background: #fffff0; }
-
+@page { margin: 0; }
 .doc-body {
   flex: 1;
   overflow: hidden;
@@ -1299,35 +1309,79 @@ function startVoiceInput(langCode) {
 // EXPORT
 // ============================================================
 function exportAsPDF() {
-  // Temporarily hide mobile keyboard
+  const element = document.getElementById('main-container');
   const mkh = document.getElementById('mobile-key-helper');
-  const wasVisible = mkhVisible;
-  mkh.classList.remove('show');
-  const el = document.getElementById('main-container');
+  
+  // Temporarily hide UI and Clear Title to prevent "Advertising" in metadata
+  const originalTitle = document.title;
+  document.title = " "; 
+  if (mkh) mkh.classList.remove('show');
+
   const opt = {
-    margin: [0.2,0.2,0.2,0.2],
-    filename: 'हिंदी_कानूनी_दस्तावेज.pdf',
+    margin: 0,
+    filename: 'Court_Document.pdf',
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2.5, useCORS: true },
-    jsPDF: { unit: 'mm', format: 'legal', orientation: 'portrait' }
+    html2canvas: { 
+      scale: 2, // Scale 2 is best for mobile stability
+      useCORS: true,
+      letterRendering: true
+    },
+    jsPDF: { 
+      unit: 'mm', 
+      format: 'legal', 
+      orientation: 'portrait' 
+    }
   };
-  showMsg('PDF तैयार हो रही है...', 2000);
-  html2pdf().set(opt).from(el).save().then(() => {
-    showMsg('PDF सेव हो गई ✅', 3000);
-    if (wasVisible) mkh.classList.add('show');
+
+  showMsg('न्यायालय प्रारूप PDF तैयार हो रही है...', 3000);
+
+  html2pdf().set(opt).from(element).toPdf().get('pdf').then(function (pdf) {
+    // Manually trigger download for better browser support
+    pdf.save('Legal_Document.pdf');
+    document.title = originalTitle; // Restore title
+    if (mkh) mkh.classList.add('show');
+    showMsg('PDF सेव हो गई ✅', 2000);
+  }).catch(err => {
+    alert("PDF Error: Please try again in a different browser.");
+    console.error(err);
   });
 }
 
 function exportAsWord() {
-  const clone = document.getElementById('main-container').cloneNode(true);
-  const style = '<style>body{font-family:"Kruti Dev 010","Times New Roman";margin:2cm;} .paper{page-break-after:always;} .no-print{display:none;}</style>';
-  const full = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Legal Doc</title>${style}</head><body>${clone.innerHTML}</body></html>`;
-  const blob = new Blob([full], {type:'application/msword'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'Legal_Doc.doc';
-  a.click();
-  showMsg('Word डाउनलोड हो रहा है', 2000);
+  const container = document.getElementById('main-container');
+  const clone = container.cloneNode(true);
+  
+  // Clean up buttons
+  clone.querySelectorAll('.no-print, .del-pt, .del-page-btn, button').forEach(el => el.remove());
+
+  // XML for Word Margins (35mm = 99.2 points)
+  const wordXMLHeader = `
+    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+    <head><meta charset='utf-8'>
+    <style>
+      @page {
+        size: 8.5in 14in; 
+        margin: 1.0in 0.75in 1.0in 1.38in; /* 1.38in = 35mm */
+        mso-header-margin: 0.5in; mso-footer-margin: 0.5in; mso-paper-source: 0;
+      }
+      body { font-family: "Kruti Dev 010", serif; }
+      .paper { page-break-after: always; }
+    </style>
+    </head><body>`;
+
+  const wordXMLFooter = "</body></html>";
+  const sourceData = wordXMLHeader + clone.innerHTML + wordXMLFooter;
+
+  const blob = new Blob(['\ufeff', sourceData], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'Court_Document.doc';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  showMsg('Word फ़ाइल डाउनलोड हो रही है', 2000);
 }
 
 
