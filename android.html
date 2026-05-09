@@ -154,8 +154,7 @@ button:active { background: #3a4560; transform: scale(0.97); }
   border-bottom: 2px solid #111;
   padding-bottom: 6px;
   margin-bottom: 10px;
-  font-family: 'Kruti Dev 010','K010',serif;
-  color: #000;
+  font-family: 'Mangal', 'Noto Sans Devanagari', 'Nirmala UI', sans-serif !important;  color: #000;
   min-height: 1.5em;
   outline: none;
 }
@@ -164,7 +163,7 @@ button:active { background: #3a4560; transform: scale(0.97); }
 .page-meta {
   text-align: center;
   margin: 5px 0;
-  font-family: 'Kruti Dev 010','K010',serif;
+  font-family: 'Mangal', 'Noto Sans Devanagari', 'Nirmala UI', sans-serif !important;
   font-size: 12pt;
   color: #000;
   outline: none;
@@ -179,7 +178,7 @@ button:active { background: #3a4560; transform: scale(0.97); }
 }
 
 [contenteditable="true"] {
-  font-family: 'Kruti Dev 010','K010',serif;
+ font-family: 'Mangal', 'Noto Sans Devanagari', 'Nirmala UI', sans-serif !important;
   font-size: 14pt;
   line-height: 1.7;
   text-align: justify;
@@ -204,14 +203,14 @@ button:active { background: #3a4560; transform: scale(0.97); }
 .point-num {
   font-weight: bold;
   min-width: 32px;
-  font-family: 'Kruti Dev 010','K010',serif;
+  font-family: 'Mangal', 'Noto Sans Devanagari', 'Nirmala UI', sans-serif !important;
   font-size: 14pt;
   line-height: 1.7;
   color: #000;
 }
 .point-text {
   flex: 1;
-  font-family: 'Kruti Dev 010','K010',serif;
+  font-family: 'Mangal', 'Noto Sans Devanagari', 'Nirmala UI', sans-serif !important;
   font-size: 14pt;
   line-height: 1.7;
   text-align: justify;
@@ -248,7 +247,7 @@ button:active { background: #3a4560; transform: scale(0.97); }
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 8px;
-  font-family: 'Kruti Dev 010','K010',serif;
+ font-family: 'Mangal', 'Noto Sans Devanagari', 'Nirmala UI', sans-serif !important;
   font-size: 12pt;
   color: #000;
 }
@@ -323,7 +322,7 @@ button:active { background: #3a4560; transform: scale(0.97); }
   height: 40px;
   border-radius: 6px;
   font-size: 15px;
-  font-family: 'Mangal','Noto Sans Devanagari',serif;
+ font-family: 'Mangal', 'Noto Sans Devanagari', 'Nirmala UI', sans-serif !important;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -341,43 +340,6 @@ button:active { background: #3a4560; transform: scale(0.97); }
 .mkh-enter { width: 70px; font-size: 11px; background: #1e3b5c; border-color: #2a5a8c; font-family: sans-serif; }
 
 /* ===== KEY CHART PANEL ===== */
-#key-chart {
-  display: none;
-  position: fixed;
-  top: calc(var(--total-toolbar) + 8px);
-  right: 8px;
-  left: 8px;
-  max-width: 620px;
-  margin: 0 auto;
-  background: #091122;
-  border: 1px solid #2f4c7a;
-  border-radius: 14px;
-  padding: 12px;
-  z-index: 2100;
-  color: #dceaff;
-  font-size: 10px;
-  box-shadow: 0 12px 28px black;
-  max-height: 75vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-#key-chart.show { display: block; }
-.kc-title { font-size: 13px; color: #ffc857; text-align: center; margin-bottom: 10px; border-bottom: 1px solid #1e4060; padding-bottom: 6px; }
-.kc-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
-.kc-item {
-  background: #132338;
-  padding: 4px 8px;
-  border-radius: 10px;
-  display: inline-flex;
-  gap: 8px;
-  font-size: 12px;
-  align-items: baseline;
-  border: 1px solid #2a4565;
-  font-family: monospace;
-}
-.kc-key { color: #f3b560; font-weight: bold; min-width: 24px; }
-.kc-normal { color: #a5f0a5; font-size: 14px; font-family: 'Mangal','Noto Sans Devanagari',serif; }
-.kc-shift { color: #e0aaff; font-size: 14px; font-family: 'Mangal','Noto Sans Devanagari',serif; }
 
 /* ===== STATUS BAR ===== */
 #status-bar {
@@ -412,7 +374,7 @@ button:active { background: #3a4560; transform: scale(0.97); }
 /* ===== PRINT ===== */
 @media print {
   .toolbar, #toolbar-main, #toolbar-sub, #mobile-key-helper, .no-print,
-  .del-pt, .del-page-btn, #key-chart, #status-bar { display: none !important; }
+  .del-pt, .del-page-btn, #status-bar { display: none !important; }
   body { background: white; margin: 0; padding: 0; }
   #main-container { margin-top: 0; padding: 0; }
   .paper { box-shadow: none; margin: 0; page-break-after: always; }
@@ -433,14 +395,16 @@ button:active { background: #3a4560; transform: scale(0.97); }
   <button class="btn-pdf" onclick="exportAsPDF()">PDF</button>
   <button class="btn-word" onclick="exportAsWord()">Word</button>
   <button onclick="window.print()" title="Print">🖨️</button>
+  <div onclick="window.location.href='index.html'" class="tool-group" style="cursor:pointer; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 0 10px;">
+    <span style="font-size: 18px;">⬅️</span>
+   
+</div>
 </div>
 
 <!-- ====== SUB TOOLBAR ====== -->
 <div id="toolbar-sub">
   <button onclick="addNewPoint()" style="font-size:12px;">+ पॉइंट</button>
   <button onclick="addNewPage()" style="font-size:12px;">+ पेज</button>
-  <button onclick="toggleKeyChart()" title="Key Chart">⌨️</button>
-  <button id="mkhToggle" onclick="toggleMobileKeyboard()" style="font-size:12px;" title="Virtual Keyboard">🔡 वर्चुअल</button>
   <div class="sep"></div>
   <button onclick="setAlign('justifyLeft')" style="font-size:12px;">◀</button>
   <button onclick="setAlign('justifyCenter')" style="font-size:12px;">≡</button>
@@ -453,20 +417,7 @@ button:active { background: #3a4560; transform: scale(0.97); }
 </div>
 
 <!-- ====== KEY CHART ====== -->
-<div id="key-chart">
-  <div class="kc-title">📌 Kruti Dev 010 — कुंजी मानचित्र</div>
-  <div id="chart-render"></div>
-  <div style="margin-top:8px;font-size:9px;text-align:center;">हरा = बिना Shift &nbsp;|&nbsp; बैंगनी = Shift+key</div>
-  <div style="text-align:center;margin-top:8px;">
-    <button onclick="toggleKeyChart()" style="font-size:11px;">✕ बंद करें</button>
-  </div>
-</div>
 
-<!-- ====== MOBILE VIRTUAL KEYBOARD ====== -->
-<div id="mobile-key-helper">
-  <div id="mkh-tabs"></div>
-  <div id="mkh-grid" class="mkh-grid"></div>
-</div>
 
 <!-- ====== STATUS BAR ====== -->
 <div id="status-bar">✅ तैयार</div>
@@ -499,17 +450,45 @@ button:active { background: #3a4560; transform: scale(0.97); }
 // KRUTI DEV 010 KEY MAP
 // ============================================================
 const KRUTI_MAP = {
-  '1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','0':'0',
-  '-':'#','=':'=','`':'`','\\':'?',
-  'q':'q','w':'w','e':'e','r':'r','t':'t','y':'y','u':'u','i':'i','o':'o','p':'p',
-  '[':'[',']':']',
-  'a':'k','s':'s','d':'d','f':'f','g':'g','h':'h','j':'j','k':'k','l':'l',';':';',"'":"'",
-  'z':'z','x':'x','c':'c','v':'v','b':'b','n':'n','m':'m',',':',','.':'.','/'  :  '/',
-  'Q':'Q','W':'W','E':'E','R':'R','T':'T','Y':'Y','U':'U','I':'I','O':'O','P':'P',
-  'A':'A','S':'S','D':'D','F':'F','G':'G','H':'H','J':'J','K':'K','L':'L',':':'  :','"':'"',
-  'Z':'Z','X':'X','C':'C','V':'V','B':'B','N':'N','M':'M','<':'<','>':'>','?':'?'
+'namaskar':'नमस्कार','namaste':'नमस्ते','dhanyavad':'धन्यवाद',
+    'aap':'आप','hum':'हम','main':'मैं','vah':'वह','yah':'यह',
+    'aur':'और','lekin':'लेकिन','par':'पर','mein':'में','se':'से',
+    'ka':'का','ke':'के','ki':'की','ko':'को','ne':'ने',
+    'hai':'है','hain':'हैं','tha':'था','thi':'थी','the':'थे',
+    'ho':'हो','hoga':'होगा','hogi':'होगी','honge':'होंगे',
+    'karo':'करो','karta':'करता','karti':'करती','karte':'करते',
+    'karein':'करें','kiya':'किया','kiye':'किये','karna':'करना',
+    'nahi':'नहीं','nahin':'नहीं','kya':'क्या','kab':'कब',
+    'kahan':'कहाँ','kaise':'कैसे','kyun':'क्यों','kyunki':'क्योंकि',
+    'agar':'अगर','toh':'तो','to':'तो','warna':'वरना',
+    'sabhi':'सभी','sab':'सब','kuch':'कुछ',
+    'bahut':'बहुत','thoda':'थोड़ा','zyada':'ज़्यादा','kam':'कम',
+    'achha':'अच्छा','bura':'बुरा','theek':'ठीक','sahi':'सही',
+    'galat':'गलत','naya':'नया','purana':'पुराना','bada':'बड़ा',
+    'chhota':'छोटा','lamba':'लम्बा',
+    'nyayalaya':'न्यायालय','nyayadhish':'न्यायाधीश',
+    'vadi':'वादी','prativadi':'प्रतिवादी','prarthna':'प्रार्थना',
+    'prarthi':'प्रार्थी','avadan':'आवेदन','arji':'अर्जी',
+    'mukadma':'मुकदमा','nirday':'निर्णय','adesh':'आदेश',
+    'apil':'अपील','dawa':'दावा','gawah':'गवाह',
+    'saakshi':'साक्षी','sabut':'सबूत','praman':'प्रमाण',
+    'vakil':'वकील','adhivakta':'अधिवक्ता','kanoon':'क़ानून',
+    'section':'धारा','dhara':'धारा',
+    'kiraya':'किराया','bedakhali':'बेदखली','sampatti':'सम्पत्ति',
+    'bhoomi':'भूमि','makan':'मकान','dukan':'दुकान',
+    'kiryadar':'किरायेदार','malik':'मालिक',
+    'swami':'स्वामी','jameen':'ज़मीन',
+    'dinank':'दिनांक','tarikh':'तारीख','varsh':'वर्ष',
+    'shrimaan':'श्रीमान','shriman':'श्रीमान','shri':'श्री',
+    'shrimati':'श्रीमती','kumar':'कुमार',
+    'mata':'माता','pita':'पिता','putra':'पुत्र','putri':'पुत्री',
+    'tatha':'तथा','evam':'एवं','athava':'अथवा','va':'व',
+    'dwara':'द्वारा','hetu':'हेतु','liye':'लिए','baad':'बाद',
+    'pahle':'पहले','sath':'साथ','bina':'बिना','tak':'तक',
+    'wadi': 'वादी', 'pratiwadi': 'प्रतिवादी', 'nyayalaya': 'न्यायालय',
+    'nam': 'नाम', 'hai': 'है', 'ko': 'को', 'ka': 'का', 'ki': 'की', 'ke': 'के',
+    'ne': 'ने', 'se': 'से', 'main': 'में', 'par': 'पर'
 };
-
 // ============================================================
 // MOBILE VIRTUAL KEYBOARD DATA (Devanagari characters mapped to Kruti Dev)
 // ============================================================
@@ -584,8 +563,9 @@ const MKH_SECTIONS = [
 // ============================================================
 // STATE
 // ============================================================
+// 'Kruti Dev 010','K010','KrutiDev010',serif";"
 let currentLang = 'hindi';
-const HINDI_FONT = "'Kruti Dev 010','K010','KrutiDev010',serif";
+const HINDI_FONT = "'Mangal','Noto Sans Devanagari','Nirmala UI',sans-serif;"
 const ENGLISH_FONT = "'Times New Roman','Georgia',serif";
 let speechRecog = null;
 let isListening = false;
@@ -616,6 +596,8 @@ function showMsg(msg, dur=2200) {
 // ============================================================
 // LANGUAGE MODE
 // ============================================================
+
+
 function setLangMode(lang) {
   const sel = window.getSelection();
   const hasSel = sel && !sel.isCollapsed && sel.toString().trim().length > 0;
@@ -628,6 +610,22 @@ function setLangMode(lang) {
     showMsg(lang === 'hindi' ? '🇮🇳 हिंदी मोड सक्रिय' : '🇬🇧 English mode active');
   }
 }
+
+function transliterate(text) {
+    // This is a basic mapping; for professional legal use, 
+    // a library like 'Google Input Tools' is usually used, but this works offline.
+    let res = text.toLowerCase();
+    const keys = Object.keys(KRUTI_MAP).sort((a, b) => b.length - a.length);
+    keys.forEach(k => {
+        const reg = new RegExp(k, 'g');
+        res = res.replace(reg, KRUTI_MAP[k]);
+    });
+    return res;
+}
+
+// ============================================================
+// MODIFIED KEYBOARD INTERCEPT
+// ============================================================
 
 function applyFontToSelection(lang) {
   const sel = window.getSelection();
@@ -662,22 +660,95 @@ function updateLangButtons() {
 // ============================================================
 // KEYBOARD INTERCEPT (Physical keyboard)
 // ============================================================
-const SKIP_KEYS = new Set(['Backspace','Delete','Enter','Tab','Escape',
-  'ArrowUp','ArrowDown','ArrowLeft','ArrowRight',
-  'Home','End','PageUp','PageDown','Shift','Control','Alt','Meta','CapsLock']);
+// ============================================================
+// CLEAN ANDROID TRANSLITERATION ENGINE
+// ============================================================
+let activeBuffer = ""; 
 
+// This function handles the conversion
+function getHindi(text) {
+    let low = text.toLowerCase();
+    
+    // 1. Legal Dictionary (Check this first)
+    if (KRUTI_MAP[low]) return KRUTI_MAP[low];
+
+    // 2. Starting Vowels (Independent)
+    low = low.replace(/^aa/g, 'आ').replace(/^a/g, 'अ')
+             .replace(/^ee/g, 'ई').replace(/^i/g, 'इ')
+             .replace(/^oo/g, 'ऊ').replace(/^u/g, 'उ')
+             .replace(/^e/g, 'ए').replace(/^ai/g, 'ऐ')
+             .replace(/^o/g, 'ओ').replace(/^au/g, 'औ')
+             .replace(/pr/g, 'प्र');
+
+
+    // 3. Consonant Clusters (Multi-letter sounds)
+    // We map these first so 'kh' doesn't become 'k' + 'h'
+    const clusters = {
+        'ksh': 'क्ष', 'sh': 'श', 'sz': 'ष', 'kh': 'ख', 'gh': 'घ', 
+        'ch': 'च', 'chh': 'छ', 'jh': 'झ', 'th': 'थ', 'dh': 'ध', 
+        'ph': 'फ', 'bh': 'भ', 'gy': 'ज्ञ', 'tr': 'त्र'
+    };
+    for (let key in clusters) {
+        low = low.replace(new RegExp(key, 'g'), clusters[key]);
+    }
+
+
+    // 4. Single Consonants & Nuqta (Handling 'q', 'z', 'f')
+    const singles = {
+        'k': 'क', 'g': 'ग', 'j': 'ज', 't': 'त', 'd': 'द', 
+        'n': 'न', 'p': 'प', 'b': 'ब', 'm': 'म', 'y': 'य', 
+        'r': 'र', 'l': 'ल', 'v': 'व', 'w': 'व', 's': 'स', 
+        'h': 'ह', 'q': 'क़', 'z': 'ज़', 'f': 'फ़' 
+    };
+    for (let key in singles) {
+        low = low.replace(new RegExp(key, 'g'), singles[key]);
+    }
+
+    // 5. Matras (Vowel Signs)
+    // We process these LAST so they attach to the consonants above
+    return low
+        .replace(/aa/g, 'ा').replace(/a/g, 'ा')
+        .replace(/ee/g, 'ी').replace(/i/g, 'ि')
+        .replace(/oo/g, 'ू').replace(/u/g, 'ु')
+        .replace(/e/g, 'े').replace(/ai/g, 'ै')
+        .replace(/o/g, 'ो').replace(/au/g, 'ौ')
+        .replace(/n~/g, 'ं').replace(/H/g, 'ः');
+}
 document.addEventListener('keydown', function(e) {
-  const el = document.activeElement;
-  if (!el || el.getAttribute('contenteditable') !== 'true') return;
-  if (e.ctrlKey || e.metaKey || e.altKey || SKIP_KEYS.has(e.key)) return;
-  if (currentLang === 'hindi') {
-    const mapped = KRUTI_MAP[e.key] || e.key;
-    e.preventDefault();
-    document.execCommand('fontName', false, 'Kruti Dev 010');
-    document.execCommand('insertText', false, mapped);
-  }
-}, true);
+    const active = document.activeElement;
+    if (!active || active.getAttribute('contenteditable') !== 'true' || currentLang !== 'hindi') return;
 
+    // 1. If Space or Enter is pressed, convert the word
+    if (e.key === ' ' || e.key === 'Enter') {
+        if (activeBuffer.length > 0) {
+            e.preventDefault(); 
+            
+            // Step 1: Remove the English word from screen
+            for (let i = 0; i < activeBuffer.length; i++) {
+                document.execCommand('delete', false);
+            }
+            
+            // Step 2: Insert the Hindi translation
+            const translated = getHindi(activeBuffer);
+            document.execCommand('insertText', false, translated + (e.key === ' ' ? ' ' : ''));
+            
+            activeBuffer = ""; // Reset for next word
+            if (e.key === 'Enter') document.execCommand('insertParagraph');
+        }
+    } 
+    // 2. Track English letters as you type
+    else if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
+        activeBuffer += e.key;
+        // We do NOT call preventDefault() here, 
+        // so you see the 'e' or 'v' as you type it.
+    } 
+    // 3. Clear buffer on backspace or clicking away
+    else if (e.key === 'Backspace') {
+        activeBuffer = activeBuffer.slice(0, -1);
+    } else {
+        activeBuffer = "";
+    }
+}, true);
 // ============================================================
 // MOBILE VIRTUAL KEYBOARD
 // ============================================================
@@ -970,37 +1041,28 @@ function startVoiceInput(langCode) {
   speechRecog.lang = langCode === 'hi' ? 'hi-IN' : 'en-US';
   speechRecog.continuous = true;
   speechRecog.interimResults = false;
-  speechRecog.onstart = () => {
-    isListening = true;
-    if (langCode === 'hi') document.getElementById('micBtn').classList.add('active');
-    else document.getElementById('micBtnEN').classList.add('active');
-    showMsg(`🎙️ ${langCode === 'hi' ? 'हिंदी सुन रहा हूँ...' : 'Listening...'}`, 3000);
-  };
-  const krutiMap = {
-    'अ':'v','आ':'vk','इ':'b','ई':'bZ','उ':'m','ऊ':'mZ','ए':'s','ऐ':'S','ओ':'vks','औ':'vkS',
-    'क':'d','ख':'[k','ग':'x','घ':'?k','च':'p','छ':'N','ज':'t','झ':'>','ट':'V','ठ':'B',
-    'ड':'M','ढ':'<','त':'r','थ':'Fk','द':'n','ध':'/k','न':'u','प':'i','फ':'Q','ब':'c',
-    'भ':'Hk','म':'e','य':';','र':'j','ल':'y','व':'o','श':"'k",'ष':'"k','स':'l','ह':'g',
-    'ा':'k','ि':'f','ी':'h','ु':'q','ू':'w','े':'s','ै':'S','ो':'ks','ौ':'kS','ं':'a','्':'~','।':'।',' ':' '
-  };
-  speechRecog.onresult = (ev) => {
-    let transcript = ev.results[ev.results.length-1][0].transcript;
-    if (langCode === 'hi') {
-      let res = '';
-      for (let i = 0; i < transcript.length; i++) {
-        const ch = transcript[i], nch = transcript[i+1];
-        if (nch === 'ि') { res += 'f' + (krutiMap[ch] || ch); i++; }
-        else res += (krutiMap[ch] || ch);
-      }
-      transcript = res;
+ speechRecog.onresult = (ev) => {
+    let transcript = ev.results[ev.results.length - 1][0].transcript;
+    
+    const activeEl = document.activeElement;
+    if (activeEl && activeEl.getAttribute('contenteditable') === 'true') {
+        // Voice already provides standard Hindi (Unicode), so we just insert it
+        document.execCommand('insertText', false, transcript + ' ');
+        checkOverflow(activeEl);
     }
-    const el = lastFocused || document.activeElement;
-    if (el && el.getAttribute('contenteditable') === 'true') {
-      const font = langCode === 'hi' ? HINDI_FONT : ENGLISH_FONT;
-      document.execCommand('insertHTML', false, `<span style="font-family:${font};font-size:${globalFontSize}pt;">${transcript} </span>`);
-      checkOverflow(el);
-    } else showMsg('पहले एडिटर में टैप करें', 1500);
-  };
+};
+  
+  speechRecog.onresult = (ev) => {
+        let transcript = ev.results[ev.results.length - 1][0].transcript;
+        
+        // NO CONVERSION NEEDED: Android handles this transcript "normally"
+        const el = lastFocused || document.activeElement;
+        if (el && el.getAttribute('contenteditable') === 'true') {
+            // Simply insert the spoken text
+            document.execCommand('insertText', false, transcript + ' ');
+            checkOverflow(el);
+        }
+    };
   speechRecog.onerror = (e) => { showMsg('Voice error: '+e.error, 2000); isListening = false; };
   speechRecog.onend = () => {
     isListening = false;
@@ -1045,38 +1107,11 @@ function exportAsWord() {
   showMsg('Word डाउनलोड हो रहा है', 2000);
 }
 
-// ============================================================
-// KEY CHART
-// ============================================================
-const chartData = [
-  { name:"🔢 नंबर पंक्ति", keys:[['1','।','!'],['2','/','@'],['3','रु','#'],['4','+','$'],['5',':','%'],["6","'","^"],['7','-','&'],["8","'","*"],['9',';','('],['0','द्ध',')'],['-','ऋ','_'],['=','त्र','+']] },
-  { name:"⌨️ QWERTY पंक्ति", keys:[['q','ु','फ'],['w','ू','ॅ'],['e','म','म्'],['r','त','त्'],['t','ज','ज्'],['y','ल','ल्'],['u','न','न्'],['i','प','प्'],['o','व','व्'],['p','च','च्'],['[','ख','क्ष'],[']',',','द्ध']] },
-  { name:"🏠 होम पंक्ति", keys:[['a','.','ा'],['s','े','ै'],['d','क','क्'],['f','ि','थ'],['g','ह','ळ'],['j','र','श्र'],['k','ा','ज्ञ'],['l','स','स्'],[';','य','रू'],["'","श","ष्ठ"]] },
-  { name:"⬇️ नीचे पंक्ति", keys:[['z','ब','\''],['x','ग','ग्'],['c','ब','ब्'],['v','अ','ट'],['b','इ','ठ'],['n','द','छ'],['m','उ','ड'],[',','ए','ढ'],['.','ण्','झ'],['/','ध','घ']] }
-];
-
-function buildChartUI() {
-  const container = document.getElementById('chart-render');
-  let html = '';
-  chartData.forEach(s => {
-    html += `<div style="font-weight:bold;color:#ffbc6e;margin:8px 0 5px;">${s.name}</div><div class="kc-row">`;
-    s.keys.forEach(([k,n,sh]) => {
-      html += `<div class="kc-item"><span class="kc-key">${k}</span><span class="kc-normal">${n}</span>/<span class="kc-shift">${sh}</span></div>`;
-    });
-    html += '</div>';
-  });
-  container.innerHTML = html;
-}
-
-function toggleKeyChart() {
-  document.getElementById('key-chart').classList.toggle('show');
-}
 
 // ============================================================
 // INIT
 // ============================================================
 function init() {
-  buildChartUI();
   buildMobileKeyboard();
   updateLangButtons();
   renumberPagesGlobal();
