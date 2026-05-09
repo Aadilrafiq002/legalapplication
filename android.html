@@ -714,41 +714,45 @@ function getHindi(text) {
         .replace(/o/g, 'ो').replace(/au/g, 'ौ')
         .replace(/n~/g, 'ं').replace(/H/g, 'ः');
 }
-document.addEventListener('keydown', function(e) {
+// Variable to track the last word typed
+let lastWord = "";
+
+document.addEventListener('input', function(e) {
     const active = document.activeElement;
     if (!active || active.getAttribute('contenteditable') !== 'true' || currentLang !== 'hindi') return;
 
-    // 1. If Space or Enter is pressed, convert the word
-    if (e.key === ' ' || e.key === 'Enter') {
-        if (activeBuffer.length > 0) {
-            e.preventDefault(); 
+    // Get the full text of the current block
+    const text = active.innerText;
+    
+    // Check if the last character typed was a space or enter
+    if (e.data === " " || e.inputType === "insertParagraph") {
+        // Get all words and find the one right before the space
+        const words = text.trim().split(/\s+/);
+        const wordToConvert = words[words.length - 1];
+
+        if (wordToConvert && /^[a-zA-Z]+$/.test(wordToConvert)) {
+            const translated = getHindi(wordToConvert);
             
-            // Step 1: Remove the English word from screen
-            for (let i = 0; i < activeBuffer.length; i++) {
-                document.execCommand('delete', false);
-            }
+            // This replaces the English word with Hindi using a Range
+            const selection = window.getSelection();
+            const range = selection.getRangeAt(0);
             
-            // Step 2: Insert the Hindi translation
-            const translated = getHindi(activeBuffer);
-            document.execCommand('insertText', false, translated + (e.key === ' ' ? ' ' : ''));
+            // Move range back by the length of the word + space
+            range.setStart(range.startContainer, range.startOffset - (wordToConvert.length + 1));
+            range.deleteContents();
             
-            activeBuffer = ""; // Reset for next word
-            if (e.key === 'Enter') document.execCommand('insertParagraph');
+            // Insert the new Hindi word
+            const newNode = document.createTextNode(translated + " ");
+            range.insertNode(newNode);
+            
+            // Move cursor to the end
+            range.setStartAfter(newNode);
+            range.setEndAfter(newNode); 
+            selection.removeAllRanges();
+            selection.addRange(range);
         }
-    } 
-    // 2. Track English letters as you type
-    else if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
-        activeBuffer += e.key;
-        // We do NOT call preventDefault() here, 
-        // so you see the 'e' or 'v' as you type it.
-    } 
-    // 3. Clear buffer on backspace or clicking away
-    else if (e.key === 'Backspace') {
-        activeBuffer = activeBuffer.slice(0, -1);
-    } else {
-        activeBuffer = "";
     }
-}, true);
+});
 // ============================================================
 // MOBILE VIRTUAL KEYBOARD
 // ============================================================
