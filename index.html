@@ -3,80 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Device | हिंदी कानूनी संपादक</title>
+    <title>Legal Editor | Select Device</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
         body {
-            background: #0f121a;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
         }
-        .container {
-            text-align: center;
-            background: #161b26;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid #2a3950;
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        h1 { margin-bottom: 30px; font-weight: 300; color: #ffbc6e; }
-        .options { display: flex; gap: 20px; }
-        .card {
-            background: #1e2535;
-            padding: 30px;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: 0.3s;
-            width: 150px;
-            border: 2px solid transparent;
+
+        .card-gradient:hover {
+            background: linear-gradient(135deg, rgba(83, 216, 138, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
         }
-        .card:hover {
-            background: #2e3d5e;
-            border-color: #53d88a;
-            transform: translateY(-10px);
+
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #53d88a;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            animation: rotation 1s linear infinite;
         }
-        .icon { font-size: 50px; margin-bottom: 15px; }
-        .label { font-weight: bold; font-size: 18px; }
-        .auto-msg { margin-top: 30px; font-size: 12px; color: #7a8aa8; }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
-<body>
+<body class="text-white flex items-center justify-center min-h-screen p-6">
 
-    <div class="container">
-        <h1>आप कौन सा डिवाइस इस्तेमाल कर रहे हैं?</h1>
-        <div class="options">
-            <div class="card" onclick="window.location.href='pc.html'">
-                <div class="icon">💻</div>
-                <div class="label">PC / Laptop</div>
+    <div class="glass max-w-2xl w-full p-8 md:p-12 rounded-3xl shadow-2xl text-center transform transition-all">
+        
+        <div class="mb-10">
+            <h1 class="text-3xl md:text-4xl font-semibold text-amber-200 mb-2">हिंदी कानूनी संपादक</h1>
+            <p class="text-slate-400 text-sm md:text-base">कृपया अपना डिवाइस चुनें / Please select your device</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div onclick="window.location.href='pc.html'" 
+                 class="group glass card-gradient p-8 rounded-2xl cursor-pointer border border-white/5 hover:border-emerald-400/50 transition-all duration-300 hover:-translate-y-2">
+                <div class="text-6xl mb-4 group-hover:scale-110 transition-transform duration-300">💻</div>
+                <h2 class="text-xl font-bold mb-1">PC / Laptop</h2>
+                <p class="text-xs text-slate-500">Windows / Mac / Linux</p>
             </div>
 
-            <div class="card" onclick="window.location.href='android.html'">
-                <div class="icon">📱</div>
-                <div class="label">Mobile</div>
+            <div onclick="window.location.href='android.html'" 
+                 class="group glass card-gradient p-8 rounded-2xl cursor-pointer border border-white/5 hover:border-blue-400/50 transition-all duration-300 hover:-translate-y-2">
+                <div class="text-6xl mb-4 group-hover:scale-110 transition-transform duration-300">📱</div>
+                <h2 class="text-xl font-bold mb-1">Android / Mobile</h2>
+                <p class="text-xs text-slate-500">Smartphone / Tablet</p>
             </div>
         </div>
-        <p class="auto-msg" id="detecting">Device Detecting...</p>
+
+        <div class="mt-12 pt-8 border-t border-white/10">
+            <div class="flex items-center justify-center gap-3">
+                <span class="loader"></span>
+                <p id="status" class="text-slate-400 text-sm tracking-wide">सिस्टम डिटेक्ट कर रहा है...</p>
+            </div>
+        </div>
     </div>
 
-    <script>
-        // Automatic Detection Logic
+   <!--  <script>
         window.onload = function() {
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            const msg = document.getElementById('detecting');
+            const statusText = document.getElementById('status');
             
-            if(isMobile) {
-                msg.innerText = "मोबाइल डिटेक्ट हुआ! 3 सेकंड में रीडायरेक्ट हो रहा है...";
-                setTimeout(() => { window.location.href = 'index.html'; }, 3000);
-            } else {
-                msg.innerText = "PC डिटेक्ट हुआ! 3 सेकंड में रीडायरेक्ट हो रहा है...";
-                setTimeout(() => { window.location.href = 'application.html'; }, 3000);
-            }
+            setTimeout(() => {
+                if(isMobile) {
+                    statusText.innerHTML = "मोबाइल मिला! <span class='text-emerald-400'>android.html</span> पर जा रहे हैं...";
+                    setTimeout(() => { window.location.href = 'android.html'; }, 1500);
+                } else {
+                    statusText.innerHTML = "PC मिला! <span class='text-emerald-400'>pc.html</span> पर जा रहे हैं...";
+                    setTimeout(() => { window.location.href = 'pc.html'; }, 1500);
+                }
+            }, 1000);
         };
-    </script>
+    </script> -->
 </body>
 </html>
