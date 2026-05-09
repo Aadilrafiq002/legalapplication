@@ -105,7 +105,12 @@ button:active { background: #3a4560; transform: scale(0.97); }
 .btn-pdf { background: #7b3f00; border-color: #a05010; }
 .btn-word { background: #103a6b; border-color: #1a5a9e; }
 .mic-btn { background: #631a1a; border-color: #8a2222; }
-.mic-btn.active { background: #c0392b; animation: pulse 1.2s infinite; }
+.mic-btn.active { 
+  background: #ff4b4b !important; 
+  border-color: #ffffff;
+  box-shadow: 0 0 10px rgba(255, 75, 75, 0.8);
+  animation: pulse 1.2s infinite; 
+}
 
 @keyframes pulse {
   0%,100% { opacity: 0.75; }
@@ -1039,50 +1044,112 @@ function handleKeydown(e, el) {
 // ============================================================
 // VOICE INPUT
 // ============================================================
+let speechRecog = null
+
+// REPLACE the existing startVoiceInput function with this:
 function startVoiceInput(langCode) {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { showMsg('❌ Chrome/Edge में आवाज़ काम करती है', 3000); return; }
+  if (!SR) { 
+    showMsg('❌ Chrome/Edge में आवाज़ काम करती है', 3000); 
+    return; 
+  }
+
+  const micBtn = document.getElementById(langCode === 'hi' ? 'micBtn' : 'micBtnEN');
+
+  // TOGGLE LOGIC: If already listening, STOP it
   if (isListening && speechRecog) {
-    speechRecog.stop(); isListening = false;
-    document.getElementById('micBtn').classList.remove('active');
-    document.getElementById('micBtnEN').classList.remove('active');
-    showMsg('Voice बंद');
+    speechRecog.stop();
+    // The rest is handled by the 'onend' event below
     return;
   }
+
+  // START NEW SESSION
   speechRecog = new SR();
   speechRecog.lang = langCode === 'hi' ? 'hi-IN' : 'en-US';
-  speechRecog.continuous = true;
+  
+  // IMPORTANT: Set this to true so it doesn't stop when you pause speaking
+  speechRecog.continuous = true; 
   speechRecog.interimResults = false;
- speechRecog.onresult = (ev) => {
+
+  speechRecog.onstart = () => {
+    isListening = true;
+    micBtn.classList.add('active');
+    showMsg(langCode === 'hi' ? '🎙️ हिंदी रिकॉर्डिंग चालू...' : '🎙️ English Recording ON...');
+  };
+
+  speechRecog.onresult = (ev) => {
+    // Get the latest result from the continuous stream
     let transcript = ev.results[ev.results.length - 1][0].transcript;
     
-    const activeEl = document.activeElement;
-    if (activeEl && activeEl.getAttribute('contenteditable') === 'true') {
-        // Voice already provides standard Hindi (Unicode), so we just insert it
+    const el = lastFocused || document.activeElement;
+    if (el && el.getAttribute('contenteditable') === 'true') {
+        // Insert the text and a space
         document.execCommand('insertText', false, transcript + ' ');
-        checkOverflow(activeEl);
+        checkOverflow(el);
     }
-};
-  
-  speechRecog.onresult = (ev) => {
-        let transcript = ev.results[ev.results.length - 1][0].transcript;
-        
-        // NO CONVERSION NEEDED: Android handles this transcript "normally"
-        const el = lastFocused || document.activeElement;
-        if (el && el.getAttribute('contenteditable') === 'true') {
-            // Simply insert the spoken text
-            document.execCommand('insertText', false, transcript + ' ');
-            checkOverflow(el);
-        }
-    };
-  speechRecog.onerror = (e) => { showMsg('Voice error: '+e.error, 2000); isListening = false; };
+  };
+
+  speechRecog.onerror = (e) => { 
+    if (e.error !== 'no-speech') {
+        showMsg('Voice error: ' + e.error, 2000);
+        isListening = false;
+        micBtn.classList.remove('active');
+    }
+  };
+
   speechRecog.onend = () => {
     isListening = false;
     document.getElementById('micBtn').classList.remove('active');
     document.getElementById('micBtnEN').classList.remove('active');
+    showMsg('🎙️ माइक्रोफोन बंद');
   };
+
   speechRecog.start();
 }
+// function startVoiceInput(langCode) {
+//   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+//   if (!SR) { showMsg('❌ Chrome/Edge में आवाज़ काम करती है', 3000); return; }
+//   if (isListening && speechRecog) {
+//     speechRecog.stop(); isListening = false;
+//     document.getElementById('micBtn').classList.remove('active');
+//     document.getElementById('micBtnEN').classList.remove('active');
+//     showMsg('Voice बंद');
+//     return;
+//   }
+//   speechRecog = new SR();
+//   speechRecog.lang = langCode === 'hi' ? 'hi-IN' : 'en-US';
+//   speechRecog.continuous = true;
+//   speechRecog.interimResults = false;
+//  speechRecog.onresult = (ev) => {
+//     let transcript = ev.results[ev.results.length - 1][0].transcript;
+    
+//     const activeEl = document.activeElement;
+//     if (activeEl && activeEl.getAttribute('contenteditable') === 'true') {
+//         // Voice already provides standard Hindi (Unicode), so we just insert it
+//         document.execCommand('insertText', false, transcript + ' ');
+//         checkOverflow(activeEl);
+//     }
+// };
+  
+//   speechRecog.onresult = (ev) => {
+//         let transcript = ev.results[ev.results.length - 1][0].transcript;
+        
+//         // NO CONVERSION NEEDED: Android handles this transcript "normally"
+//         const el = lastFocused || document.activeElement;
+//         if (el && el.getAttribute('contenteditable') === 'true') {
+//             // Simply insert the spoken text
+//             document.execCommand('insertText', false, transcript + ' ');
+//             checkOverflow(el);
+//         }
+//     };
+//   speechRecog.onerror = (e) => { showMsg('Voice error: '+e.error, 2000); isListening = false; };
+//   speechRecog.onend = () => {
+//     isListening = false;
+//     document.getElementById('micBtn').classList.remove('active');
+//     document.getElementById('micBtnEN').classList.remove('active');
+//   };
+//   speechRecog.start();
+// }
 
 // ============================================================
 // EXPORT
