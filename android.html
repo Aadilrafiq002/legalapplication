@@ -127,12 +127,16 @@ button:active { background: #3a4560; transform: scale(0.97); }
 .paper {
   background: #fff;
   width: var(--paper-w);
+  height: var(--paper-h); /* Change min-height to height */
   max-width: 98vw;
   min-height: var(--paper-h);
   padding: 20mm 12mm 20mm 35mm;
   margin: 0 auto 20px;
   position: relative;
   box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  overflow: hidden; /* Prevent text from visually spilling out */
+  display: flex;
+  flex-direction: column;
 }
 
 /* Responsive scaling of paper on small screens */
@@ -172,6 +176,8 @@ button:active { background: #3a4560; transform: scale(0.97); }
 .page-meta:focus { background: #fffff0; }
 
 .doc-body {
+  flex: 1;
+  overflow: hidden;
   padding-top: 10mm;
   min-height: 200px;
   color: #000;
@@ -715,49 +721,102 @@ function getHindi(text) {
         .replace(/n~/g, 'ं').replace(/H/g, 'ः');
 }
 // Variable to track the last word typed
+// document.addEventListener('input', function(e) {
+//     const active = document.activeElement;
+//     if (!active || active.getAttribute('contenteditable') !== 'true' || currentLang !== 'hindi') return;
+
+//     // Check if the character just entered was a space
+//     // On Android, e.data is usually the most reliable way to catch the space
+//     if (e.data === " " || e.inputType === "insertParagraph") {
+//         const sel = window.getSelection();
+//         if (!sel.rangeCount) return;
+//         const range = sel.getRangeAt(0);
+        
+//         // Look at the text node where the cursor is
+//         const node = range.startContainer;
+//         const offset = range.startOffset;
+//         const text = node.textContent;
+
+//         // Regex to find the English word right before the space we just hit
+//         // It looks for letters [a-zA-Z] followed by a space at the current cursor position
+//         const match = text.substring(0, offset).match(/([a-zA-Z]+)\s$/);
+
+//         if (match) {
+//             const wordToConvert = match[1];
+//             const translated = getHindi(wordToConvert);
+            
+//             // Create a new range specifically for the English word + the space
+//             const replaceRange = document.createRange();
+//             replaceRange.setStart(node, offset - (wordToConvert.length + 1));
+//             replaceRange.setEnd(node, offset);
+            
+//             // Delete English and Insert Hindi + a real space
+//             replaceRange.deleteContents();
+            
+//             // Using \u00A0 (Non-breaking space) is the ONLY way to force Android 
+//             // to keep the space after an automated edit.
+//             const newNode = document.createTextNode(translated + "\u00A0");
+//             replaceRange.insertNode(newNode);
+
+//             // Move the cursor to the end of the new Hindi word
+//             sel.removeAllRanges();
+//             const nextRange = document.createRange();
+//             nextRange.setStartAfter(newNode);
+//             nextRange.collapse(true);
+//             sel.addRange(nextRange);
+//             // ADD THIS LINE HERE:
+//             checkOverflow(active);
+//         }
+//     }
+// });
+
 document.addEventListener('input', function(e) {
     const active = document.activeElement;
     if (!active || active.getAttribute('contenteditable') !== 'true' || currentLang !== 'hindi') return;
 
-    // Check if the character just entered was a space
-    // On Android, e.data is usually the most reliable way to catch the space
+    // Detect Space or Enter
     if (e.data === " " || e.inputType === "insertParagraph") {
         const sel = window.getSelection();
         if (!sel.rangeCount) return;
         const range = sel.getRangeAt(0);
         
-        // Look at the text node where the cursor is
         const node = range.startContainer;
         const offset = range.startOffset;
-        const text = node.textContent;
+        const textContent = node.textContent;
 
-        // Regex to find the English word right before the space we just hit
-        // It looks for letters [a-zA-Z] followed by a space at the current cursor position
-        const match = text.substring(0, offset).match(/([a-zA-Z]+)\s$/);
+        // Find the English word immediately before the cursor/space
+        const match = textContent.substring(0, offset).match(/([a-zA-Z]+)\s$/);
 
         if (match) {
             const wordToConvert = match[1];
             const translated = getHindi(wordToConvert);
             
-            // Create a new range specifically for the English word + the space
+            // Create a specific range for the English word + the space
             const replaceRange = document.createRange();
             replaceRange.setStart(node, offset - (wordToConvert.length + 1));
             replaceRange.setEnd(node, offset);
             
-            // Delete English and Insert Hindi + a real space
+            // Delete the English text
             replaceRange.deleteContents();
             
-            // Using \u00A0 (Non-breaking space) is the ONLY way to force Android 
-            // to keep the space after an automated edit.
-            const newNode = document.createTextNode(translated + "\u00A0");
+            // Create a fragment to hold the Hindi word and a trailing space
+            // Using \u00A0 ensures the cursor doesn't jump inside the word
+            const hindiText = translated + "\u00A0";
+            const newNode = document.createTextNode(hindiText);
             replaceRange.insertNode(newNode);
 
-            // Move the cursor to the end of the new Hindi word
+            // CRITICAL FIX: Position the cursor AFTER the new text
+            const newRange = document.createRange();
+            newRange.setStartAfter(newNode);
+            newRange.collapse(true); // collapse(true) ensures it's a blinking cursor, not a selection
+            
             sel.removeAllRanges();
-            const nextRange = document.createRange();
-            nextRange.setStartAfter(newNode);
-            nextRange.collapse(true);
-            sel.addRange(nextRange);
+            sel.addRange(newRange);
+
+            // Ensure the page break logic still runs
+            if (typeof checkOverflow === "function") {
+                checkOverflow(active);
+            }
         }
     }
 });
@@ -905,6 +964,23 @@ function renumberAllPoints() {
   });
 }
 
+// function addNewPage() {
+//   pageCounter++;
+//   const pg = document.createElement('div');
+//   pg.className = 'paper';
+//   pg.innerHTML = `
+//     <button class="del-page-btn no-print" onclick="deleteThisPage(this)">🗑️ हटाएँ</button>
+//     <div class="page-header" style="text-align:center;" contenteditable="true">${pageCounter}</div>
+//     <div class="doc-body">
+//       <div contenteditable="true" class="cont-text" oninput="checkOverflow(this)" onkeydown="handleKeydown(event,this)"></div>
+//     </div>`;
+//   document.getElementById('main-container').appendChild(pg);
+//   const ce = pg.querySelector('.cont-text');
+//   ce.style.fontSize = globalFontSize + 'pt';
+//   applyFontToElement(ce);
+//   lastFocused = ce;
+//   ce.focus();
+// }
 function addNewPage() {
   pageCounter++;
   const pg = document.createElement('div');
@@ -914,15 +990,21 @@ function addNewPage() {
     <div class="page-header" style="text-align:center;" contenteditable="true">${pageCounter}</div>
     <div class="doc-body">
       <div contenteditable="true" class="cont-text" oninput="checkOverflow(this)" onkeydown="handleKeydown(event,this)"></div>
+    </div>
+    <div class="page-footer">
+       <div contenteditable="true">जयपुर</div>
+       <div>पेज: ${pageCounter}</div>
     </div>`;
+  
   document.getElementById('main-container').appendChild(pg);
+  
   const ce = pg.querySelector('.cont-text');
   ce.style.fontSize = globalFontSize + 'pt';
-  applyFontToElement(ce);
-  lastFocused = ce;
-  ce.focus();
+  ce.style.fontFamily = HINDI_FONT;
+  
+  renumberPagesGlobal();
+  return pg;
 }
-
 function deleteThisPage(btn) {
   const pg = btn.closest('.paper');
   if (document.querySelectorAll('.paper').length <= 1) {
@@ -950,58 +1032,178 @@ function renumberPagesGlobal() {
 // ============================================================
 // OVERFLOW HANDLING
 // ============================================================
-function checkOverflow(el) {
-  const paper = el.closest('.paper');
-  const body = paper.querySelector('.doc-body');
-  if (body.scrollHeight <= body.clientHeight + 5) return;
-  let next = paper.nextElementSibling;
-  if (!next || !next.classList.contains('paper')) {
-    addNewPage();
-    next = paper.nextElementSibling;
-  }
-  const nextBody = next.querySelector('.doc-body');
-  let targetDiv;
-  if (el.classList.contains('point-text')) {
-    let firstRow = nextBody.firstElementChild;
-    if (firstRow && firstRow.classList.contains('point-row') && !firstRow.querySelector('.point-num').innerText.trim()) {
-      targetDiv = firstRow.querySelector('.point-text');
-    } else {
-      const cr = document.createElement('div');
-      cr.className = 'point-row';
-      cr.innerHTML = `<button class="del-pt no-print" onclick="removePoint(this)">✕</button><div class="point-num" style="visibility:hidden">.</div><div class="point-text" contenteditable="true" oninput="checkOverflow(this)" onkeydown="handleKeydown(event,this)"></div>`;
-      nextBody.prepend(cr);
-      targetDiv = cr.querySelector('.point-text');
-    }
-  } else {
-    targetDiv = nextBody.querySelector('.cont-text');
-    if (!targetDiv) {
-      targetDiv = document.createElement('div');
-      targetDiv.className = 'cont-text';
-      targetDiv.contentEditable = 'true';
-      targetDiv.oninput = () => checkOverflow(targetDiv);
-      targetDiv.onkeydown = (e) => handleKeydown(e, targetDiv);
-      nextBody.prepend(targetDiv);
-    }
-  }
-  let words = el.innerText.split(/\s+/);
-  let overflow = [];
-  while (body.scrollHeight > body.clientHeight + 5 && words.length > 0) {
-    overflow.unshift(words.pop());
-    el.innerText = words.join(' ');
-  }
-  targetDiv.innerText = overflow.join(' ') + ' ' + targetDiv.innerText;
-  moveFooterToLast();
-  lastFocused = targetDiv;
-  targetDiv.focus();
-  const range = document.createRange();
-  const sel = window.getSelection();
-  range.selectNodeContents(targetDiv);
-  range.collapse(true);
-  sel.removeAllRanges();
-  sel.addRange(range);
-  setTimeout(() => checkOverflow(targetDiv), 10);
-}
+// function checkOverflow(el) {
+//   const paper = el.closest('.paper');
+//   const body = paper.querySelector('.doc-body');
+//   if (body.scrollHeight <= body.clientHeight + 5) return;
+//   let next = paper.nextElementSibling;
+//   if (!next || !next.classList.contains('paper')) {
+//     addNewPage();
+//     next = paper.nextElementSibling;
+//   }
+//   const nextBody = next.querySelector('.doc-body');
+//   let targetDiv;
+//   if (el.classList.contains('point-text')) {
+//     let firstRow = nextBody.firstElementChild;
+//     if (firstRow && firstRow.classList.contains('point-row') && !firstRow.querySelector('.point-num').innerText.trim()) {
+//       targetDiv = firstRow.querySelector('.point-text');
+//     } else {
+//       const cr = document.createElement('div');
+//       cr.className = 'point-row';
+//       cr.innerHTML = `<button class="del-pt no-print" onclick="removePoint(this)">✕</button><div class="point-num" style="visibility:hidden">.</div><div class="point-text" contenteditable="true" oninput="checkOverflow(this)" onkeydown="handleKeydown(event,this)"></div>`;
+//       nextBody.prepend(cr);
+//       targetDiv = cr.querySelector('.point-text');
+//     }
+//   } else {
+//     targetDiv = nextBody.querySelector('.cont-text');
+//     if (!targetDiv) {
+//       targetDiv = document.createElement('div');
+//       targetDiv.className = 'cont-text';
+//       targetDiv.contentEditable = 'true';
+//       targetDiv.oninput = () => checkOverflow(targetDiv);
+//       targetDiv.onkeydown = (e) => handleKeydown(e, targetDiv);
+//       nextBody.prepend(targetDiv);
+//     }
+//   }
+//   let words = el.innerText.split(/\s+/);
+//   let overflow = [];
+//   while (body.scrollHeight > body.clientHeight + 5 && words.length > 0) {
+//     overflow.unshift(words.pop());
+//     el.innerText = words.join(' ');
+//   }
+//   targetDiv.innerText = overflow.join(' ') + ' ' + targetDiv.innerText;
+//   moveFooterToLast();
+//   lastFocused = targetDiv;
+//   targetDiv.focus();
+//   const range = document.createRange();
+//   const sel = window.getSelection();
+//   range.selectNodeContents(targetDiv);
+//   range.collapse(true);
+//   sel.removeAllRanges();
+//   sel.addRange(range);
+//   setTimeout(() => checkOverflow(targetDiv), 10);
+// }
 
+function checkOverflow(el) {
+    const paperDiv = el.closest('.paper');
+    const bodyDiv = paperDiv.querySelector('.doc-body');
+
+    if (bodyDiv.scrollHeight > bodyDiv.clientHeight) {
+        // 1. SAVE CURSOR POSITION
+        const sel = window.getSelection();
+        let savedOffset = 0;
+        let isCursorAtEnd = false;
+        
+        if (sel.rangeCount > 0) {
+            const range = sel.getRangeAt(0);
+            savedOffset = range.startOffset;
+            // Check if cursor is at the end of the current element
+            isCursorAtEnd = (range.startContainer === el || range.startContainer.parentNode === el) && 
+                            (savedOffset >= el.innerText.length - 1);
+        }
+
+        let nextPaper = paperDiv.nextElementSibling;
+        if (!nextPaper || !nextPaper.classList.contains('paper')) {
+            nextPaper = addNewPageAfter(paperDiv); 
+        }
+        
+        const nextBodyDiv = nextPaper.querySelector('.doc-body');
+        let targetDiv;
+
+        // --- (Logic for Point-Row or Paragraph remains same) ---
+        if (el.classList.contains('point-text')) {
+            let firstRow = nextBodyDiv.firstElementChild;
+            if (firstRow && firstRow.classList.contains('point-row') && firstRow.querySelector('.point-num').innerText.trim() === "") {
+                targetDiv = firstRow.querySelector('.point-text');
+            } else {
+                const contRow = document.createElement('div');
+                contRow.className = 'point-row';
+                contRow.innerHTML = `
+                    <button class="del-pt no-print" onclick="removePoint(this)">✕</button>
+                    <div class="point-num" style="visibility:hidden">.</div>
+                    <div class="point-text" contenteditable="true" oninput="checkOverflow(this)" onkeydown="handleKeydown(event, this)"></div>
+                `;
+                nextBodyDiv.prepend(contRow);
+                targetDiv = contRow.querySelector('.point-text');
+            }
+        } else {
+            targetDiv = nextBodyDiv.querySelector('.cont-text');
+            if (!targetDiv) {
+                targetDiv = document.createElement('div');
+                targetDiv.className = 'cont-text';
+                targetDiv.contentEditable = "true";
+                targetDiv.oninput = () => checkOverflow(targetDiv);
+                targetDiv.onkeydown = (e) => handleKeydown(e, targetDiv);
+                nextBodyDiv.prepend(targetDiv);
+            }
+        }
+
+        // 2. MOVE TEXT
+        let words = el.innerText.split(/\s+/);
+        let overflowWords = [];
+        while (bodyDiv.scrollHeight > bodyDiv.clientHeight && words.length > 0) {
+            overflowWords.unshift(words.pop());
+            el.innerText = words.join(' ');
+        }
+        targetDiv.innerText = overflowWords.join(' ') + " " + targetDiv.innerText;
+
+        // 3. SMART FOCUS RESTORATION
+        if (isCursorAtEnd) {
+            // If you were at the end, go to the next page
+            targetDiv.focus();
+            const newRange = document.createRange();
+            newRange.selectNodeContents(targetDiv);
+            newRange.collapse(true); 
+            sel.removeAllRanges();
+            sel.addRange(newRange);
+        } else {
+            // If you were typing in the middle, STAY on the current element
+            el.focus();
+            const restoreRange = document.createRange();
+            // Restore cursor to the previous position
+            try {
+                restoreRange.setStart(sel.anchorNode, savedOffset);
+                restoreRange.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(restoreRange);
+            } catch(e) { 
+                /* Fallback if node structure changed too much */ 
+            }
+        }
+
+        moveFooterToLast();
+        renumberPagesGlobal(); 
+        setTimeout(() => checkOverflow(targetDiv), 10);
+    }
+}
+// HELPER FUNCTION: To insert a page in the middle of the document
+function addNewPageAfter(afterThisPage) {
+    const mainContainer = document.getElementById('main-container');
+    
+    // Create the same paper structure you use in addNewPage()
+    const pg = document.createElement('div');
+    pg.className = 'paper';
+    pg.innerHTML = `
+      <button class="del-page-btn no-print" onclick="deleteThisPage(this)">🗑️ हटाएँ</button>
+      <div class="page-header" style="text-align:center;" contenteditable="true">${pageCounter}</div>
+      <div class="doc-body">
+        <div contenteditable="true" class="cont-text" oninput="checkOverflow(this)" onkeydown="handleKeydown(event,this)"></div>
+      </div>
+      <div class="page-footer">
+         <div contenteditable="true">जयपुर</div>
+         <div class="pg-num-display"></div>
+      </div>`;
+    
+    // Insert after the specific page provided
+    afterThisPage.parentNode.insertBefore(pg, afterThisPage.nextSibling);
+    
+    // Apply current font/size settings
+    const ce = pg.querySelector('.cont-text');
+    ce.style.fontSize = globalFontSize + 'pt';
+    ce.style.fontFamily = HINDI_FONT;
+    
+    return pg;
+}
 function moveFooterToLast() {
   const footer = document.querySelector('.page-footer');
   if (!footer) return;
