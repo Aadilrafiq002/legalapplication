@@ -715,41 +715,49 @@ function getHindi(text) {
         .replace(/n~/g, 'ं').replace(/H/g, 'ः');
 }
 // Variable to track the last word typed
-let lastWord = "";
-
 document.addEventListener('input', function(e) {
     const active = document.activeElement;
     if (!active || active.getAttribute('contenteditable') !== 'true' || currentLang !== 'hindi') return;
 
-    // Get the full text of the current block
-    const text = active.innerText;
-    
-    // Check if the last character typed was a space or enter
+    // Check if the character just entered was a space
+    // On Android, e.data is usually the most reliable way to catch the space
     if (e.data === " " || e.inputType === "insertParagraph") {
-        // Get all words and find the one right before the space
-        const words = text.trim().split(/\s+/);
-        const wordToConvert = words[words.length - 1];
+        const sel = window.getSelection();
+        if (!sel.rangeCount) return;
+        const range = sel.getRangeAt(0);
+        
+        // Look at the text node where the cursor is
+        const node = range.startContainer;
+        const offset = range.startOffset;
+        const text = node.textContent;
 
-        if (wordToConvert && /^[a-zA-Z]+$/.test(wordToConvert)) {
+        // Regex to find the English word right before the space we just hit
+        // It looks for letters [a-zA-Z] followed by a space at the current cursor position
+        const match = text.substring(0, offset).match(/([a-zA-Z]+)\s$/);
+
+        if (match) {
+            const wordToConvert = match[1];
             const translated = getHindi(wordToConvert);
             
-            // This replaces the English word with Hindi using a Range
-            const selection = window.getSelection();
-            const range = selection.getRangeAt(0);
+            // Create a new range specifically for the English word + the space
+            const replaceRange = document.createRange();
+            replaceRange.setStart(node, offset - (wordToConvert.length + 1));
+            replaceRange.setEnd(node, offset);
             
-            // Move range back by the length of the word + space
-            range.setStart(range.startContainer, range.startOffset - (wordToConvert.length + 1));
-            range.deleteContents();
+            // Delete English and Insert Hindi + a real space
+            replaceRange.deleteContents();
             
-            // Insert the new Hindi word
-            const newNode = document.createTextNode(translated + " ");
-            range.insertNode(newNode);
-            
-            // Move cursor to the end
-            range.setStartAfter(newNode);
-            range.setEndAfter(newNode); 
-            selection.removeAllRanges();
-            selection.addRange(range);
+            // Using \u00A0 (Non-breaking space) is the ONLY way to force Android 
+            // to keep the space after an automated edit.
+            const newNode = document.createTextNode(translated + "\u00A0");
+            replaceRange.insertNode(newNode);
+
+            // Move the cursor to the end of the new Hindi word
+            sel.removeAllRanges();
+            const nextRange = document.createRange();
+            nextRange.setStartAfter(newNode);
+            nextRange.collapse(true);
+            sel.addRange(nextRange);
         }
     }
 });
