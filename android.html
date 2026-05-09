@@ -7,7 +7,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title></title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
@@ -102,8 +101,6 @@ button:active { background: #3a4560; transform: scale(0.97); }
   flex-shrink: 0;
 }
 
-.btn-pdf { background: #7b3f00; border-color: #a05010; }
-.btn-word { background: #103a6b; border-color: #1a5a9e; }
 .mic-btn { background: #631a1a; border-color: #8a2222; }
 .mic-btn.active { background: #c0392b; animation: pulse 1.2s infinite; }
 
@@ -397,6 +394,7 @@ button:active { background: #3a4560; transform: scale(0.97); }
 }
 </style>
 </head>
+
 <body>
 
 <!-- ====== MAIN TOOLBAR ====== -->
@@ -408,8 +406,6 @@ button:active { background: #3a4560; transform: scale(0.97); }
   <button class="mic-btn" id="micBtn" onclick="startVoiceInput('hi')" style="font-size:12px;">🎙️ हिंदी</button>
   <button class="mic-btn" id="micBtnEN" onclick="startVoiceInput('en')" style="font-size:12px;">🎙️ Eng</button>
   <div class="sep"></div>
-  <button class="btn-pdf" onclick="exportAsPDF()">PDF</button>
-  <button class="btn-word" onclick="exportAsWord()">Word</button>
   <button onclick="window.print()" title="Print">🖨️</button>
   <div onclick="window.location.href='index.html'" class="tool-group" style="cursor:pointer; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 0 10px;">
     <span style="font-size: 18px;">⬅️</span>
@@ -422,11 +418,15 @@ button:active { background: #3a4560; transform: scale(0.97); }
   <button onclick="addNewPoint()" style="font-size:12px;">+ पॉइंट</button>
   <button onclick="addNewPage()" style="font-size:12px;">+ पेज</button>
   <div class="sep"></div>
+  <button onclick="toggleBold()" style="font-size:12px;">B</button>
+  <button id="mkhToggle" onclick="toggleMobileKeyboard()" style="font-size:12px; background: #334155;">⌨️</button>
+   <div class="sep"></div>
   <button onclick="setAlign('justifyLeft')" style="font-size:12px;">◀</button>
   <button onclick="setAlign('justifyCenter')" style="font-size:12px;">≡</button>
   <button onclick="setAlign('justifyRight')" style="font-size:12px;">▶</button>
   <button onclick="setAlign('justifyFull')" style="font-size:12px;">☰</button>
   <div class="sep"></div>
+
   <button onclick="changeFontSize('dec')" style="font-size:12px;">A-</button>
   <span id="current-fs-display">14pt</span>
   <button onclick="changeFontSize('inc')" style="font-size:12px;">A+</button>
@@ -459,6 +459,10 @@ button:active { background: #3a4560; transform: scale(0.97); }
       <div contenteditable="true"><b>प्रार्थी</b><br>( उदय सिंह )</div>
     </div>
   </div>
+</div>
+<div id="mobile-key-helper">
+  <div id="mkh-tabs"></div>
+  <div id="mkh-grid" class="mkh-grid"></div>
 </div>
 
 <script>
@@ -510,58 +514,58 @@ const KRUTI_MAP = {
 // ============================================================
 const MKH_SECTIONS = [
   {
-    name: "स्वर",
+    name: "विशेष",
     keys: [
-      {label:"अ", krutiInsert:"v"},{label:"आ", krutiInsert:"vk"},{label:"इ", krutiInsert:"b"},
-      {label:"ई", krutiInsert:"bZ"},{label:"उ", krutiInsert:"m"},{label:"ऊ", krutiInsert:"mZ"},
-      {label:"ए", krutiInsert:"s"},{label:"ऐ", krutiInsert:"S"},{label:"ओ", krutiInsert:"vks"},
-      {label:"औ", krutiInsert:"vkS"},{label:"अं", krutiInsert:"va"},{label:"अः", krutiInsert:"v%"},
+      {label:"प्र", krutiInsert:"प्र"},{label:"श्र", krutiInsert:"श्र"},{label:"श्री", krutiInsert:"श्री"},
+      {label:"त्र", krutiInsert:"त्र"},{label:"ज्ञ", krutiInsert:"ज्ञ"},{label:"क्ष", krutiInsert:"क्ष"},
+      {label:"द्ध", krutiInsert:"द्ध"},{label:"द्य", krutiInsert:"द्य"},{label:"द्व", krutiInsert:"द्व"},
+      {label:"।", krutiInsert:"।"},{label:"॥", krutiInsert:"॥"},{label:"( )", krutiInsert:"()"}
     ]
   },
   {
     name: "मात्राएँ",
     keys: [
-      {label:"ा", krutiInsert:"k"},{label:"ि", krutiInsert:"f"},{label:"ी", krutiInsert:"h"},
-      {label:"ु", krutiInsert:"q"},{label:"ू", krutiInsert:"w"},{label:"े", krutiInsert:"s"},
-      {label:"ै", krutiInsert:"S"},{label:"ो", krutiInsert:"ks"},{label:"ौ", krutiInsert:"kS"},
-      {label:"ं", krutiInsert:"a"},{label:"ँ", krutiInsert:"¡"},{label:"ः", krutiInsert:"%"},
-      {label:"्", krutiInsert:"~"},
+      {label:"ा", krutiInsert:"ा"},{label:"ि", krutiInsert:"ि"},{label:"ी", krutiInsert:"ी"},
+      {label:"ु", krutiInsert:"ु"},{label:"ू", krutiInsert:"ू"},{label:"े", krutiInsert:"े"},
+      {label:"ै", krutiInsert:"ै"},{label:"ो", krutiInsert:"ो"},{label:"ौ", krutiInsert:"ौ"},
+      {label:"ं", krutiInsert:"ं"},{label:"ँ", krutiInsert:"ँ"},{label:"ः", krutiInsert:"ः"},
+      {label:"्", krutiInsert:"्"},{label:"ृ", krutiInsert:"ृ"}
     ]
   },
   {
-    name: "क–ज",
+    name: "स्वर",
     keys: [
-      {label:"क", krutiInsert:"d"},{label:"ख", krutiInsert:"[k"},{label:"ग", krutiInsert:"x"},
-      {label:"घ", krutiInsert:"?k"},{label:"च", krutiInsert:"p"},{label:"छ", krutiInsert:"N"},
-      {label:"ज", krutiInsert:"t"},{label:"झ", krutiInsert:">"},{label:"ञ", krutiInsert:"¥"},
+      {label:"अ", krutiInsert:"अ"},{label:"आ", krutiInsert:"आ"},{label:"इ", krutiInsert:"इ"},
+      {label:"ई", krutiInsert:"ई"},{label:"उ", krutiInsert:"उ"},{label:"ऊ", krutiInsert:"ऊ"},
+      {label:"ए", krutiInsert:"ए"},{label:"ऐ", krutiInsert:"ऐ"},{label:"ओ", krutiInsert:"ओ"},
+      {label:"औ", krutiInsert:"औ"}
+    ]
+  },
+  {
+    name: "क–ञ",
+    keys: [
+      {label:"क", krutiInsert:"क"},{label:"ख", krutiInsert:"ख"},{label:"ग", krutiInsert:"ग"},
+      {label:"घ", krutiInsert:"घ"},{label:"च", krutiInsert:"च"},{label:"छ", krutiInsert:"छ"},
+      {label:"ज", krutiInsert:"ज"},{label:"झ", krutiInsert:"झ"},{label:"ञ", krutiInsert:"ञ"}
     ]
   },
   {
     name: "ट–न",
     keys: [
-      {label:"ट", krutiInsert:"V"},{label:"ठ", krutiInsert:"B"},{label:"ड", krutiInsert:"M"},
-      {label:"ढ", krutiInsert:"<"},{label:"ण", krutiInsert:".k"},{label:"त", krutiInsert:"r"},
-      {label:"थ", krutiInsert:"Fk"},{label:"द", krutiInsert:"n"},{label:"ध", krutiInsert:"/k"},
-      {label:"न", krutiInsert:"u"},
+      {label:"ट", krutiInsert:"ट"},{label:"ठ", krutiInsert:"ठ"},{label:"ड", krutiInsert:"ड"},
+      {label:"ढ", krutiInsert:"ढ"},{label:"ण", krutiInsert:"ण"},{label:"त", krutiInsert:"त"},
+      {label:"थ", krutiInsert:"थ"},{label:"द", krutiInsert:"द"},{label:"ध", krutiInsert:"ध"},
+      {label:"न", krutiInsert:"न"}
     ]
   },
   {
     name: "प–ह",
     keys: [
-      {label:"प", krutiInsert:"i"},{label:"फ", krutiInsert:"Q"},{label:"ब", krutiInsert:"c"},
-      {label:"भ", krutiInsert:"Hk"},{label:"म", krutiInsert:"e"},{label:"य", krutiInsert:";"},
-      {label:"र", krutiInsert:"j"},{label:"ल", krutiInsert:"y"},{label:"व", krutiInsert:"o"},
-      {label:"श", krutiInsert:"'k"},{label:"ष", krutiInsert:"\"k"},{label:"स", krutiInsert:"l"},
-      {label:"ह", krutiInsert:"g"},
-    ]
-  },
-  {
-    name: "संयुक्त",
-    keys: [
-      {label:"क्ष", krutiInsert:"{k"},{label:"त्र", krutiInsert:"="},{label:"ज्ञ", krutiInsert:"K"},
-      {label:"श्र", krutiInsert:"J"},{label:"क्", krutiInsert:"D"},{label:"त्", krutiInsert:"R"},
-      {label:"न्", krutiInsert:"u~"},{label:"ल्", krutiInsert:"y~"},{label:"स्", krutiInsert:"l~"},
-      {label:"।", krutiInsert:"A"},{label:"॥", krutiInsert:"AA"},{label:"ऋ", krutiInsert:"_"},
+      {label:"प", krutiInsert:"प"},{label:"फ", krutiInsert:"फ"},{label:"ब", krutiInsert:"ब"},
+      {label:"भ", krutiInsert:"भ"},{label:"म", krutiInsert:"म"},{label:"य", krutiInsert:"य"},
+      {label:"र", krutiInsert:"र"},{label:"ल", krutiInsert:"ल"},{label:"व", krutiInsert:"व"},
+      {label:"श", krutiInsert:"श"},{label:"ष", krutiInsert:"ष"},{label:"स", krutiInsert:"स"},
+      {label:"ह", krutiInsert:"ह"}
     ]
   },
   {
@@ -570,18 +574,17 @@ const MKH_SECTIONS = [
       {label:"१",krutiInsert:"1"},{label:"२",krutiInsert:"2"},{label:"३",krutiInsert:"3"},
       {label:"४",krutiInsert:"4"},{label:"५",krutiInsert:"5"},{label:"६",krutiInsert:"6"},
       {label:"७",krutiInsert:"7"},{label:"८",krutiInsert:"8"},{label:"९",krutiInsert:"9"},
-      {label:"०",krutiInsert:"0"},{label:",",krutiInsert:","},{label:".",krutiInsert:"."},
-      {label:"-",krutiInsert:"-"},{label:"(",krutiInsert:"("},{label:")",krutiInsert:")"},
+      {label:"०",krutiInsert:"0"}
     ]
   }
 ];
-
 // ============================================================
 // STATE
 // ============================================================
 // 'Kruti Dev 010','K010','KrutiDev010',serif";"
 let currentLang = 'hindi';
-const HINDI_FONT = "'Mangal','Noto Sans Devanagari','Nirmala UI',sans-serif;"
+// const HINDI_FONT = "'Mangal','Noto Sans Devanagari','Nirmala UI',sans-serif;"
+const HINDI_FONT = "'Mangal','Noto Sans Devanagari','Nirmala UI',sans-serif";
 const ENGLISH_FONT = "'Times New Roman','Georgia',serif";
 let speechRecog = null;
 let isListening = false;
@@ -590,12 +593,37 @@ let mkhActiveTab = 0;
 let mkhVisible = false;
 let lastFocused = null;
 
-// Track last focused editable
-document.addEventListener('focusin', e => {
-  if (e.target && e.target.getAttribute('contenteditable') === 'true') {
-    lastFocused = e.target;
+
+let savedRange = null;
+
+// Track exactly where the cursor is at all times
+document.addEventListener('selectionchange', () => {
+  const active = document.activeElement;
+  if (active && active.getAttribute('contenteditable') === 'true') {
+    lastFocused = active;
+    const sel = window.getSelection();
+    if (sel.rangeCount > 0) {
+      savedRange = sel.getRangeAt(0);
+    }
   }
 });
+
+// // Track focus and save the exact cursor position (Range)
+// document.addEventListener('focusout', e => {
+//   if (e.target && e.target.getAttribute('contenteditable') === 'true') {
+//     const sel = window.getSelection();
+//     if (sel.rangeCount > 0) {
+//       savedRange = sel.getRangeAt(0);
+//     }
+//   }
+// });
+
+// // Track last focused editable
+// document.addEventListener('focusin', e => {
+//   if (e.target && e.target.getAttribute('contenteditable') === 'true') {
+//     lastFocused = e.target;
+//   }
+// });
 
 // ============================================================
 // STATUS BAR
@@ -676,6 +704,31 @@ function updateLangButtons() {
 // ============================================================
 // KEYBOARD INTERCEPT (Physical keyboard)
 // ============================================================
+
+// 1. बोल्ड टॉगल करने का मुख्य फंक्शन
+function toggleBold() {
+  document.execCommand('bold', false, null);
+  updateBoldUI();
+  
+  // कर्सर वापस एडिटर में रखें ताकि लिखना जारी रहे
+  const activeEl = document.activeElement;
+  if (activeEl && activeEl.getAttribute('contenteditable') === 'true') {
+    activeEl.focus();
+  }
+}
+
+// 2. बटन की स्थिति (Active/Inactive) अपडेट करने के लिए
+function updateBoldUI() {
+  const isBold = document.queryCommandState('bold');
+  const btn = document.getElementById('boldBtn');
+  if (btn) {
+    if (isBold) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  }
+}
 // ============================================================
 // CLEAN ANDROID TRANSLITERATION ENGINE
 // ============================================================
@@ -854,52 +907,79 @@ function switchMkhTab(idx) {
 
 function renderMkhTab(idx) {
   const gridEl = document.getElementById('mkh-grid');
+  
+  // English Mode / Empty State
   if (idx === -1) {
-    // English mode helper
     gridEl.innerHTML = `
       <div style="color:#8a9bbc;font-size:12px;padding:6px;width:100%;">English mode — type with device keyboard</div>
-      <button class="mkh-key mkh-del" onclick="mkhDelete()">⌫</button>
-      <button class="mkh-key mkh-enter" onclick="mkhInsert('\\n')">↵ Enter</button>
-      <button class="mkh-key mkh-sp" onclick="mkhInsert(' ')">Space ___</button>
+      <button class="mkh-key mkh-del" onpointerdown="event.preventDefault(); mkhDelete()">⌫</button>
+      <button class="mkh-key mkh-enter" onpointerdown="event.preventDefault(); mkhInsert('\\n')">↵ Enter</button>
+      <button class="mkh-key mkh-sp" onpointerdown="event.preventDefault(); mkhInsert(' ')">Space ___</button>
     `;
     return;
   }
+
   const section = MKH_SECTIONS[idx];
   let html = '';
+  
+  // Render main keys
   section.keys.forEach(k => {
-    html += `<button class="mkh-key" onclick="mkhInsert(${JSON.stringify(k.krutiInsert)})">${k.label}</button>`;
+    // IMPORTANT: onpointerdown prevents the button from taking focus away from the page
+    html += `<button class="mkh-key" onpointerdown="event.preventDefault(); mkhInsert('${k.krutiInsert}')">${k.label}</button>`;
   });
-  // Action keys
-  html += `<button class="mkh-key mkh-del" onclick="mkhDelete()">⌫</button>`;
-  html += `<button class="mkh-key mkh-enter" onclick="mkhInsert('\\n')">↵</button>`;
-  html += `<button class="mkh-key mkh-sp" onclick="mkhInsert(' ')">Space</button>`;
+  
+  // Add control keys
+  html += `<button class="mkh-key mkh-del" onpointerdown="event.preventDefault(); mkhDelete()">⌫</button>`;
+  html += `<button class="mkh-key mkh-enter" onpointerdown="event.preventDefault(); mkhInsert('\\n')">↵</button>`;
+  html += `<button class="mkh-key mkh-sp" onpointerdown="event.preventDefault(); mkhInsert(' ')">Space</button>`;
+  
   gridEl.innerHTML = html;
 }
-
 function mkhInsert(text) {
-  const el = lastFocused;
-  if (!el || el.getAttribute('contenteditable') !== 'true') {
-    showMsg('पहले टेक्स्ट एरिया में टैप करें', 1500);
+  if (!lastFocused) {
+    showMsg('लिखने के लिए पहले पेज पर क्लिक करें', 1500);
     return;
   }
-  el.focus();
-  if (text === '\n') {
+
+  // 1. Force focus back to the text area
+  lastFocused.focus();
+  
+  // 2. Restore the exact cursor position
+  const sel = window.getSelection();
+  if (savedRange) {
+    sel.removeAllRanges();
+    sel.addRange(savedRange);
+  }
+
+  // 3. Insert the text/character
+  if (text === '\\n' || text === '\n') {
     document.execCommand('insertParagraph', false);
   } else {
-    document.execCommand('fontName', false, 'Kruti Dev 010');
-    document.execCommand('fontSize', false, '4');
     document.execCommand('insertText', false, text);
   }
-  checkOverflow(el);
+
+  // 4. Save the new cursor position after insertion
+  if (sel.rangeCount > 0) {
+    savedRange = sel.getRangeAt(0);
+  }
+
+  // Update layout if text overflows
+  if (typeof checkOverflow === "function") {
+    checkOverflow(lastFocused);
+  }
 }
 
 function mkhDelete() {
-  const el = lastFocused;
-  if (!el || el.getAttribute('contenteditable') !== 'true') return;
-  el.focus();
-  document.execCommand('delete', false);
+  if (!lastFocused) return;
+  lastFocused.focus();
+  document.execCommand('delete', false, null);
+  
+  // Update saved range after deletion
+  const sel = window.getSelection();
+  if (sel.rangeCount > 0) {
+    savedRange = sel.getRangeAt(0);
+  }
 }
-
 function toggleMobileKeyboard() {
   mkhVisible = !mkhVisible;
   document.getElementById('mobile-key-helper').classList.toggle('show', mkhVisible);
@@ -1308,82 +1388,6 @@ function startVoiceInput(langCode) {
 // ============================================================
 // EXPORT
 // ============================================================
-function exportAsPDF() {
-  const element = document.getElementById('main-container');
-  const mkh = document.getElementById('mobile-key-helper');
-  
-  // Temporarily hide UI and Clear Title to prevent "Advertising" in metadata
-  const originalTitle = document.title;
-  document.title = " "; 
-  if (mkh) mkh.classList.remove('show');
-
-  const opt = {
-    margin: 0,
-    filename: 'Court_Document.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { 
-      scale: 2, // Scale 2 is best for mobile stability
-      useCORS: true,
-      letterRendering: true
-    },
-    jsPDF: { 
-      unit: 'mm', 
-      format: 'legal', 
-      orientation: 'portrait' 
-    }
-  };
-
-  showMsg('न्यायालय प्रारूप PDF तैयार हो रही है...', 3000);
-
-  html2pdf().set(opt).from(element).toPdf().get('pdf').then(function (pdf) {
-    // Manually trigger download for better browser support
-    pdf.save('Legal_Document.pdf');
-    document.title = originalTitle; // Restore title
-    if (mkh) mkh.classList.add('show');
-    showMsg('PDF सेव हो गई ✅', 2000);
-  }).catch(err => {
-    alert("PDF Error: Please try again in a different browser.");
-    console.error(err);
-  });
-}
-
-function exportAsWord() {
-  const container = document.getElementById('main-container');
-  const clone = container.cloneNode(true);
-  
-  // Clean up buttons
-  clone.querySelectorAll('.no-print, .del-pt, .del-page-btn, button').forEach(el => el.remove());
-
-  // XML for Word Margins (35mm = 99.2 points)
-  const wordXMLHeader = `
-    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-    <head><meta charset='utf-8'>
-    <style>
-      @page {
-        size: 8.5in 14in; 
-        margin: 1.0in 0.75in 1.0in 1.38in; /* 1.38in = 35mm */
-        mso-header-margin: 0.5in; mso-footer-margin: 0.5in; mso-paper-source: 0;
-      }
-      body { font-family: "Kruti Dev 010", serif; }
-      .paper { page-break-after: always; }
-    </style>
-    </head><body>`;
-
-  const wordXMLFooter = "</body></html>";
-  const sourceData = wordXMLHeader + clone.innerHTML + wordXMLFooter;
-
-  const blob = new Blob(['\ufeff', sourceData], { type: 'application/msword' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'Court_Document.doc';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  
-  showMsg('Word फ़ाइल डाउनलोड हो रही है', 2000);
-}
-
 
 // ============================================================
 // INIT
