@@ -3,629 +3,640 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>हिंदी कानूनी संपादक | Kruti Dev 010</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<title>हिंदी कानूनी संपादक | Device Selection</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-:root {
-  --toolbar-h: 56px;
-  --sub-toolbar-h: 44px;
-  --total-toolbar: calc(var(--toolbar-h) + var(--sub-toolbar-h));
-  --paper-w: 215.9mm;
-  --paper-h: 355.6mm;
-}
-
-html, body {
-  background: #0f121a;
-  font-family: 'Mangal','Noto Sans Devanagari','Nirmala UI',sans-serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* ===== MAIN TOOLBAR ===== */
-#toolbar-main {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: var(--toolbar-h);
-  background: #161b26;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 10px;
-  border-bottom: 1px solid #2a3950;
-  z-index: 2000;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-#toolbar-main::-webkit-scrollbar { display: none; }
-
-/* ===== SUB TOOLBAR ===== */
-#toolbar-sub {
-  position: fixed;
-  top: var(--toolbar-h);
-  left: 0; right: 0;
-  height: var(--sub-toolbar-h);
-  background: #1a2030;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 0 8px;
-  border-bottom: 1px solid #2a3950;
-  z-index: 1999;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-#toolbar-sub::-webkit-scrollbar { display: none; }
-
-/* ===== BUTTONS ===== */
-button {
-  background: #2c354a;
-  border: 1px solid #3f4a63;
-  color: #cbd5e0;
-  padding: 0 12px;
-  height: 34px;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: background 0.15s;
-  touch-action: manipulation;
-  -webkit-appearance: none;
-  font-family: inherit;
-}
-button:active { background: #3a4560; transform: scale(0.97); }
-
-.lang-btn { border-radius: 20px; font-weight: bold; height: 36px; }
-.lang-btn.hindi { background: #1d4d2c; color: #bfffc3; border-color: #2e6b3e; }
-.lang-btn.hindi.active { background: #2e8b57; color: white; border-color: #53d88a; }
-.lang-btn.english { background: #1e3b5c; color: #b9e2ff; border-color: #2a5a8c; }
-.lang-btn.english.active { background: #2c6c9e; color: white; border-color: #7bc9ff; }
-
-#mode-indicator {
-  background: #1f2e42;
-  padding: 0 10px;
-  height: 28px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: bold;
-  border-left: 3px solid gold;
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.btn-pdf { background: #7b3f00; border-color: #a05010; }
-.btn-word { background: #103a6b; border-color: #1a5a9e; }
-.mic-btn { background: #631a1a; border-color: #8a2222; }
-.mic-btn.active { background: #c0392b; animation: pulse 1.2s infinite; }
-
-@keyframes pulse {
-  0%,100% { opacity: 0.75; }
-  50% { opacity: 1; background: #e67e22; }
-}
-
-.sep { width: 1px; height: 28px; background: #2a3950; flex-shrink: 0; margin: 0 2px; }
-
-/* ===== MAIN SCROLL AREA ===== */
-#main-container {
-  margin-top: var(--total-toolbar);
-  padding: 16px 8px 120px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* ===== PAPER ===== */
-.paper {
-  background: #fff;
-  width: var(--paper-w);
-  max-width: 98vw;
-  min-height: var(--paper-h);
-  padding: 20mm 12mm 20mm 35mm;
-  margin: 0 auto 20px;
-  position: relative;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-}
-
-/* Responsive scaling of paper on small screens */
-@media (max-width: 600px) {
-  #main-container {
-    padding: 12px 0 120px;
-    overflow-x: auto;
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
-  .paper {
-    transform-origin: top center;
+
+  body {
+    background: linear-gradient(135deg, #1a1f3a 0%, #0f121a 100%);
+    font-family: 'Mangal', 'Noto Sans Devanagari', 'Nirmala UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
   }
-}
 
-/* ===== PAPER CONTENT ===== */
-.page-header {
-  text-align: center;
-  font-weight: bold;
-  font-size: 13.5pt;
-  border-bottom: 2px solid #111;
-  padding-bottom: 6px;
-  margin-bottom: 10px;
-  font-family: 'Kruti Dev 010','K010',serif;
-  color: #000;
-  min-height: 1.5em;
-  outline: none;
-}
-.page-header:focus { background: #fffff0; }
+  #device-selector {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    text-align: center;
+  }
 
-.page-meta {
-  text-align: center;
-  margin: 5px 0;
-  font-family: 'Kruti Dev 010','K010',serif;
-  font-size: 12pt;
-  color: #000;
-  outline: none;
-  min-height: 1.2em;
-}
-.page-meta:focus { background: #fffff0; }
+  .selector-title {
+    font-size: 28px;
+    color: #1a1f3a;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
 
-.doc-body {
-  padding-top: 10mm;
-  min-height: 200px;
-  color: #000;
-}
+  .selector-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 40px;
+    line-height: 1.6;
+  }
 
-[contenteditable="true"] {
-  font-family: 'Kruti Dev 010','K010',serif;
-  font-size: 14pt;
-  line-height: 1.7;
-  text-align: justify;
-  color: #000;
-  outline: none;
-  min-height: 1.4em;
-}
-[contenteditable="true"]:focus { background: rgba(255,255,200,0.5); }
+  .button-container {
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+  }
 
-.cont-text {
-  width: 100%;
-  display: block;
-}
+  .device-btn {
+    padding: 20px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    color: white;
+    font-family: inherit;
+  }
 
-.point-row {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-  margin: 8px 0;
-  position: relative;
-}
-.point-num {
-  font-weight: bold;
-  min-width: 32px;
-  font-family: 'Kruti Dev 010','K010',serif;
-  font-size: 14pt;
-  line-height: 1.7;
-  color: #000;
-}
-.point-text {
-  flex: 1;
-  font-family: 'Kruti Dev 010','K010',serif;
-  font-size: 14pt;
-  line-height: 1.7;
-  text-align: justify;
-  color: #000;
-  outline: none;
-  min-height: 1.4em;
-}
-.point-text:focus { background: rgba(255,255,200,0.5); }
+  .device-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
 
-.del-pt {
-  position: absolute;
-  left: -26px;
-  top: 2px;
-  background: #f0d6d6;
-  color: #b91c1c;
-  border: none;
-  border-radius: 50%;
-  width: 22px; height: 22px;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  cursor: pointer;
-  opacity: 0.6;
-}
-.del-pt:active { opacity: 1; }
+  .device-btn:active {
+    transform: translateY(-1px);
+  }
 
-.page-footer {
-  margin-top: 16px;
-  border-top: 1px dashed #aaa;
-  padding-top: 12px;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px;
-  font-family: 'Kruti Dev 010','K010',serif;
-  font-size: 12pt;
-  color: #000;
-}
-.page-footer [contenteditable="true"] { outline: none; min-height: 1.2em; }
-.page-footer [contenteditable="true"]:focus { background: rgba(255,255,200,0.5); }
+  .pc-btn {
+    background: linear-gradient(135deg, #2c6c9e 0%, #1e3b5c 100%);
+  }
 
-.del-page-btn {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  background: #a12222;
-  color: white;
-  border: none;
-  font-size: 10px;
-  padding: 3px 8px;
-  height: auto;
-  border-radius: 20px;
-  cursor: pointer;
-  opacity: 0.8;
-}
+  .mobile-btn {
+    background: linear-gradient(135deg, #2e8b57 0%, #1d4d2c 100%);
+  }
 
-/* ===== MOBILE KEYBOARD HELPER (Virtual Kruti) ===== */
-#mobile-key-helper {
-  display: none;
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: #111827;
-  border-top: 1px solid #2a3950;
-  z-index: 3000;
-  padding: 6px 4px;
-  max-height: 45vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-#mobile-key-helper.show { display: block; }
+  .btn-icon {
+    font-size: 32px;
+  }
 
-#mkh-tabs {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 6px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-#mkh-tabs::-webkit-scrollbar { display: none; }
-.mkh-tab {
-  background: #1e2535;
-  border: 1px solid #2a3950;
-  color: #8a9bbc;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  white-space: nowrap;
-  height: 28px;
-  cursor: pointer;
-  flex-shrink: 0;
-  touch-action: manipulation;
-}
-.mkh-tab.active { background: #1d4d2c; color: #bfffc3; border-color: #2e6b3e; }
+  .btn-text {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
 
-.mkh-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-.mkh-key {
-  background: #1e2535;
-  border: 1px solid #2a3950;
-  color: #e2e8f0;
-  padding: 0;
-  width: 52px;
-  height: 40px;
-  border-radius: 6px;
-  font-size: 15px;
-  font-family: 'Mangal','Noto Sans Devanagari',serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  touch-action: manipulation;
-  flex-shrink: 0;
-}
-.mkh-key:active { background: #2e8b57; transform: scale(0.93); }
-.mkh-key .kk { font-size: 10px; color: #7a8aa8; font-family: monospace; }
-.mkh-key .kv { font-size: 17px; line-height: 1.1; }
+  .btn-main {
+    font-size: 18px;
+  }
 
-.mkh-sp { width: 100px; font-size: 12px; color: #8a9bbc; font-family: sans-serif; }
-.mkh-del { width: 60px; font-size: 16px; background: #3a1a1a; border-color: #6a2a2a; }
-.mkh-enter { width: 70px; font-size: 11px; background: #1e3b5c; border-color: #2a5a8c; font-family: sans-serif; }
+  .btn-sub {
+    font-size: 12px;
+    opacity: 0.9;
+  }
 
-/* ===== KEY CHART PANEL ===== */
-#key-chart {
-  display: none;
-  position: fixed;
-  top: calc(var(--total-toolbar) + 8px);
-  right: 8px;
-  left: 8px;
-  max-width: 620px;
-  margin: 0 auto;
-  background: #091122;
-  border: 1px solid #2f4c7a;
-  border-radius: 14px;
-  padding: 12px;
-  z-index: 2100;
-  color: #dceaff;
-  font-size: 10px;
-  box-shadow: 0 12px 28px black;
-  max-height: 75vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-#key-chart.show { display: block; }
-.kc-title { font-size: 13px; color: #ffc857; text-align: center; margin-bottom: 10px; border-bottom: 1px solid #1e4060; padding-bottom: 6px; }
-.kc-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
-.kc-item {
-  background: #132338;
-  padding: 4px 8px;
-  border-radius: 10px;
-  display: inline-flex;
-  gap: 8px;
-  font-size: 12px;
-  align-items: baseline;
-  border: 1px solid #2a4565;
-  font-family: monospace;
-}
-.kc-key { color: #f3b560; font-weight: bold; min-width: 24px; }
-.kc-normal { color: #a5f0a5; font-size: 14px; font-family: 'Mangal','Noto Sans Devanagari',serif; }
-.kc-shift { color: #e0aaff; font-size: 14px; font-family: 'Mangal','Noto Sans Devanagari',serif; }
+  .loader {
+    display: none;
+    text-align: center;
+    margin-top: 20px;
+  }
 
-/* ===== STATUS BAR ===== */
-#status-bar {
-  position: fixed;
-  bottom: 70px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #0a0f1aee;
-  color: #f0f3fa;
-  padding: 8px 20px;
-  border-radius: 50px;
-  font-size: 12px;
-  z-index: 3500;
-  backdrop-filter: blur(6px);
-  display: none;
-  white-space: nowrap;
-  max-width: 90vw;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-#status-bar.show { display: block; }
+  .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #2c6c9e;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 10px;
+  }
 
-/* ===== FONT SIZE DISPLAY ===== */
-#current-fs-display {
-  color: #93c5fd;
-  font-size: 12px;
-  min-width: 34px;
-  text-align: center;
-  flex-shrink: 0;
-}
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 
-/* ===== PRINT ===== */
-@media print {
-  .toolbar, #toolbar-main, #toolbar-sub, #mobile-key-helper, .no-print,
-  .del-pt, .del-page-btn, #key-chart, #status-bar { display: none !important; }
-  body { background: white; margin: 0; padding: 0; }
-  #main-container { margin-top: 0; padding: 0; }
-  .paper { box-shadow: none; margin: 0; page-break-after: always; }
-}
+  .loader-text {
+    color: #666;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  @media (max-width: 600px) {
+    #device-selector {
+      padding: 30px 20px;
+    }
+
+    .selector-title {
+      font-size: 22px;
+    }
+
+    .device-btn {
+      padding: 15px 20px;
+      font-size: 16px;
+    }
+
+    .btn-icon {
+      font-size: 28px;
+    }
+  }
 </style>
 </head>
 <body>
 
-<!-- ====== MAIN TOOLBAR ====== -->
-<div id="toolbar-main">
-  <button class="lang-btn hindi active" id="btnHindi" onclick="setLangMode('hindi')">हिंदी</button>
-  <button class="lang-btn english" id="btnEng" onclick="setLangMode('english')">Eng</button>
-  <div id="mode-indicator">🔤 हिंदी</div>
-  <div class="sep"></div>
-  <button class="mic-btn" id="micBtn" onclick="startVoiceInput('hi')" style="font-size:12px;">🎙️ हिंदी</button>
-  <button class="mic-btn" id="micBtnEN" onclick="startVoiceInput('en')" style="font-size:12px;">🎙️ Eng</button>
-  <div class="sep"></div>
-  <button class="btn-pdf" onclick="exportAsPDF()">PDF</button>
-  <button class="btn-word" onclick="exportAsWord()">Word</button>
-  <button onclick="window.print()" title="Print">🖨️</button>
-</div>
-
-<!-- ====== SUB TOOLBAR ====== -->
-<div id="toolbar-sub">
-  <button onclick="addNewPoint()" style="font-size:12px;">+ पॉइंट</button>
-  <button onclick="addNewPage()" style="font-size:12px;">+ पेज</button>
-  <button onclick="toggleKeyChart()" title="Key Chart">⌨️</button>
-  <button id="mkhToggle" onclick="toggleMobileKeyboard()" style="font-size:12px;" title="Virtual Keyboard">🔡 वर्चुअल</button>
-  <div class="sep"></div>
-  <button onclick="setAlign('justifyLeft')" style="font-size:12px;">◀</button>
-  <button onclick="setAlign('justifyCenter')" style="font-size:12px;">≡</button>
-  <button onclick="setAlign('justifyRight')" style="font-size:12px;">▶</button>
-  <button onclick="setAlign('justifyFull')" style="font-size:12px;">☰</button>
-  <div class="sep"></div>
-  <button onclick="changeFontSize('dec')" style="font-size:12px;">A-</button>
-  <span id="current-fs-display">14pt</span>
-  <button onclick="changeFontSize('inc')" style="font-size:12px;">A+</button>
-</div>
-
-<!-- ====== KEY CHART ====== -->
-<div id="key-chart">
-  <div class="kc-title">📌 Kruti Dev 010 — कुंजी मानचित्र</div>
-  <div id="chart-render"></div>
-  <div style="margin-top:8px;font-size:9px;text-align:center;">हरा = बिना Shift &nbsp;|&nbsp; बैंगनी = Shift+key</div>
-  <div style="text-align:center;margin-top:8px;">
-    <button onclick="toggleKeyChart()" style="font-size:11px;">✕ बंद करें</button>
+<div id="device-selector">
+  <div class="selector-title">👋 स्वागत है!</div>
+  <div class="selector-subtitle">
+    कृपया अपना डिवाइस चुनें:<br>
+    <span style="font-size: 12px;">आप किस पर काम कर रहे हैं?</span>
   </div>
-</div>
 
-<!-- ====== MOBILE VIRTUAL KEYBOARD ====== -->
-<div id="mobile-key-helper">
-  <div id="mkh-tabs"></div>
-  <div id="mkh-grid" class="mkh-grid"></div>
-</div>
+  <div class="button-container">
+    <button class="device-btn pc-btn" onclick="loadVersion('pc')">
+      <span class="btn-icon">💻</span>
+      <span class="btn-text">
+        <span class="btn-main">PC / लैपटॉप</span>
+        <span class="btn-sub">डेस्कटॉप संस्करण</span>
+      </span>
+    </button>
 
-<!-- ====== STATUS BAR ====== -->
-<div id="status-bar">✅ तैयार</div>
+    <button class="device-btn mobile-btn" onclick="loadVersion('mobile')">
+      <span class="btn-icon">📱</span>
+      <span class="btn-text">
+        <span class="btn-main">मोबाइल फोन</span>
+        <span class="btn-sub">मोबाइल संस्करण</span>
+      </span>
+    </button>
+  </div>
 
-<!-- ====== MAIN DOCUMENT AREA ====== -->
-<div id="main-container">
-  <div class="paper" id="page-1">
-    <div class="page-header" contenteditable="true" id="header1">न्यायालय किराया अधिकरण, जयपुर महानगर (द्वितीय)</div>
-    <div class="page-meta" contenteditable="true" style="text-align:center;">मुकदमा सं. ________ / 2026</div>
-    <div class="page-meta" contenteditable="true" style="text-align:center;">उदय सिंह शेखावत &nbsp; बनाम &nbsp; रामचन्द्र</div>
-    <div class="page-meta" contenteditable="true" style="text-align:center;margin-bottom:8px;">बेदखली एवं किराया वसूली याचिका</div>
-    <div class="doc-body" id="body1">
-      <div contenteditable="true" class="cont-text" oninput="checkOverflow(this)" onkeydown="handleKeydown(event,this)">प्रार्थी की ओर से निवेदन:</div>
-      <div class="point-row" id="init-point">
-        <button class="del-pt no-print" onclick="removePoint(this)">✕</button>
-        <div class="point-num">1.</div>
-        <div class="point-text" contenteditable="true" oninput="checkOverflow(this)" onkeydown="handleKeydown(event,this)">यह कि उपरोक्त अर्जी आज माननीय न्यायालय के समक्ष नियत है।</div>
-      </div>
-    </div>
-    <div class="page-footer">
-      <div contenteditable="true">जयपुर</div>
-      <div>दिनांक: <span contenteditable="true" style="border-bottom:1px dashed #666;">____/____/2026</span></div>
-      <div contenteditable="true"><b>प्रार्थी</b><br>( उदय सिंह )</div>
-    </div>
+  <div class="loader" id="loader">
+    <div class="spinner"></div>
+    <div class="loader-text">लोड हो रहा है...</div>
   </div>
 </div>
 
 <script>
-// ============================================================
-// KRUTI DEV 010 KEY MAP
-// ============================================================
+  // PC VERSION (Desktop/Laptop)
+  const PC_VERSION = `<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>हिंदी कानूनी संपादक | Kruti Dev 010 सटीक टाइपिंग</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: #0f121a;
+    font-family: 'Mangal', 'Noto Sans Devanagari', 'Nirmala UI', 'Kruti Dev 010', 'K010', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .toolbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #161b26;
+    padding: 4px 10px;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    align-items: center;
+    overflow-x: auto;
+    border-bottom: 1px solid #2a3950;
+    z-index: 2000;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  }
+
+  #main-container {
+    margin-top: 70px;
+    padding-bottom: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tool-group {
+    display: flex;
+    align-items: center;
+    background: #1e2535;
+    padding: 3px 8px;
+    border-radius: 8px;
+    gap: 5px;
+  }
+
+  .tool-group span.label {
+    font-size: 9px;
+    color: #7a8aa8;
+  }
+
+  button {
+    background: #2c354a;
+    border: 1px solid #3f4a63;
+    color: #cbd5e0;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  button:hover {
+    background: #2e3d5e;
+    transform: translateY(-1px);
+  }
+
+  button:active {
+    transform: translateY(1px);
+  }
+
+  .lang-btn {
+    padding: 5px 16px;
+    border-radius: 30px;
+    font-weight: bold;
+    border: 1px solid transparent;
+  }
+
+  .lang-btn.hindi {
+    background: #1d4d2c;
+    color: #bfffc3;
+  }
+
+  .lang-btn.hindi.active {
+    background: #2e8b57;
+    color: white;
+    border-color: #53d88a;
+    box-shadow: 0 0 0 2px #2e8b5780;
+  }
+
+  .lang-btn.english {
+    background: #1e3b5c;
+    color: #b9e2ff;
+  }
+
+  .lang-btn.english.active {
+    background: #2c6c9e;
+    color: white;
+    border-color: #7bc9ff;
+  }
+
+  #mode-indicator {
+    background: #1f2e42;
+    padding: 4px 12px;
+    border-radius: 28px;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.3px;
+    border-left: 3px solid gold;
+  }
+
+  .btn-pdf { background: #7b3f00; }
+  .btn-word { background: #103a6b; }
+  .mic-btn { background: #631a1a; }
+  .mic-btn.active { background: #c0392b; animation: pulse 1.2s infinite; }
+
+  @keyframes pulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; background: #e67e22; }
+    100% { opacity: 0.7; }
+  }
+
+  #key-chart {
+    display: none;
+    position: fixed;
+    top: 80px;
+    right: 12px;
+    width: 600px;
+    max-width: 92vw;
+    background: #091122;
+    border: 1px solid #2f4c7a;
+    border-radius: 20px;
+    padding: 14px;
+    z-index: 2100;
+    backdrop-filter: blur(2px);
+    color: #dceaff;
+    font-size: 10px;
+    box-shadow: 0 12px 28px black;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  #key-chart.show { display: block; }
+
+  .kc-title { font-size: 13px; color: #ffc857; text-align: center; margin-bottom: 10px; border-bottom: 1px solid #1e4060; }
+  .kc-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .kc-item {
+    background: #132338;
+    padding: 4px 8px;
+    border-radius: 12px;
+    display: inline-flex;
+    gap: 10px;
+    font-family: monospace;
+    font-size: 12px;
+    align-items: baseline;
+    border: 1px solid #2a4565;
+  }
+
+  .kc-key { color: #f3b560; font-weight: bold; min-width: 28px; }
+  .kc-normal { color: #a5f0a5; font-size: 14px; font-family: 'Mangal','Kruti Dev 010',monospace; }
+  .kc-shift { color: #e0aaff; font-size: 14px; font-family: 'Mangal','Kruti Dev 010',monospace; }
+
+  :root {
+    --pw: 215.9mm;
+    --ph: 355.6mm;
+    --pt: 20mm; --pb: 20mm;
+    --pl: 45mm;
+    --pr: 15mm;
+  }
+
+  .paper {
+    background: #FFFFFF !important;
+    width: var(--pw);
+    height: var(--ph);
+    min-height: var(--ph);
+    max-height: var(--ph);
+    padding: 25mm var(--pr) 25mm var(--pl);
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .cont-text:focus {
+    width: 100%;
+    font-size: 16pt;
+    line-height: 1.6;
+    text-align: justify;
+    outline: none;
+    min-height: 1em;
+    padding-left: 0;
+  }
+
+  .doc-body {
+    flex: 1;
+    display: block;
+    padding-top: 15mm;
+    margin: 0;
+  }
+
+  [contenteditable="true"], .cont-text, .point-text {
+    font-family: 'Kruti Dev 010', 'K010', serif !important;
+    font-size: 16pt !important;
+    line-height: 1.6 !important;
+    text-align: justify;
+    color: #000;
+  }
+
+  .page-header {
+    text-align: center;
+    font-weight: bold;
+    font-size: 13.5pt;
+    border-bottom: 2px solid #111;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+    font-family: inherit;
+  }
+
+  .page-meta {
+    text-align: center;
+    margin: 6px 0;
+    font-size: 16pt;
+  }
+
+  .point-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin: 8px 0;
+    position: relative;
+  }
+
+  .point-num {
+    font-weight: bold;
+    min-width: 40px;
+    font-size: 16pt;
+    line-height: 1.6;
+  }
+
+  .point-text {
+    flex: 1;
+    font-size: 16pt;
+    line-height: 1.6;
+    text-align: justify;
+  }
+
+  .del-pt {
+    position: absolute;
+    left: -28px;
+    top: 2px;
+    background: #f0d6d6;
+    color: #b91c1c;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: 0.1s;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .page-footer {
+    margin-top: 16px;
+    border-top: 1px dashed #aaa;
+    padding-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Kruti Dev 010', serif;
+  }
+
+  .del-page-btn {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    background: #a12222;
+    color: white;
+    border: none;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 30px;
+    cursor: pointer;
+    opacity: 0.7;
+  }
+
+  #status-bar {
+    position: fixed;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0a0f1aee;
+    color: #f0f3fa;
+    padding: 8px 24px;
+    border-radius: 60px;
+    font-size: 13px;
+    z-index: 3000;
+    backdrop-filter: blur(6px);
+    display: none;
+    white-space: nowrap;
+  }
+
+  #status-bar.show { display: block; }
+
+  @media print {
+    .toolbar, .no-print, .del-pt, .del-page-btn, #key-chart { display: none !important; }
+    body { background: white; margin: 0; padding: 0; }
+    .paper { box-shadow: none; margin: 0; page-break-after: always; }
+  }
+
+  .back-btn {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #a12222 !important;
+    color: white !important;
+    border: none !important;
+    padding: 8px 16px !important;
+    border-radius: 20px !important;
+    font-size: 12px !important;
+    cursor: pointer;
+    z-index: 2001;
+  }
+</style>
+</head>
+<body>
+
+<button class="back-btn" onclick="location.reload()">← Back</button>
+
+<div class="toolbar no-print">
+  <div class="tool-group">
+    <span class="label">🌐<\/span>
+    <button class="lang-btn hindi active" id="btnHindi" onclick="setLangMode('hindi')">हिंदी<\/button>
+    <button class="lang-btn english" id="btnEng" onclick="setLangMode('english')">Eng<\/button>
+    <div id="mode-indicator"><\/div>
+  <\/div>
+  <div class="tool-group">
+    <span class="label">🎙️<\/span>
+    <button class="mic-btn" id="micBtn" onclick="startVoiceInput('hi')">हिंदी<\/button>
+    <button class="mic-btn" id="micBtnEN" onclick="startVoiceInput('en')">Eng<\/button>
+  <\/div>
+  <div class="tool-group">
+    <span class="label">📄<\/span>
+    <button onclick="addNewPoint()">पॉइंट<\/button>
+    <button onclick="addNewPage()">पेज<\/button>
+    <button onclick="toggleKeyChart()">⌨️<\/button>
+  <\/div>
+  <div class="tool-group">
+    <span class="label">💾<\/span>
+    <button class="btn-pdf" onclick="exportAsPDF()">PDF<\/button>
+    <button class="btn-word" onclick="exportAsWord()">Word<\/button>
+    <button onclick="window.print()">🖨️<\/button>
+  <\/div>
+  <div class="tool-group">
+    <span class="label">Formatting<\/span>
+    <button onclick="setAlign('justifyLeft')">Left<\/button>
+    <button onclick="setAlign('justifyCenter')">Center<\/button>
+    <button onclick="setAlign('justifyRight')">Right<\/button>
+    <button onclick="setAlign('justifyFull')">Justify<\/button>
+    <span style="color:#555; margin: 0 5px;">|<\/span>
+    <button onclick="changeFontSize('dec')">A-<\/button>
+    <span id="current-fs-display" style="color:white; font-size:12px;">16pt<\/span>
+    <button onclick="changeFontSize('inc')">A+<\/button>
+  <\/div>
+<\/div>
+
+<div id="key-chart">
+  <div class="kc-title">📌 Kruti Dev 010 सटीक मानचित्र (स्टीकर के अनुसार)<\/div>
+  <div id="chart-render"><\/div>
+  <div style="margin-top: 8px; font-size: 9px; text-align: center;">हरा = बिना Shift &nbsp;|&nbsp; बैंगनी = Shift + key<\/div>
+<\/div>
+
+<div id="status-bar">✅ तैयार<\/div>
+
+<div id="main-container">
+  <div class="paper" id="page-1">
+    <div class="page-header" contenteditable="true" id="header1">न्यायालय किराया अधिकरण, जयपुर महानगर (द्वितीय)<\/div>
+    <div class="page-meta" contenteditable="true" style="text-align:center;">मुकदमा सं. ________ / 2026<\/div>
+    <div class="page-meta" contenteditable="true" style="text-align:center;">उदय सिंह शेखावत &nbsp; बनाम &nbsp; रामचन्द्र<\/div>
+    <div class="page-meta" contenteditable="true" style="text-align:center; margin-bottom: 8px;">बेदखली एवं किराया वसूली याचिका<\/div>
+    <div class="doc-body" id="body1">
+      <div contenteditable="true" class="cont-text" oninput="checkOverflow(this)" onkeydown="handleKeydown(event, this)">
+        प्रार्थी की ओर से निवेदन:
+      <\/div>
+      <div class="point-row" id="init-point">
+        <button class="del-pt no-print" onclick="removePoint(this)">✕<\/button>
+        <div class="point-num">1.<\/div>
+        <div class="point-text" contenteditable="true" oninput="checkOverflow(this)" onkeydown="handleKeydown(event, this)">
+          यह कि उपरोक्त अर्जी आज माननीय न्यायालय के समक्ष नियत है।
+        <\/div>
+      <\/div>
+    <\/div>
+    <div class="page-footer">
+      <div contenteditable="true">जयपुर<\/div>
+      <div>दिनांक: <span contenteditable="true" style="border-bottom:1px dashed #666;">____/____/2026<\/span><\/div>
+      <div contenteditable="true"><b>प्रार्थी<\/b><br>( उदय सिंह )<\/div>
+    <\/div>
+  <\/div>
+<\/div>
+
+<script>
 const KRUTI_MAP = {
-  '1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','0':'0',
-  '-':'#','=':'=','`':'`','\\':'?',
-  'q':'q','w':'w','e':'e','r':'r','t':'t','y':'y','u':'u','i':'i','o':'o','p':'p',
-  '[':'[',']':']',
-  'a':'k','s':'s','d':'d','f':'f','g':'g','h':'h','j':'j','k':'k','l':'l',';':';',"'":"'",
-  'z':'z','x':'x','c':'c','v':'v','b':'b','n':'n','m':'m',',':',','.':'.','/'  :  '/',
-  'Q':'Q','W':'W','E':'E','R':'R','T':'T','Y':'Y','U':'U','I':'I','O':'O','P':'P',
-  'A':'A','S':'S','D':'D','F':'F','G':'G','H':'H','J':'J','K':'K','L':'L',':':'  :','"':'"',
-  'Z':'Z','X':'X','C':'C','V':'V','B':'B','N':'N','M':'M','<':'<','>':'>','?':'?'
+    '1':'1', '2':'2', '3':'3', '4':'4', '5':'5', '6':'6', '7':'7', '8':'8', '9':'9', '0':'0',
+    '-':'#', '=':'=', '\`':'\`', '\\\\':'?',
+    'q':'q', 'w':'w', 'e':'e', 'r':'r', 't':'t', 'y':'y', 'u':'u', 'i':'i', 'o':'o', 'p':'p', 
+    '[':'[', ']':']',
+    'a':'k', 's':'s', 'd':'d', 'f':'f', 'g':'g', 'h':'h', 'j':'j', 'k':'k', 'l':'l', ';':';', "'":"'",
+    'z':'z', 'x':'x', 'c':'c', 'v':'v', 'b':'b', 'n':'n', 'm':'m', ',':',', '.':'.', '/':'/',
+    'Q':'Q', 'W':'W', 'E':'E', 'R':'R', 'T':'T', 'Y':'Y', 'U':'U', 'I':'I', 'O':'O', 'P':'P',
+    'A':'A', 'S':'S', 'D':'D', 'F':'F', 'G':'G', 'H':'H', 'J':'J', 'K':'K', 'L':'L', ':':':', '"':'"',
+    'Z':'Z', 'X':'X', 'C':'C', 'V':'V', 'B':'B', 'N':'N', 'M':'M', '<':'<', '>':'>', '?':'?'
 };
 
-// ============================================================
-// MOBILE VIRTUAL KEYBOARD DATA (Devanagari characters mapped to Kruti Dev)
-// ============================================================
-const MKH_SECTIONS = [
-  {
-    name: "स्वर",
-    keys: [
-      {label:"अ", krutiInsert:"v"},{label:"आ", krutiInsert:"vk"},{label:"इ", krutiInsert:"b"},
-      {label:"ई", krutiInsert:"bZ"},{label:"उ", krutiInsert:"m"},{label:"ऊ", krutiInsert:"mZ"},
-      {label:"ए", krutiInsert:"s"},{label:"ऐ", krutiInsert:"S"},{label:"ओ", krutiInsert:"vks"},
-      {label:"औ", krutiInsert:"vkS"},{label:"अं", krutiInsert:"va"},{label:"अः", krutiInsert:"v%"},
-    ]
-  },
-  {
-    name: "मात्राएँ",
-    keys: [
-      {label:"ा", krutiInsert:"k"},{label:"ि", krutiInsert:"f"},{label:"ी", krutiInsert:"h"},
-      {label:"ु", krutiInsert:"q"},{label:"ू", krutiInsert:"w"},{label:"े", krutiInsert:"s"},
-      {label:"ै", krutiInsert:"S"},{label:"ो", krutiInsert:"ks"},{label:"ौ", krutiInsert:"kS"},
-      {label:"ं", krutiInsert:"a"},{label:"ँ", krutiInsert:"¡"},{label:"ः", krutiInsert:"%"},
-      {label:"्", krutiInsert:"~"},
-    ]
-  },
-  {
-    name: "क–ज",
-    keys: [
-      {label:"क", krutiInsert:"d"},{label:"ख", krutiInsert:"[k"},{label:"ग", krutiInsert:"x"},
-      {label:"घ", krutiInsert:"?k"},{label:"च", krutiInsert:"p"},{label:"छ", krutiInsert:"N"},
-      {label:"ज", krutiInsert:"t"},{label:"झ", krutiInsert:">"},{label:"ञ", krutiInsert:"¥"},
-    ]
-  },
-  {
-    name: "ट–न",
-    keys: [
-      {label:"ट", krutiInsert:"V"},{label:"ठ", krutiInsert:"B"},{label:"ड", krutiInsert:"M"},
-      {label:"ढ", krutiInsert:"<"},{label:"ण", krutiInsert:".k"},{label:"त", krutiInsert:"r"},
-      {label:"थ", krutiInsert:"Fk"},{label:"द", krutiInsert:"n"},{label:"ध", krutiInsert:"/k"},
-      {label:"न", krutiInsert:"u"},
-    ]
-  },
-  {
-    name: "प–ह",
-    keys: [
-      {label:"प", krutiInsert:"i"},{label:"फ", krutiInsert:"Q"},{label:"ब", krutiInsert:"c"},
-      {label:"भ", krutiInsert:"Hk"},{label:"म", krutiInsert:"e"},{label:"य", krutiInsert:";"},
-      {label:"र", krutiInsert:"j"},{label:"ल", krutiInsert:"y"},{label:"व", krutiInsert:"o"},
-      {label:"श", krutiInsert:"'k"},{label:"ष", krutiInsert:"\"k"},{label:"स", krutiInsert:"l"},
-      {label:"ह", krutiInsert:"g"},
-    ]
-  },
-  {
-    name: "संयुक्त",
-    keys: [
-      {label:"क्ष", krutiInsert:"{k"},{label:"त्र", krutiInsert:"="},{label:"ज्ञ", krutiInsert:"K"},
-      {label:"श्र", krutiInsert:"J"},{label:"क्", krutiInsert:"D"},{label:"त्", krutiInsert:"R"},
-      {label:"न्", krutiInsert:"u~"},{label:"ल्", krutiInsert:"y~"},{label:"स्", krutiInsert:"l~"},
-      {label:"।", krutiInsert:"A"},{label:"॥", krutiInsert:"AA"},{label:"ऋ", krutiInsert:"_"},
-    ]
-  },
-  {
-    name: "अंक",
-    keys: [
-      {label:"१",krutiInsert:"1"},{label:"२",krutiInsert:"2"},{label:"३",krutiInsert:"3"},
-      {label:"४",krutiInsert:"4"},{label:"५",krutiInsert:"5"},{label:"६",krutiInsert:"6"},
-      {label:"७",krutiInsert:"7"},{label:"८",krutiInsert:"8"},{label:"९",krutiInsert:"9"},
-      {label:"०",krutiInsert:"0"},{label:",",krutiInsert:","},{label:".",krutiInsert:"."},
-      {label:"-",krutiInsert:"-"},{label:"(",krutiInsert:"("},{label:")",krutiInsert:")"},
-    ]
-  }
-];
-
-// ============================================================
-// STATE
-// ============================================================
 let currentLang = 'hindi';
-const HINDI_FONT = "'Kruti Dev 010','K010','KrutiDev010',serif";
+const HINDI_FONT = "'Kruti Dev 010', 'K010', 'KrutiDev010', serif";
 const ENGLISH_FONT = "'Times New Roman','Georgia',serif";
 let speechRecog = null;
 let isListening = false;
-let globalFontSize = 14;
-let mkhActiveTab = 0;
-let mkhVisible = false;
-let lastFocused = null;
-
-// Track last focused editable
-document.addEventListener('focusin', e => {
-  if (e.target && e.target.getAttribute('contenteditable') === 'true') {
-    lastFocused = e.target;
-  }
-});
-
-// ============================================================
-// STATUS BAR
-// ============================================================
+let globalFontSize = 16;
 const statusBar = document.getElementById('status-bar');
-let statusTimer;
-function showMsg(msg, dur=2200) {
+let timeoutStatus;
+
+function showMsg(msg, duration = 2000) {
   statusBar.innerText = msg;
   statusBar.classList.add('show');
-  clearTimeout(statusTimer);
-  statusTimer = setTimeout(() => statusBar.classList.remove('show'), dur);
+  clearTimeout(timeoutStatus);
+  timeoutStatus = setTimeout(() => statusBar.classList.remove('show'), duration);
 }
 
-// ============================================================
-// LANGUAGE MODE
-// ============================================================
 function setLangMode(lang) {
-  const sel = window.getSelection();
-  const hasSel = sel && !sel.isCollapsed && sel.toString().trim().length > 0;
-  if (hasSel) {
+  const selection = window.getSelection();
+  const hasSelected = selection && !selection.isCollapsed && selection.toString().trim().length > 0;
+  if (hasSelected) {
     applyFontToSelection(lang);
-    showMsg(lang === 'hindi' ? '✅ चयनित टेक्स्ट बदला' : '✅ Selection changed to English');
+    showMsg(lang === 'hindi' ? '✅ चयनित टेक्स्ट बदला गया' : '✅ Selected text changed to English');
   } else {
     currentLang = lang;
     updateLangButtons();
-    showMsg(lang === 'hindi' ? '🇮🇳 हिंदी मोड सक्रिय' : '🇬🇧 English mode active');
+    showMsg(currentLang === 'hindi' ? '🇮🇳 अगला टाइप हिंदी में होगा' : '🇬🇧 Next typing will be English');
   }
 }
 
@@ -635,309 +646,273 @@ function applyFontToSelection(lang) {
   const range = sel.getRangeAt(0);
   const span = document.createElement('span');
   span.style.fontFamily = lang === 'hindi' ? HINDI_FONT : ENGLISH_FONT;
-  try { range.surroundContents(span); sel.removeAllRanges(); }
-  catch(e) {
+  span.className = \`lang-\${lang}\`;
+  try {
+    range.surroundContents(span);
+    sel.removeAllRanges();
+  } catch(e) {
     document.execCommand('styleWithCSS', false, true);
-    document.execCommand('fontName', false, lang === 'hindi' ? 'Kruti Dev 010' : 'Times New Roman');
+    document.execCommand('fontName', false, lang === 'hindi' ? 'Mangal' : 'Times New Roman');
   }
 }
 
 function applyFontToElement(el) {
-  el.style.fontFamily = currentLang === 'hindi' ? HINDI_FONT : ENGLISH_FONT;
+  if (currentLang === 'hindi') {
+    el.style.fontFamily = HINDI_FONT;
+  } else {
+    el.style.fontFamily = ENGLISH_FONT;
+  }
 }
 
 function updateLangButtons() {
-  document.getElementById('btnHindi').classList.toggle('active', currentLang === 'hindi');
-  document.getElementById('btnEng').classList.toggle('active', currentLang === 'english');
-  const mi = document.getElementById('mode-indicator');
+  const btnH = document.getElementById('btnHindi');
+  const btnE = document.getElementById('btnEng');
+  const modeDiv = document.getElementById('mode-indicator');
+  btnH.classList.toggle('active', currentLang === 'hindi');
+  btnE.classList.toggle('active', currentLang === 'english');
   if (currentLang === 'hindi') {
-    mi.innerHTML = '🔤 हिंदी';
-    mi.style.background = '#1d4d2c';
+    modeDiv.innerHTML = '🔤 हिंदी (कृति देव 010) – सटीक मानचित्र';
+    modeDiv.style.background = '#1d4d2c';
   } else {
-    mi.innerHTML = '🔠 English';
-    mi.style.background = '#1e3b5c';
+    modeDiv.innerHTML = '🔠 English Mode – Direct Typing';
+    modeDiv.style.background = '#1e3b5c';
   }
 }
 
-// ============================================================
-// KEYBOARD INTERCEPT (Physical keyboard)
-// ============================================================
-const SKIP_KEYS = new Set(['Backspace','Delete','Enter','Tab','Escape',
-  'ArrowUp','ArrowDown','ArrowLeft','ArrowRight',
-  'Home','End','PageUp','PageDown','Shift','Control','Alt','Meta','CapsLock']);
+const skipKeys = new Set(['Backspace','Delete','Enter','Tab','Escape','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Home','End','PageUp','PageDown','Shift','Control','Alt','Meta','CapsLock']);
 
 document.addEventListener('keydown', function(e) {
-  const el = document.activeElement;
-  if (!el || el.getAttribute('contenteditable') !== 'true') return;
-  if (e.ctrlKey || e.metaKey || e.altKey || SKIP_KEYS.has(e.key)) return;
+  const activeEl = document.activeElement;
+  if (!activeEl || activeEl.getAttribute('contenteditable') !== 'true') return;
+  if (e.ctrlKey || e.metaKey || e.altKey || skipKeys.has(e.key)) return;
+
   if (currentLang === 'hindi') {
-    const mapped = KRUTI_MAP[e.key] || e.key;
+    const mappedChar = KRUTI_MAP[e.key] || e.key;
     e.preventDefault();
     document.execCommand('fontName', false, 'Kruti Dev 010');
-    document.execCommand('insertText', false, mapped);
+    document.execCommand('insertText', false, mappedChar);
+  } else {
+    document.execCommand('fontName', false, 'Arial');
   }
 }, true);
 
-// ============================================================
-// MOBILE VIRTUAL KEYBOARD
-// ============================================================
-function buildMobileKeyboard() {
-  const tabsEl = document.getElementById('mkh-tabs');
-  const gridEl = document.getElementById('mkh-grid');
-
-  tabsEl.innerHTML = MKH_SECTIONS.map((s,i) =>
-    `<button class="mkh-tab${i===0?' active':''}" onclick="switchMkhTab(${i})">${s.name}</button>`
-  ).join('') + `<button class="mkh-tab" onclick="switchMkhTab(-1)" style="background:#1e3b5c;color:#93c5fd;">Eng</button>`;
-
-  renderMkhTab(0);
-}
-
-function switchMkhTab(idx) {
-  mkhActiveTab = idx;
-  document.querySelectorAll('.mkh-tab').forEach((t,i) =>
-    t.classList.toggle('active', i === idx)
-  );
-  renderMkhTab(idx);
-}
-
-function renderMkhTab(idx) {
-  const gridEl = document.getElementById('mkh-grid');
-  if (idx === -1) {
-    // English mode helper
-    gridEl.innerHTML = `
-      <div style="color:#8a9bbc;font-size:12px;padding:6px;width:100%;">English mode — type with device keyboard</div>
-      <button class="mkh-key mkh-del" onclick="mkhDelete()">⌫</button>
-      <button class="mkh-key mkh-enter" onclick="mkhInsert('\\n')">↵ Enter</button>
-      <button class="mkh-key mkh-sp" onclick="mkhInsert(' ')">Space ___</button>
-    `;
-    return;
-  }
-  const section = MKH_SECTIONS[idx];
-  let html = '';
-  section.keys.forEach(k => {
-    html += `<button class="mkh-key" onclick="mkhInsert(${JSON.stringify(k.krutiInsert)})">${k.label}</button>`;
-  });
-  // Action keys
-  html += `<button class="mkh-key mkh-del" onclick="mkhDelete()">⌫</button>`;
-  html += `<button class="mkh-key mkh-enter" onclick="mkhInsert('\\n')">↵</button>`;
-  html += `<button class="mkh-key mkh-sp" onclick="mkhInsert(' ')">Space</button>`;
-  gridEl.innerHTML = html;
-}
-
-function mkhInsert(text) {
-  const el = lastFocused;
-  if (!el || el.getAttribute('contenteditable') !== 'true') {
-    showMsg('पहले टेक्स्ट एरिया में टैप करें', 1500);
-    return;
-  }
-  el.focus();
-  if (text === '\n') {
-    document.execCommand('insertParagraph', false);
-  } else {
-    document.execCommand('fontName', false, 'Kruti Dev 010');
-    document.execCommand('fontSize', false, '4');
-    document.execCommand('insertText', false, text);
-  }
-  checkOverflow(el);
-}
-
-function mkhDelete() {
-  const el = lastFocused;
-  if (!el || el.getAttribute('contenteditable') !== 'true') return;
-  el.focus();
-  document.execCommand('delete', false);
-}
-
-function toggleMobileKeyboard() {
-  mkhVisible = !mkhVisible;
-  document.getElementById('mobile-key-helper').classList.toggle('show', mkhVisible);
-  document.getElementById('mkhToggle').style.background = mkhVisible ? '#1d4d2c' : '';
-  // Adjust bottom of status bar
-  statusBar.style.bottom = mkhVisible ? 'calc(45vh + 10px)' : '70px';
-}
-
-// ============================================================
-// FONT SIZE & ALIGNMENT
-// ============================================================
-function setAlign(cmd) {
-  document.execCommand(cmd, false, null);
-}
-
-function changeFontSize(action) {
-  if (action === 'inc') globalFontSize++;
-  else if (action === 'dec' && globalFontSize > 8) globalFontSize--;
-  document.getElementById('current-fs-display').innerText = globalFontSize + 'pt';
-  const sel = window.getSelection();
-  if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
-    const span = document.createElement('span');
-    span.style.fontSize = globalFontSize + 'pt';
-    try { sel.getRangeAt(0).surroundContents(span); } catch(e) {}
-  } else {
-    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-      el.style.fontSize = globalFontSize + 'pt';
-    });
-  }
-  showMsg('Font: ' + globalFontSize + 'pt');
-}
-
-// ============================================================
-// ADD POINT / PAGE / DELETE
-// ============================================================
 let pageCounter = 1;
 
 function addNewPoint() {
-  const el = document.activeElement;
-  let targetBody, referenceRow = null;
-  if (el && el.closest('.point-row')) {
-    referenceRow = el.closest('.point-row');
+  const activeEl = document.activeElement;
+  let targetBody;
+  let referenceRow = null;
+
+  if (activeEl && activeEl.closest('.point-row')) {
+    referenceRow = activeEl.closest('.point-row');
     targetBody = referenceRow.parentElement;
-  } else if (el && el.closest('.doc-body')) {
-    targetBody = el.closest('.doc-body');
+  } else if (activeEl && activeEl.closest('.doc-body')) {
+    targetBody = activeEl.closest('.doc-body');
   } else {
     const bodies = document.querySelectorAll('.doc-body');
     targetBody = bodies[bodies.length - 1];
   }
-  const div = document.createElement('div');
-  div.className = 'point-row';
-  div.innerHTML = `<button class="del-pt no-print" onclick="removePoint(this)">✕</button><div class="point-num"></div><div class="point-text" contenteditable="true" oninput="checkOverflow(this)" onkeydown="handleKeydown(event,this)"></div>`;
-  if (referenceRow) referenceRow.insertAdjacentElement('afterend', div);
-  else targetBody.appendChild(div);
+
+  const pointDiv = document.createElement('div');
+  pointDiv.className = 'point-row';
+  pointDiv.innerHTML = \`
+    <button class="del-pt no-print" onclick="removePoint(this)">✕<\/button>
+    <div class="point-num"><\/div>
+    <div class="point-text" contenteditable="true" oninput="checkOverflow(this)" onkeydown="handleKeydown(event, this)"><\/div>
+  \`;
+
+  if (referenceRow) {
+    referenceRow.insertAdjacentElement('afterend', pointDiv);
+  } else {
+    targetBody.appendChild(pointDiv);
+  }
+
   renumberAllPoints();
-  const pt = div.querySelector('.point-text');
-  lastFocused = pt;
-  pt.focus();
-  checkOverflow(pt);
+  const newText = pointDiv.querySelector('.point-text');
+  newText.focus();
+  checkOverflow(newText);
 }
 
 function removePoint(btn) {
-  btn.closest('.point-row').remove();
+  const row = btn.closest('.point-row');
+  if (row) row.remove();
   renumberAllPoints();
 }
 
 function renumberAllPoints() {
-  let c = 1;
+  let counter = 1;
   document.querySelectorAll('.point-row').forEach(row => {
-    const n = row.querySelector('.point-num');
-    if (n) n.innerText = (c++) + '.';
+    const numDiv = row.querySelector('.point-num');
+    if (numDiv) numDiv.innerText = (counter++) + '.';
   });
 }
 
 function addNewPage() {
   pageCounter++;
-  const pg = document.createElement('div');
-  pg.className = 'paper';
-  pg.innerHTML = `
-    <button class="del-page-btn no-print" onclick="deleteThisPage(this)">🗑️ हटाएँ</button>
-    <div class="page-header" style="text-align:center;" contenteditable="true">${pageCounter}</div>
+  const newPage = document.createElement('div');
+  newPage.className = 'paper';
+  newPage.innerHTML = \`
+    <button class="del-page-btn no-print" onclick="deleteThisPage(this)">🗑️ हटाएँ<\/button>
+    <div class="page-header" style="text-align: center;" contenteditable="true">\${pageCounter}<\/div>
     <div class="doc-body">
-      <div contenteditable="true" class="cont-text" oninput="checkOverflow(this)" onkeydown="handleKeydown(event,this)"></div>
-    </div>`;
-  document.getElementById('main-container').appendChild(pg);
-  const ce = pg.querySelector('.cont-text');
-  ce.style.fontSize = globalFontSize + 'pt';
-  applyFontToElement(ce);
-  lastFocused = ce;
-  ce.focus();
+      <div contenteditable="true" class="cont-text" oninput="checkOverflow(this)" onkeydown="handleKeydown(event, this)"><\/div>
+    <\/div>
+  \`;
+  
+  document.getElementById('main-container').appendChild(newPage);
+  const newEditable = newPage.querySelector('.cont-text');
+  newEditable.style.fontSize = globalFontSize + "pt";
+  applyFontToElement(newEditable);
 }
 
 function deleteThisPage(btn) {
-  const pg = btn.closest('.paper');
+  const page = btn.closest('.paper');
   if (document.querySelectorAll('.paper').length <= 1) {
-    showMsg('कम से कम एक पेज रखना आवश्यक है');
+    showMsg('कम से कम एक पेज रखना आवश्यक है', 2000);
     return;
   }
-  if (confirm('क्या इस पेज को हटाना है?')) {
-    pg.remove();
+  if (confirm('क्या इस पेज को स्थायी रूप से हटाना है?')) {
+    page.remove();
     renumberPagesGlobal();
     renumberAllPoints();
-    showMsg('पेज हटा दिया गया');
+    showMsg('पेज हटा दिया गया', 1500);
   }
 }
 
 function renumberPagesGlobal() {
   const pages = document.querySelectorAll('.paper');
   pageCounter = pages.length;
-  pages.forEach((pg, i) => {
-    const h = pg.querySelector('.page-header');
-    if (i === 0) { if (h && /^—/.test(h.innerText)) h.innerText = 'न्यायालय किराया अधिकरण, जयपुर महानगर (द्वितीय)'; }
-    else { if (h && /^\d+$/.test(h.innerText.trim())) h.innerText = String(i + 1); }
+  pages.forEach((pg, idx) => {
+    const hdr = pg.querySelector('.page-header');
+    if (idx === 0) {
+      if (hdr && hdr.innerText.trim().startsWith('—')) hdr.innerText = 'न्यायालय किराया अधिकरण, जयपुर महानगर (द्वितीय)';
+    } else {
+      if (hdr) hdr.innerText = \`— पेज \${idx+1} —\`;
+    }
   });
 }
 
-// ============================================================
-// OVERFLOW HANDLING
-// ============================================================
 function checkOverflow(el) {
-  const paper = el.closest('.paper');
-  const body = paper.querySelector('.doc-body');
-  if (body.scrollHeight <= body.clientHeight + 5) return;
-  let next = paper.nextElementSibling;
-  if (!next || !next.classList.contains('paper')) {
-    addNewPage();
-    next = paper.nextElementSibling;
-  }
-  const nextBody = next.querySelector('.doc-body');
-  let targetDiv;
-  if (el.classList.contains('point-text')) {
-    let firstRow = nextBody.firstElementChild;
-    if (firstRow && firstRow.classList.contains('point-row') && !firstRow.querySelector('.point-num').innerText.trim()) {
-      targetDiv = firstRow.querySelector('.point-text');
+  const paperDiv = el.closest('.paper');
+  const bodyDiv = paperDiv.querySelector('.doc-body');
+
+  if (bodyDiv.scrollHeight > bodyDiv.clientHeight) {
+    let nextPaper = paperDiv.nextElementSibling;
+    if (!nextPaper || !nextPaper.classList.contains('paper')) {
+      addNewPage();
+      nextPaper = paperDiv.nextElementSibling;
+    }
+    
+    const nextBodyDiv = nextPaper.querySelector('.doc-body');
+    let targetDiv;
+
+    if (el.classList.contains('point-text')) {
+      let firstRow = nextBodyDiv.firstElementChild;
+      if (firstRow && firstRow.classList.contains('point-row') && firstRow.querySelector('.point-num').innerText === "") {
+        targetDiv = firstRow.querySelector('.point-text');
+      } else {
+        const contRow = document.createElement('div');
+        contRow.className = 'point-row';
+        contRow.innerHTML = \`
+          <button class="del-pt no-print" onclick="removePoint(this)">✕<\/button>
+          <div class="point-num" style="visibility:hidden">.<\/div>
+          <div class="point-text" contenteditable="true" oninput="checkOverflow(this)" onkeydown="handleKeydown(event, this)"><\/div>
+        \`;
+        nextBodyDiv.prepend(contRow);
+        targetDiv = contRow.querySelector('.point-text');
+      }
     } else {
-      const cr = document.createElement('div');
-      cr.className = 'point-row';
-      cr.innerHTML = `<button class="del-pt no-print" onclick="removePoint(this)">✕</button><div class="point-num" style="visibility:hidden">.</div><div class="point-text" contenteditable="true" oninput="checkOverflow(this)" onkeydown="handleKeydown(event,this)"></div>`;
-      nextBody.prepend(cr);
-      targetDiv = cr.querySelector('.point-text');
+      targetDiv = nextBodyDiv.querySelector('.cont-text');
+      if (!targetDiv) {
+        targetDiv = document.createElement('div');
+        targetDiv.className = 'cont-text';
+        targetDiv.contentEditable = "true";
+        targetDiv.oninput = () => checkOverflow(targetDiv);
+        targetDiv.onkeydown = (e) => handleKeydown(e, targetDiv);
+        nextBodyDiv.prepend(targetDiv);
+      }
     }
-  } else {
-    targetDiv = nextBody.querySelector('.cont-text');
-    if (!targetDiv) {
-      targetDiv = document.createElement('div');
-      targetDiv.className = 'cont-text';
-      targetDiv.contentEditable = 'true';
-      targetDiv.oninput = () => checkOverflow(targetDiv);
-      targetDiv.onkeydown = (e) => handleKeydown(e, targetDiv);
-      nextBody.prepend(targetDiv);
+
+    let words = el.innerText.split(/\\s+/);
+    let overflowWords = [];
+    while (bodyDiv.scrollHeight > bodyDiv.clientHeight && words.length > 0) {
+      overflowWords.unshift(words.pop());
+      el.innerText = words.join(' ');
     }
+    targetDiv.innerText = overflowWords.join(' ') + " " + targetDiv.innerText;
+
+    moveFooterToLast();
+
+    targetDiv.focus();
+    const range = document.createRange();
+    const sel = window.getSelection();
+    range.selectNodeContents(targetDiv);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
+
+    setTimeout(() => checkOverflow(targetDiv), 10);
   }
-  let words = el.innerText.split(/\s+/);
-  let overflow = [];
-  while (body.scrollHeight > body.clientHeight + 5 && words.length > 0) {
-    overflow.unshift(words.pop());
-    el.innerText = words.join(' ');
-  }
-  targetDiv.innerText = overflow.join(' ') + ' ' + targetDiv.innerText;
-  moveFooterToLast();
-  lastFocused = targetDiv;
-  targetDiv.focus();
-  const range = document.createRange();
-  const sel = window.getSelection();
-  range.selectNodeContents(targetDiv);
-  range.collapse(true);
-  sel.removeAllRanges();
-  sel.addRange(range);
-  setTimeout(() => checkOverflow(targetDiv), 10);
 }
 
 function moveFooterToLast() {
   const footer = document.querySelector('.page-footer');
-  if (!footer) return;
-  const pages = document.querySelectorAll('.paper');
-  pages[pages.length - 1].appendChild(footer);
+  if (footer) {
+    const allPages = document.querySelectorAll('.paper');
+    const lastPage = allPages[allPages.length - 1];
+    lastPage.appendChild(footer);
+  }
+}
+
+function setAlign(cmd) {
+  document.execCommand(cmd, false, null);
+  showMsg("Alignment changed");
+}
+
+function changeFontSize(action) {
+  if (action === 'inc') globalFontSize += 1;
+  else if (action === 'dec' && globalFontSize > 8) globalFontSize -= 1;
+  
+  document.getElementById('current-fs-display').innerText = globalFontSize + "pt";
+  
+  const selection = window.getSelection();
+  if (selection.rangeCount > 0 && !selection.isCollapsed) {
+    const span = document.createElement("span");
+    span.style.fontSize = globalFontSize + "pt";
+    const range = selection.getRangeAt(0);
+    range.surroundContents(span);
+  } else {
+    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+      el.style.fontSize = globalFontSize + "pt";
+    });
+    showMsg("Font size set to " + globalFontSize + "pt");
+  }
+}
+
+function handleKeydown(e, el) {
+  if (e.key === 'Enter') {
+    setTimeout(() => checkOverflow(el), 10);
+  }
+  if (e.key === 'Backspace' && el.innerText.trim() === '') {
+    const row = el.closest('.point-row');
+    if (row && !row.previousElementSibling) {
+      moveToPreviousPage(el);
+    }
+  }
 }
 
 function moveToPreviousPage(el) {
-  const cur = el.closest('.paper');
-  const prev = cur.previousElementSibling;
-  if (prev && prev.classList.contains('paper')) {
-    const last = prev.querySelector('.doc-body').lastElementChild;
-    if (last) {
-      const t = last.querySelector('[contenteditable="true"]') || last;
-      lastFocused = t;
-      t.focus();
+  const currentPaper = el.closest('.paper');
+  const prevPaper = currentPaper.previousElementSibling;
+  if (prevPaper && prevPaper.classList.contains('paper')) {
+    const prevBody = prevPaper.querySelector('.doc-body');
+    const lastChild = prevBody.lastElementChild;
+    if (lastChild) {
+      const target = lastChild.querySelector('[contenteditable="true"]') || lastChild;
+      target.focus();
       const range = document.createRange();
       const sel = window.getSelection();
-      range.selectNodeContents(t);
+      range.selectNodeContents(target);
       range.collapse(false);
       sel.removeAllRanges();
       sel.addRange(range);
@@ -945,158 +920,194 @@ function moveToPreviousPage(el) {
   }
 }
 
-function handleKeydown(e, el) {
-  if (e.key === 'Enter') setTimeout(() => checkOverflow(el), 10);
-  if (e.key === 'Backspace' && el.innerText.trim() === '') {
-    const row = el.closest('.point-row');
-    if (row && !row.previousElementSibling) moveToPreviousPage(el);
-  }
-}
-
-// ============================================================
-// VOICE INPUT
-// ============================================================
 function startVoiceInput(langCode) {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { showMsg('❌ Chrome/Edge में आवाज़ काम करती है', 3000); return; }
-  if (isListening && speechRecog) {
-    speechRecog.stop(); isListening = false;
-    document.getElementById('micBtn').classList.remove('active');
-    document.getElementById('micBtnEN').classList.remove('active');
-    showMsg('Voice बंद');
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    showMsg('❌ आपका ब्राउज़र voice input support नहीं करता (Chrome/Edge प्रयोग करें)', 3000);
     return;
   }
+  if (isListening && speechRecog) {
+    speechRecog.stop();
+    isListening = false;
+    document.getElementById('micBtn').classList.remove('active');
+    document.getElementById('micBtnEN').classList.remove('active');
+    showMsg('Voice बंद हुआ', 1000);
+    return;
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   speechRecog = new SR();
   speechRecog.lang = langCode === 'hi' ? 'hi-IN' : 'en-US';
   speechRecog.continuous = true;
   speechRecog.interimResults = false;
   speechRecog.onstart = () => {
     isListening = true;
-    if (langCode === 'hi') document.getElementById('micBtn').classList.add('active');
+    if(langCode === 'hi') document.getElementById('micBtn').classList.add('active');
     else document.getElementById('micBtnEN').classList.add('active');
-    showMsg(`🎙️ ${langCode === 'hi' ? 'हिंदी सुन रहा हूँ...' : 'Listening...'}`, 3000);
+    showMsg(\`🎙️ \${langCode === 'hi' ? 'हिंदी आवाज़ सुन रहा हूँ...' : 'English listening...'}\`, 2000);
   };
-  const krutiMap = {
-    'अ':'v','आ':'vk','इ':'b','ई':'bZ','उ':'m','ऊ':'mZ','ए':'s','ऐ':'S','ओ':'vks','औ':'vkS',
-    'क':'d','ख':'[k','ग':'x','घ':'?k','च':'p','छ':'N','ज':'t','झ':'>','ट':'V','ठ':'B',
-    'ड':'M','ढ':'<','त':'r','थ':'Fk','द':'n','ध':'/k','न':'u','प':'i','फ':'Q','ब':'c',
-    'भ':'Hk','म':'e','य':';','र':'j','ल':'y','व':'o','श':"'k",'ष':'"k','स':'l','ह':'g',
-    'ा':'k','ि':'f','ी':'h','ु':'q','ू':'w','े':'s','ै':'S','ो':'ks','ौ':'kS','ं':'a','्':'~','।':'।',' ':' '
-  };
+
   speechRecog.onresult = (ev) => {
-    let transcript = ev.results[ev.results.length-1][0].transcript;
+    let transcript = ev.results[ev.results.length - 1][0].transcript;
+
     if (langCode === 'hi') {
-      let res = '';
+      const krutiMap = {
+        'अ':'v','आ':'vk','इ':'b','ई':'bZ','उ':'m','ऊ':'mZ','ए':'s','ऐ':'S','ओ':'vks','औ':'vkS',
+        'क':'d','ख':'[k','ग':'x','घ':'?k','च':'p','छ':'N','ज':'t','झ':'>','ट':'V','ठ':'B',
+        'ड':'M','ढ':'<','त':'r','थ':'Fk','द':'n','ध':'/k','न':'u','प':'i','फ':'Q','ब':'c',
+        'भ':'Hk','म':'e','य':';','र':'j','ल':'y','व':'o','श':"'k",'ष':'"k','स':'l','ह':'g',
+        'ा':'k','ि':'f','ी':'h','ु':'q','ू':'w','े':'s','ै':'S','ो':'ks','ौ':'kS','ं':'a','्':'~','।':'।',' ' : ' '
+      };
+
+      let res = "";
       for (let i = 0; i < transcript.length; i++) {
-        const ch = transcript[i], nch = transcript[i+1];
-        if (nch === 'ि') { res += 'f' + (krutiMap[ch] || ch); i++; }
-        else res += (krutiMap[ch] || ch);
+        let char = transcript[i];
+        let nextChar = transcript[i+1];
+        if (nextChar === 'ि') {
+          res += 'f' + (krutiMap[char] || char);
+          i++;
+        } else {
+          res += krutiMap[char] || char;
+        }
       }
       transcript = res;
     }
-    const el = lastFocused || document.activeElement;
-    if (el && el.getAttribute('contenteditable') === 'true') {
+
+    const activeEl = document.activeElement;
+    if (activeEl && activeEl.getAttribute('contenteditable') === 'true') {
       const font = langCode === 'hi' ? HINDI_FONT : ENGLISH_FONT;
-      document.execCommand('insertHTML', false, `<span style="font-family:${font};font-size:${globalFontSize}pt;">${transcript} </span>`);
-      checkOverflow(el);
-    } else showMsg('पहले एडिटर में टैप करें', 1500);
+      const size = globalFontSize + "pt";
+      const html = \`<span style="font-family:\${font}; font-size:\${size};">\${transcript} <\/span>\`;
+      document.execCommand('insertHTML', false, html);
+      checkOverflow(activeEl);
+    } else {
+      showMsg('पहले एडिटर में क्लिक करें', 1500);
+    }
   };
-  speechRecog.onerror = (e) => { showMsg('Voice error: '+e.error, 2000); isListening = false; };
-  speechRecog.onend = () => {
-    isListening = false;
-    document.getElementById('micBtn').classList.remove('active');
-    document.getElementById('micBtnEN').classList.remove('active');
-  };
+
+  speechRecog.onerror = (err) => { showMsg('Voice error: '+err.error, 2000); isListening=false; };
+  speechRecog.onend = () => { isListening = false; document.getElementById('micBtn').classList.remove('active'); document.getElementById('micBtnEN').classList.remove('active'); };
   speechRecog.start();
 }
 
-// ============================================================
-// EXPORT
-// ============================================================
 function exportAsPDF() {
-  // Temporarily hide mobile keyboard
-  const mkh = document.getElementById('mobile-key-helper');
-  const wasVisible = mkhVisible;
-  mkh.classList.remove('show');
-  const el = document.getElementById('main-container');
-  const opt = {
-    margin: [0.2,0.2,0.2,0.2],
-    filename: 'हिंदी_कानूनी_दस्तावेज.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2.5, useCORS: true },
-    jsPDF: { unit: 'mm', format: 'legal', orientation: 'portrait' }
-  };
-  showMsg('PDF तैयार हो रही है...', 2000);
-  html2pdf().set(opt).from(el).save().then(() => {
-    showMsg('PDF सेव हो गई ✅', 3000);
-    if (wasVisible) mkh.classList.add('show');
-  });
+  const element = document.getElementById('main-container');
+  const opt = { margin: [0.2,0.2,0.2,0.2], filename: 'हिंदी_कानूनी_दस्तावेज.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2.5, useCORS: true }, jsPDF: { unit: 'mm', format: 'legal', orientation: 'portrait' } };
+  showMsg('PDF तैयार हो रही है...', 1500);
+  html2pdf().set(opt).from(element).save().then(()=>showMsg('PDF सेव हो गई ✅', 3000));
 }
 
 function exportAsWord() {
-  const clone = document.getElementById('main-container').cloneNode(true);
-  const style = '<style>body{font-family:"Kruti Dev 010","Times New Roman";margin:2cm;} .paper{page-break-after:always;} .no-print{display:none;}</style>';
-  const full = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Legal Doc</title>${style}</head><body>${clone.innerHTML}</body></html>`;
-  const blob = new Blob([full], {type:'application/msword'});
+  let htmlContent = document.getElementById('main-container').cloneNode(true);
+  const style = '<style>body{font-family:"Mangal","Times New Roman";margin:2cm;} .paper{page-break-after:always;}<\/style>';
+  const fullHtml = \`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Legal Document<\/title>\${style}<\/head><body>\${htmlContent.innerHTML}<\/body><\/html>\`;
+  const blob = new Blob([fullHtml], {type: 'application/msword'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'Legal_Doc.doc';
   a.click();
-  showMsg('Word डाउनलोड हो रहा है', 2000);
+  showMsg('Word दस्तावेज़ डाउनलोड हो रहा है', 2000);
 }
 
-// ============================================================
-// KEY CHART
-// ============================================================
 const chartData = [
-  { name:"🔢 नंबर पंक्ति", keys:[['1','।','!'],['2','/','@'],['3','रु','#'],['4','+','$'],['5',':','%'],["6","'","^"],['7','-','&'],["8","'","*"],['9',';','('],['0','द्ध',')'],['-','ऋ','_'],['=','त्र','+']] },
-  { name:"⌨️ QWERTY पंक्ति", keys:[['q','ु','फ'],['w','ू','ॅ'],['e','म','म्'],['r','त','त्'],['t','ज','ज्'],['y','ल','ल्'],['u','न','न्'],['i','प','प्'],['o','व','व्'],['p','च','च्'],['[','ख','क्ष'],[']',',','द्ध']] },
-  { name:"🏠 होम पंक्ति", keys:[['a','.','ा'],['s','े','ै'],['d','क','क्'],['f','ि','थ'],['g','ह','ळ'],['j','र','श्र'],['k','ा','ज्ञ'],['l','स','स्'],[';','य','रू'],["'","श","ष्ठ"]] },
-  { name:"⬇️ नीचे पंक्ति", keys:[['z','ब','\''],['x','ग','ग्'],['c','ब','ब्'],['v','अ','ट'],['b','इ','ठ'],['n','द','छ'],['m','उ','ड'],[',','ए','ढ'],['.','ण्','झ'],['/','ध','घ']] }
+  {
+    name: "🔢 नंबर पंक्ति",
+    keys: [
+      ['1', '।', '!'], ['2', '/', '@'], ['3', 'रु', '#'], ['4', '+', '$'], 
+      ['5', ':', '%'], ['6', "'", '^'], ['7', '-', '&'], ['8', "'", '*'], 
+      ['9', ';', '('], ['0', 'द्ध', ')'], ['-', 'ऋ', '_'], ['=', 'त्र', '+'],
+      ['\\\\', '?', 'द्य']
+    ]
+  },
+  {
+    name: "⌨️ QWERTY पंक्ति",
+    keys: [
+      ['q', 'ु', 'फ'], ['w', 'ू', 'ॅ'], ['e', 'म', 'म्'], ['r', 'त', 'त्'], 
+      ['t', 'ज', 'ज्'], ['y', 'ल', 'ल्'], ['u', 'न', 'न्'], ['i', 'प', 'प्'], 
+      ['o', 'व', 'व्'], ['p', 'च', 'च्'], ['[', 'ख', 'क्ष'], [']', ',', 'द्ध'],
+      ['~', '्र', ''']
+    ]
+  },
+  {
+    name: "🏠 होम पंक्ति (ASDF)",
+    keys: [
+      ['a', '.', 'ा'], ['s', 'े', 'ै'], ['d', 'क', 'क्'], ['f', 'ि', 'थ'], 
+      ['g', 'ह', 'ळ'], ['h', 'अअअअ', 'भअअअअअ'], ['j', 'र', 'श्र'], ['k', 'ा', 'ज्ञ'], 
+      ['l', 'स', 'स्'], [';', 'य', 'रू'], ["'", 'श', 'ष्ठ']
+    ]
+  },
+  {
+    name: "⬇️ नीचे पंक्ति (ZXCV)",
+    keys: [
+      ['z', 'ब', '''], ['x', 'ग', 'ग्'], ['c', 'ब', 'ब्'], ['v', 'अ', 'ट'], 
+      ['b', 'इ', 'ठ'], ['n', 'द', 'छ'], ['m', 'उ', 'ड'], [',', 'ए', 'ढ'], 
+      ['.', 'ण्', 'झ'], ['/', 'ध', 'घ']
+    ]
+  }
 ];
 
 function buildChartUI() {
   const container = document.getElementById('chart-render');
   let html = '';
-  chartData.forEach(s => {
-    html += `<div style="font-weight:bold;color:#ffbc6e;margin:8px 0 5px;">${s.name}</div><div class="kc-row">`;
-    s.keys.forEach(([k,n,sh]) => {
-      html += `<div class="kc-item"><span class="kc-key">${k}</span><span class="kc-normal">${n}</span>/<span class="kc-shift">${sh}</span></div>`;
+  chartData.forEach(section => {
+    html += \`<div style="font-weight:bold;color:#ffbc6e;margin:8px 0 5px 0;">\${section.name}<\/div><div class="kc-row">\`;
+    section.keys.forEach(([key, normal, shifted]) => {
+      html += \`<div class="kc-item"><span class="kc-key">\${key}<\/span><span class="kc-normal">\${normal}<\/span> / <span class="kc-shift">\${shifted}<\/span><\/div>\`;
     });
-    html += '</div>';
+    html += \`<\/div>\`;
   });
   container.innerHTML = html;
 }
 
-function toggleKeyChart() {
-  document.getElementById('key-chart').classList.toggle('show');
-}
+function toggleKeyChart() { document.getElementById('key-chart').classList.toggle('show'); }
 
-// ============================================================
-// INIT
-// ============================================================
 function init() {
   buildChartUI();
-  buildMobileKeyboard();
   updateLangButtons();
   renumberPagesGlobal();
   renumberAllPoints();
   document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-    el.style.fontFamily = HINDI_FONT;
-    el.style.fontSize = globalFontSize + 'pt';
+    if(currentLang === 'hindi') el.style.fontFamily = HINDI_FONT;
   });
+  showMsg('✅ कृति देव 010 कीबोर्ड सक्रिय | स्टीकर अनुसार टाइपिंग', 3000);
+}
 
-  // Auto-show virtual keyboard on mobile if no physical keyboard
-  if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-    // Small delay so page loads first
+init();
+<\/script>
+<\/body>
+<\/html>`;
+
+  // MOBILE VERSION
+  const MOBILE_VERSION = document.querySelector('html').outerHTML;
+
+  function loadVersion(type) {
+    const selector = document.getElementById('device-selector');
+    const loader = document.getElementById('loader');
+    
+    // Show loader
+    selector.style.opacity = '0.5';
+    loader.style.display = 'block';
+    
     setTimeout(() => {
-      showMsg('💡 वर्चुअल कीबोर्ड के लिए "🔡 वर्चुअल" बटन दबाएँ', 4000);
-    }, 1500);
+      if (type === 'pc') {
+        document.open();
+        document.write(PC_VERSION);
+        document.close();
+      } else {
+        // Mobile version is the current page
+        localStorage.setItem('editorVersion', 'mobile');
+        window.location.reload();
+      }
+    }, 800);
   }
 
-  showMsg('✅ कृति देव 010 सक्रिय — मोबाइल अनुकूल', 3000);
-}
-init();
+  // Check if we need to load the mobile version
+  window.addEventListener('load', () => {
+    const version = localStorage.getItem('editorVersion');
+    if (version === 'mobile') {
+      localStorage.removeItem('editorVersion');
+      // The mobile version is already loaded
+    }
+  });
 </script>
+
 </body>
 </html>
