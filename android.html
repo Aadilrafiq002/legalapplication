@@ -140,6 +140,7 @@ button:active { background: #3a4560; transform: scale(0.97); }
 @media (max-width: 600px) {
   @page {
     size: legal; /* Forces Legal Paper */
+    size: 8.5in 14in; 
     margin: 0;    /* Removes Browser Headers/Footers (URL/Title) */
   }
 
@@ -406,7 +407,10 @@ button:active { background: #3a4560; transform: scale(0.97); }
   <button class="mic-btn" id="micBtn" onclick="startVoiceInput('hi')" style="font-size:12px;">🎙️ हिंदी</button>
   <button class="mic-btn" id="micBtnEN" onclick="startVoiceInput('en')" style="font-size:12px;">🎙️ Eng</button>
   <div class="sep"></div>
-  <button onclick="window.print()" title="Print">🖨️</button>
+  <button onclick="saveProject()">Save</button>
+  <button onclick="document.getElementById('uploadFile').click()">Upload</button>
+  <input type="file" id="uploadFile" style="display:none" onchange="loadProject(event)" accept=".legal">
+  <button onclick="window.print()" title="Print">🖨️PDF</button>
   <div onclick="window.location.href='index.html'" class="tool-group" style="cursor:pointer; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 0 10px;">
     <span style="font-size: 18px;">⬅️</span>
    
@@ -419,6 +423,7 @@ button:active { background: #3a4560; transform: scale(0.97); }
   <button onclick="addNewPage()" style="font-size:12px;">+ पेज</button>
   <div class="sep"></div>
   <button onclick="toggleBold()" style="font-size:12px;">B</button>
+ 
   <button id="mkhToggle" onclick="toggleMobileKeyboard()" style="font-size:12px; background: #334155;">⌨️</button>
    <div class="sep"></div>
   <button onclick="setAlign('justifyLeft')" style="font-size:12px;">◀</button>
@@ -517,7 +522,7 @@ const MKH_SECTIONS = [
     name: "शब्द/क्रम",
     keys: [
       {label:"प्रथम", krutiInsert:"प्रथम"},{label:"द्वितीय", krutiInsert:"द्वितीय"},{label:"तृतीय", krutiInsert:"तृतीय"},
-      {label:"चतुर्थ", krutiInsert:"चतुर्थ"},{label:"कर्म", krutiInsert:"कर्म"},{label:"विरुद्ध", krutiInsert:"विरुद्ध"},
+      {label:"चतुर्थ", krutiInsert:"चतुर्थ"},{label:"क्रम", krutiInsert:"क्रम"},{label:"विरुद्ध", krutiInsert:"विरुद्ध"},
       {label:"बनाम", krutiInsert:"बनाम"},
       {label:"दिनांक", krutiInsert:"दिनांक"},
       {label:"प्रकरण", krutiInsert:"प्रकरण"},
@@ -529,15 +534,7 @@ const MKH_SECTIONS = [
     ]
   },
 
-  {
-    name: "विशेष",
-    keys: [
-      {label:"प्र", krutiInsert:"प्र"},{label:"श्र", krutiInsert:"श्र"},{label:"श्री", krutiInsert:"श्री"},
-      {label:"त्र", krutiInsert:"त्र"},{label:"ज्ञ", krutiInsert:"ज्ञ"},{label:"क्ष", krutiInsert:"क्ष"},
-      {label:"द्ध", krutiInsert:"द्ध"},{label:"द्य", krutiInsert:"द्य"},{label:"द्व", krutiInsert:"द्व"},
-      {label:"।", krutiInsert:"।"},{label:"॥", krutiInsert:"॥"},{label:"( )", krutiInsert:"()"}
-    ]
-  },
+  
   {
     name: "विशेष",
     keys: [
@@ -908,6 +905,242 @@ document.addEventListener('input', function(e) {
         }
     }
 });
+
+  // 1. SAVE WORK: Downloads a project file (.legal)
+// function saveProject() {
+//     const data = {
+//         content: document.getElementById('main-container').innerHTML,
+//         fontSize: globalFontSize,
+//         lang: currentLang
+//     };
+//     const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+//     const a = document.createElement('a');
+//     a.href = URL.createObjectURL(blob);
+//     a.download = 'My_Legal_Work.legal'; // Custom extension for your app
+//     a.click();
+//     showMsg('प्रोजेक्ट फाइल सुरक्षित की गई');
+// }
+
+// 2. LOAD WORK: Uploads the .legal file and restores the page
+// function loadProject(event) {
+//     const file = event.target.files[0];
+//     if (!file) return;
+
+//     const reader = new FileReader();
+//     reader.onload = function(e) {
+//         try {
+//             const data = JSON.parse(e.target.result);
+            
+//             // Restore content
+//             document.getElementById('main-container').innerHTML = data.content;
+            
+//             // Restore settings
+//             globalFontSize = data.fontSize || 16;
+//             currentLang = data.lang || 'hindi';
+//             document.documentElement.style.setProperty('--global-fs', globalFontSize + "pt");
+//             document.getElementById('current-fs-display').innerText = globalFontSize + "pt";
+            
+//             // Refresh UI and Listeners
+//             updateLangButtons();
+//             renumberPagesGlobal();
+//             renumberAllPoints();
+            
+//             showMsg('पुराना काम सफलतापूर्वक लोड किया गया');
+//         } catch (err) {
+//             alert('फाइल लोड करने में त्रुटि हुई!');
+//         }
+//     };
+//     reader.readAsText(file);
+// }
+
+
+// Function to convert Kruti Dev ASCII to Android Unicode
+// 1. UPDATED SAVE: Added source tag and speed optimization
+// function saveProject() {
+//     showMsg("Saving... Please wait");
+//     // Timeout allows the UI to show the message before the heavy processing starts
+//     setTimeout(() => {
+//         const data = {
+//             content: document.getElementById('main-container').innerHTML,
+//             fontSize: globalFontSize,
+//             lang: currentLang,
+//             source: 'android' // Identifies this as a mobile file
+//         };
+//         const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+//         const a = document.createElement('a');
+//         a.href = URL.createObjectURL(blob);
+//         a.download = 'Legal_Work_Mobile.legal';
+//         a.click();
+//         showMsg('Saved Successfully');
+//     }, 100);
+// }
+
+let currentProjectName = sessionStorage.getItem('active_project') || "Untitled";
+
+function saveProject() {
+    const container = document.getElementById('main-container');
+    if(!container) return;
+
+    // 1. Prompt the user for a file name
+    let customName = prompt("फ़ाइल का नाम दर्ज करें (Enter file name):", currentProjectName || "My_Document");
+
+    // 2. If the user clicks Cancel, stop the saving process
+    if (customName === null) {
+        showMsg("सेव कैंसिल किया गया (Save Cancelled)");
+        return;
+    }
+
+    // 3. Clean up the text
+    customName = customName.trim().replace(/[/\\?%*:|"<>]/g, '-');
+    if (customName === "") {
+        customName = "Legal_Work_Mobile";
+    }
+
+    // Update global project name for unique autosaving
+   currentProjectName = customName;
+    sessionStorage.setItem('active_project', currentProjectName);
+
+    // 4. Construct the final name: [User_Name]_Mobile.legal
+    const finalFileName = customName + "_Mobile.legal";
+
+    showMsg("Saving file...");
+    
+    setTimeout(() => {
+        const data = {
+            content: container.innerHTML,
+            fontSize: globalFontSize,
+            lang: currentLang,
+            source: 'android', // Identifies this as mobile source
+            projectName: currentProjectName // Critical for cross-platform autosave
+        };
+        
+        const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        
+        // 5. Apply the custom file name here
+        a.download = finalFileName;
+        
+        a.click();
+
+        // Clean up the memory
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        
+        showMsg('File Saved Successfully');
+    }, 50);
+}
+// 2. UPDATED LOAD: Active code with PC-to-Mobile conversion
+function loadProject(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    // UPDATE: Set the project name based on the loaded file name (removing extension)
+    // currentProjectName = file.name.replace('_Mobile.legal', '').replace('.legal', '');
+    currentProjectName = (data.projectName || file.name).replace('_PC.legal','').replace('_Mobile.legal','').replace('.legal','');
+    sessionStorage.setItem('active_project', currentProjectName);
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = data.content;
+
+            // If source is PC or contains English characters (Kruti Dev), convert it
+            if (data.source === 'pc' || /[a-zA-Z]{5,}/.test(tempDiv.innerText)) {
+                showMsg('PC फाइल को मोबाइल फॉर्मेट (Unicode) में बदला जा रहा है...');
+                const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
+                let node;
+                while(node = walker.nextNode()) {
+                    node.nodeValue = convertKrutiToUnicode(node.nodeValue);
+                }
+            }
+
+            document.getElementById('main-container').innerHTML = tempDiv.innerHTML;
+            globalFontSize = data.fontSize || 14;
+            document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+                el.style.fontSize = globalFontSize + 'pt';
+            });
+            
+            updateLangButtons();
+            renumberPagesGlobal();
+            renumberAllPoints();
+            showMsg('फाइल लोड हो गई');
+        } catch (err) {
+            showMsg('त्रुटि: फाइल सही नहीं है');
+            console.error(err);
+        }
+    };
+    reader.readAsText(file);
+}
+setInterval(() => {
+    const container = document.getElementById('main-container');
+    if(container) {
+        const autoData = {
+            content: container.innerHTML,
+            fontSize: globalFontSize,
+            lang: currentLang,
+            projectName: currentProjectName
+        };
+        // localStorage.setItem('autosave_work', JSON.stringify(autoData));
+        // console.log("Auto-saved to browser memory");
+        // UPDATE: Key is now unique to the project
+          localStorage.setItem('autosave_' + currentProjectName, JSON.stringify(autoData));
+        
+        // Remember which project this TAB is handling
+        sessionStorage.setItem('active_project', currentProjectName);
+    }
+}, 5000);
+
+// पेज लोड होते ही पुराना काम वापस लाएँ
+window.addEventListener('load', () => {
+    // 1. Check if this specific tab has an active project
+    const activeTabProject = sessionStorage.getItem('active_project');
+    
+    if (activeTabProject) {
+        const saved = localStorage.getItem('autosave_' + activeTabProject);
+        if (saved) {
+            const data = JSON.parse(saved);
+            if (confirm(`इस टैब में "${activeTabProject}" पर काम जारी रखें? \n(Continue working on "${activeTabProject}" in this tab?)`)) {
+                document.getElementById('main-container').innerHTML = data.content;
+                currentProjectName = activeTabProject;
+                return; // Stop here, we found the right file
+            }
+        }
+    }
+
+    // 2. If it's a fresh tab, see if there are ANY autosaves available
+    const allKeys = Object.keys(localStorage).filter(k => k.startsWith('autosave_'));
+    if (allKeys.length > 0) {
+        // Get the very last one modified
+        const lastKey = allKeys[allKeys.length - 1];
+        const projectName = lastKey.replace('autosave_', '');
+        
+        if (confirm(`पुराना ऑटो-सेव मिला: "${projectName}"। क्या आप इसे लोड करना चाहते हैं?`)) {
+            const data = JSON.parse(localStorage.getItem(lastKey));
+            document.getElementById('main-container').innerHTML = data.content;
+            currentProjectName = projectName;
+            sessionStorage.setItem('active_project', projectName);
+        }
+    }
+});
+
+// 3. NEW: Kruti Dev to Unicode Converter for Mobile
+function convertKrutiToUnicode(str) {
+    if (!str) return "";
+    // Simplified mapping for the 'f' matra swap
+    let res = str;
+    // Swap 'f' (i matra) back to its Unicode position (after the letter)
+    res = res.replace(/f([k-z]|d|\[k|\[|x|c|v|b|n|m|y|j|l|p|o|i|u|t|r|e|w|q|a|s|g|h|z|{)/g, "$1f");
+    
+    const krutiToUniMap = {
+        'd':'क', 'k':'ा', 'f':'ि', 'x':'ग', 'c':'ब', 'v':'अ', 'b':'इ', 'n':'द', 'm':'प',
+        'y':'थ', 'j':'र', 'l':'स', 'p':'च', 'o':'व', 'i':'ह', 'u':'न', 't':'ज', 'r':'त',
+        'e':'म', 'w':'ा', 'q':'फ', 'a':'ं', 's':'े', 'g':'ह', 'h':'ी', 'z':'्र'
+        // Add other mappings here as needed
+    };
+    
+    return res.split('').map(char => krutiToUniMap[char] || char).join('');
+}
+  //
 // ============================================================
 // MOBILE VIRTUAL KEYBOARD
 // ============================================================
