@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>हिंदी कानूनी संपादक | Kruti Dev 010 सटीक टाइपिंग</title>
+<title></title>
 <!-- html2pdf for export -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   * {
     box-sizing: border-box;
@@ -24,6 +23,7 @@
 
   /* ----- FIXED TOOLBAR ----- */
 
+
 .toolbar {
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -39,7 +39,70 @@
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
+
+/*keyboard */
+#pc-keyboard-panel {
+  position: fixed;
+  right: 20px;
+  top: 60px; /* टूलबार के नीचे */
+  width: 320px;
+  background: #1a202c;
+  border: 1px solid #4a5568;
+  border-radius: 8px;
+  display: none; 
+  flex-direction: column;
+  max-height: 80vh;
+  z-index: 1000;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  padding: 10px;
+}
+
+#pc-keyboard-panel.show { display: flex; }
+
+#mkh-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.mkh-tab {
+  background: #2d3748;
+  color: #edf2f7;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+}
+.mkh-tab.active { background: #3182ce; }
+
+#mkh-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* PC पर 4 कॉलम */
+  gap: 6px;
+  overflow-y: auto;
+}
+
+.mkh-key {
+  background: #2d3748;
+  color: white;
+  border: 1px solid #4a5568;
+  padding: 10px 2px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.mkh-key:hover { background: #4a5568; }
+
+.mkh-del { background: #c53030; }
+.mkh-enter { background: #2f855a; grid-column: span 2; }
+.mkh-sp { background: #2b6cb0; grid-column: span 2; }
+/**/
+
 /* FIX: This pushes the document down so it isn't hidden */
+
 #main-container {
     margin-top: 70px;
     padding-bottom: 100px;
@@ -125,7 +188,7 @@ button {
     border-left: 3px solid gold;
   }
 
-  .btn-pdf { background: #7b3f00; }
+
   .btn-word { background: #103a6b; }
   .mic-btn { background: #631a1a; }
   .mic-btn.active { background: #c0392b; animation: pulse 1.2s infinite; }
@@ -171,18 +234,19 @@ button {
     border: 1px solid #2a4565;
   }
   .kc-key { color: #f3b560; font-weight: bold; min-width: 28px; }
-  .kc-normal { color: #a5f0a5; font-size: 14px; font-family: 'Mangal','Kruti Dev 010',monospace; }
-  .kc-shift { color: #e0aaff; font-size: 14px; font-family: 'Mangal','Kruti Dev 010',monospace; }
+  .kc-normal { color: #a5f0a5; font-size: 14px;  font-family: 'Kruti Dev 010', 'K010', serif;}
+  .kc-shift { color: #e0aaff; font-size: 14px;  font-family: 'Kruti Dev 010', 'K010', serif; }
 
 /*  /* ----- LEGAL PAPER (8.5x14 inch, court margins) ----- */
 
 
 :root {
-    --pw: 215.9mm;
-    --ph: 355.6mm;
-    --pt: 20mm;   --pb: 20mm;
-    --pl: 45mm;   /* Extra space on left for stitching/tagging */
-    --pr: 15mm;
+    --pw: 8.5in;
+    --ph: 14in;
+    --pt: 0.75in;
+    --pb: 0.75in;
+    --pl: 1.75in; /* 45mm for court margins */
+    --pr: 0.6in;
 }
 
 .paper {
@@ -218,11 +282,19 @@ button {
 }
 /* Ensure all text uses the default 16pt */
 [contenteditable="true"], .cont-text, .point-text {
-    font-family: 'Kruti Dev 010', 'K010', serif !important;
-    font-size: 16pt !important;
+    font-family: 'Kruti Dev 010', 'K010', serif;
+    /* Change the line below to use a variable */
+    font-size: var(--global-fs, 16pt) !important;
+    /*font-size: 16pt;*/
     line-height: 1.6 !important;
     text-align: justify;
     color: #000;
+   /* --- THESE ARE THE CRITICAL FIXES --- */
+    word-break: keep-all;      /* Only breaks at actual spaces */
+    overflow-wrap: normal;     /* Disables breaking inside a word */
+    word-wrap: normal;         /* Disables breaking inside a word */
+    white-space: pre-wrap;     /* Preserves spaces and wraps correctly */
+    hyphens: none;
 }
   .page-header {
     text-align: center;
@@ -330,10 +402,37 @@ button {
   #status-bar.show { display: block; }
 
   @media print {
-    .toolbar, .no-print, .del-pt, .del-page-btn, #key-chart { display: none !important; }
-    body { background: white; margin: 0; padding: 0; }
-    .paper { box-shadow: none; margin: 0; page-break-after: always; }
+  @page {
+    /* Explicitly define Legal dimensions */
+    size: legal; 
+    size: 8.5in 14in; 
+    margin: 0; /* Removes header/footer (date, URL) from the print */
   }
+
+  body {
+    background: white;
+    margin: 0;
+    padding: 0;
+  }
+
+  .no-print, .toolbar, .del-pt, .del-page-btn, #key-chart {
+    display: none !important;
+  }
+
+  #main-container {
+    margin-top: 0 !important;
+    padding: 0 !important;
+  }
+
+  .paper {
+    margin: 0 !important;
+    box-shadow: none !important;
+    page-break-after: always;
+    /* Ensure the div matches the paper size exactly */
+    width: 8.5in;
+    height: 14in;
+  }
+}
 </style>
 </head>
 <body>
@@ -354,14 +453,22 @@ button {
     <span class="label">📄</span>
     <button onclick="addNewPoint()">पॉइंट</button>
     <button onclick="addNewPage()">पेज</button>
-    <button onclick="toggleKeyChart()">⌨️</button>
+
   </div>
+    <div class="tool-group">
+    <button id="mkhToggle" onclick="togglePCKeyboard()" style="font-size:12px; background:#2d3748;">⌨️</button>
+</div>
+<div class="tool-group">
+  <span class="label">💾</span>
+  <button onclick="saveProject()">Save</button>
+  <button onclick="document.getElementById('uploadFile').click()">Upload</button>
+  <input type="file" id="uploadFile" style="display:none" onchange="loadProject(event)" accept=".legal">
+  <button onclick="window.print()">🖨️Pdf</button>
+</div>
+ 
   <div class="tool-group">
-    <span class="label">💾</span>
-    <button class="btn-pdf" onclick="exportAsPDF()">PDF</button>
-    <button class="btn-word" onclick="exportAsWord()">Word</button>
-    <button onclick="window.print()">🖨️</button>
-  </div>
+    <button onclick="toggleBold()" style="font-size:12px;">B</button>
+   </div>
   <div class="tool-group">
   <span class="label">Formatting</span>
   <button onclick="setAlign('justifyLeft')">Left</button>
@@ -371,9 +478,9 @@ button {
   
   <span style="color:#555; margin: 0 5px;">|</span>
   
-  <button onclick="changeFontSize('dec')">A-</button>
+  <button onmousedown="event.preventDefault(); changeFontSize('dec')">A-</button>
   <span id="current-fs-display" style="color:white; font-size:12px;">16pt</span>
-  <button onclick="changeFontSize('inc')">A+</button>
+  <button onmousedown="event.preventDefault(); changeFontSize('inc')">A+</button>
 </div>
 
 <div onclick="window.location.href='index.html'" class="tool-group" title="डिवाइस बदलें" style="cursor:pointer; border-right: 1px solid #2a3950; padding-right: 15px;">
@@ -391,7 +498,7 @@ button {
 
 <div id="status-bar">✅ तैयार</div>
 
-<div id="main-container">
+<div id="main-container" spellcheck="false">
   <!-- पहला पेज: मानक कानूनी प्रारूप -->
   <div class="paper" id="page-1">
     <div class="page-header" contenteditable="true" id="header1">न्यायालय किराया अधिकरण, जयपुर महानगर (द्वितीय)</div>
@@ -416,6 +523,10 @@ button {
       <div contenteditable="true"><b>प्रार्थी</b><br>( उदय सिंह )</div>
     </div>
   </div>
+</div>
+<div id="pc-keyboard-panel" class="no-print">
+  <div id="mkh-tabs"></div>
+  <div id="mkh-grid"></div>
 </div>
 
 <script>
@@ -469,22 +580,90 @@ const KRUTI_MAP = {
     timeoutStatus = setTimeout(() => statusBar.classList.remove('show'), duration);
   }
   
-  function setLangMode(lang) {
-    const selection = window.getSelection();
-    const hasSelected = selection && !selection.isCollapsed && selection.toString().trim().length > 0;
-    
-    if (hasSelected) {
-        // If text is highlighted, only change that specific text
-        applyFontToSelection(lang);
-        showMsg(lang === 'hindi' ? '✅ चयनित टेक्स्ट बदला गया' : '✅ Selected text changed to English');
-    } else {
-        // Just switch the "mode" for what you are about to type next
-        currentLang = lang;
-        updateLangButtons();
-        showMsg(currentLang === 'hindi' ? '🇮🇳 अगला टाइप हिंदी में होगा' : '🇬🇧 Next typing will be English');
-    }
-}
+//  function setLangMode(lang) {
+//   // Always update the global language mode first
+//   currentLang = lang;
+//   updateLangButtons();
   
+//   const sel = window.getSelection();
+//   const hasSel = sel && !sel.isCollapsed && sel.toString().trim().length > 0;
+  
+//   if (hasSel) {
+//     // If text is selected, apply the font to the selection
+//     applyFontToSelection(lang);
+//     showMsg(lang === 'hindi' ? '✅ चयनित टेक्स्ट बदला' : '✅ Selection changed to English');
+//   } else {
+//     // Otherwise just show the status message
+//     showMsg(lang === 'hindi' ? '🇮🇳 हिंदी मोड सक्रिय' : '🇬🇧 English mode active');
+//   }
+// }
+
+function setLangMode(lang) {
+  currentLang = lang.toLowerCase();
+  updateLangButtons();
+
+  const activeEl = document.activeElement;
+  if (activeEl && activeEl.getAttribute('contenteditable') === 'true') {
+    activeEl.focus();
+
+    // 🔴 FIX: Kruti Dev 010 के आस-पास सिंगल और डबल कोट्स का ध्यान रखें
+    const targetFont = (currentLang === 'hindi') ? '"Kruti Dev 010"' : 'Arial';
+    document.execCommand('fontName', false, targetFont);
+  }
+
+  const sel = window.getSelection();
+  if (sel && !sel.isCollapsed && sel.toString().trim().length > 0) {
+    applyFontToSelection(currentLang);
+  }
+
+  showMsg(currentLang === 'hindi' ? '🇮🇳 KRUTI DEV ON' : '🇬🇧 ENGLISH ON');
+}
+
+// Shortcut key: Alt + T to toggle language
+document.addEventListener('keydown', function(e) {
+  if (e.altKey && (e.key === 't' || e.key === 'T')) {
+    e.preventDefault(); 
+    // Use .toLowerCase() here to ensure the comparison is 100% accurate
+    const nextLang = (currentLang.toLowerCase() === 'hindi') ? 'english' : 'hindi';
+    setLangMode(nextLang);
+  }
+});
+
+document.addEventListener('keydown', function(e) {
+  const activeEl = document.activeElement;
+  if (!activeEl || activeEl.getAttribute('contenteditable') !== 'true') return;
+
+  if (e.ctrlKey || e.metaKey || e.altKey || (typeof skipKeys !== 'undefined' && skipKeys.has(e.key))) return;
+
+  if (currentLang.toLowerCase() === 'hindi') {
+    e.preventDefault();
+    const mappedChar = KRUTI_MAP[e.key] || e.key;
+
+    // चेक करें कि ब्राउज़र अभी किस फॉन्ट में है
+    let currentFont = document.queryCommandValue('fontName') || '';
+    currentFont = currentFont.toLowerCase();
+
+    // 🔴 MASTER FIX: अगर कर्सर Arial या English फॉन्ट में फंसा है
+    if (currentFont.includes('arial') || currentFont.includes('times') || currentFont.includes('sans-serif')) {
+        // हम ब्राउज़र को बायपास करके सीधे Kruti Dev का HTML टैग डाल देंगे
+        const forcedHtml = `<span style="font-family: 'Kruti Dev 010', 'K010', serif;">${mappedChar}</span>`;
+        document.execCommand('insertHTML', false, forcedHtml);
+    } else {
+        // अगर फॉन्ट पहले से सही है
+        document.execCommand('fontName', false, '"Kruti Dev 010"'); // नाम के चारों ओर Quotes ज़रूरी हैं
+        document.execCommand('insertText', false, mappedChar);
+    }
+  } else {
+    // English Mode
+    let currentFont = document.queryCommandValue('fontName') || '';
+    currentFont = currentFont.toLowerCase();
+    
+    // अगर कर्सर Kruti में फंसा है, तो उसे Arial दें
+    if (currentFont.includes('kruti') || currentFont.includes('k010') || currentFont === '') {
+        document.execCommand('fontName', false, 'Arial');
+    }
+  }
+}, true);
 function convertUnicodeToKrutiDev(unicodeString) {
     if (!unicodeString) return "";
     let array_one = ["‘", "’", "“", "”", "(", ")", "{", "}", "=", "।", "?", "-", "µ", "ं", "ँ", "ः", "ा", "ि", "ी", "ु", "ू", "ृ", "े", "ै", "ो", "ौ", "्", "़", "़", "अ", "आ", "इ", "ई", "उ", "ऊ", "ऋ", "ए", "ऐ", "ओ", "औ", "क", "ख", "ग", "घ", "ङ", "च", "छ", "ज", "झ", "ञ", "ट", "ठ", "ड", "ढ", "ण", "त", "थ", "द", "ध", "न", "प", "फ", "ब", "भ", "म", "य", "र", "ल", "व", "श", "ष", "स", "ह", "क्ष", "त्र", "ज्ञ", "श्र"];
@@ -534,69 +713,60 @@ function setAlign(cmd) {
 }
 
 function changeFontSize(action) {
-    if (action === 'inc') globalFontSize += 1;
-    else if (action === 'dec' && globalFontSize > 8) globalFontSize -= 1;
+    // 1. Force globalFontSize to stay a number and update it
+    if (action === 'inc') {
+        globalFontSize = parseInt(globalFontSize) + 1;
+    } else if (action === 'dec' && globalFontSize > 8) {
+        globalFontSize = parseInt(globalFontSize) - 1;
+    }
     
-    // Update the UI display
-    document.getElementById('current-fs-display').innerText = globalFontSize + "pt";
+    const newSize = globalFontSize + "pt";
+
+    // 2. Update the UI display immediately
+    document.getElementById('current-fs-display').innerText = newSize;
     
-    // Apply to selected text OR set as default for new typing
+    // 3. Apply to selection OR Global variable
     const selection = window.getSelection();
     if (selection.rangeCount > 0 && !selection.isCollapsed) {
-        // Apply to specific selection
         const span = document.createElement("span");
-        span.style.fontSize = globalFontSize + "pt";
-        
+        span.style.fontSize = newSize;
         const range = selection.getRangeAt(0);
-        range.surroundContents(span);
+        try {
+            range.surroundContents(span);
+        } catch(e) {
+            // If selection is complex, we just update the whole area via CSS variable
+            document.documentElement.style.setProperty('--global-fs', newSize);
+        }
     } else {
-        // Set for the whole document if nothing is selected
-        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-            el.style.fontSize = globalFontSize + "pt";
-        });
-        showMsg("Font size set to " + globalFontSize + "pt");
+        // Update the CSS Variable globally
+        document.documentElement.style.setProperty('--global-fs', newSize);
+    }
+
+    // 4. FIX: Use lastFocused instead of activeElement to trigger layout reflow
+    if (lastFocused) {
+        lastFocused.focus(); // Keep focus where it belongs
+        checkOverflow(lastFocused); // Trigger the page-break logic
     }
 }
 
-  function updateLangButtons() {
-    const btnH = document.getElementById('btnHindi');
-    const btnE = document.getElementById('btnEng');
-    const modeDiv = document.getElementById('mode-indicator');
-    btnH.classList.toggle('active', currentLang === 'hindi');
-    btnE.classList.toggle('active', currentLang === 'english');
-    if (currentLang === 'hindi') {
-      modeDiv.innerHTML = '🔤 हिंदी (कृति देव 010) – सटीक मानचित्र';
-      modeDiv.style.background = '#1d4d2c';
-    } else {
-      modeDiv.innerHTML = '🔠 English Mode – Direct Typing';
-      modeDiv.style.background = '#1e3b5c';
-    }
+function updateLangButtons() {
+  document.getElementById('btnHindi').classList.toggle('active', currentLang === 'hindi');
+  document.getElementById('btnEng').classList.toggle('active', currentLang === 'english');
+  const mi = document.getElementById('mode-indicator');
+  if (currentLang === 'hindi') {
+    mi.innerHTML = '🔤 हिंदी';
+    mi.style.background = '#1d4d2c';
+  } else {
+    mi.innerHTML = '🔠 English';
+    mi.style.background = '#1e3b5c';
   }
+}
   
   // ----- कीबोर्ड इंटरसेप्ट (Kruti Dev Mapping) -----
   const skipKeys = new Set(['Backspace','Delete','Enter','Tab','Escape','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Home','End','PageUp','PageDown','Shift','Control','Alt','Meta','CapsLock']);
   
-  document.addEventListener('keydown', function(e) {
-    const activeEl = document.activeElement;
-    if (!activeEl || activeEl.getAttribute('contenteditable') !== 'true') return;
-    if (e.ctrlKey || e.metaKey || e.altKey || skipKeys.has(e.key)) return;
 
-    if (currentLang === 'hindi') {
-        const mappedChar = KRUTI_MAP[e.key] || e.key;
-        e.preventDefault();
-        
-        // 1. Force the font at the cursor position
-        document.execCommand('fontName', false, 'Kruti Dev 010');
-        
-        // 2. Insert the mapped character
-        document.execCommand('insertText', false, mappedChar);
-    } else {
-        // If in English mode, ensure it's not using Kruti Dev
-        // This prevents English typing from staying in Hindi font if you just switched
-        document.execCommand('fontName', false, 'Arial'); 
-    }
-}, true);
-  
+
   let pageCounter = 1;
   
   function addNewPoint() {
@@ -621,7 +791,7 @@ function changeFontSize(action) {
     pointDiv.innerHTML = `
       <button class="del-pt no-print" onclick="removePoint(this)">✕</button>
       <div class="point-num"></div>
-      <div class="point-text" contenteditable="true" oninput="checkOverflow(this)" onkeydown="handleKeydown(event, this)"></div>
+      <div class="point-text" contenteditable="true" spellcheck="false" oninput="checkOverflow(this)" onkeydown="handleKeydown(event, this)"></div>
     `;
 
     // Insert after the current point or at the end of the body
@@ -638,6 +808,18 @@ function changeFontSize(action) {
     
     // Check if adding this point caused an overflow
     checkOverflow(newText);
+}
+
+
+function toggleBold() {
+  document.execCommand('bold', false, null);
+  updateBoldUI();
+  
+  // कर्सर वापस एडिटर में रखें ताकि लिखना जारी रहे
+  const activeEl = document.activeElement;
+  if (activeEl && activeEl.getAttribute('contenteditable') === 'true') {
+    activeEl.focus();
+  }
 }
   function removePoint(btn) {
     const row = btn.closest('.point-row');
@@ -662,7 +844,7 @@ function changeFontSize(action) {
       <button class="del-page-btn no-print" onclick="deleteThisPage(this)">🗑️ हटाएँ</button>
       <div class="page-header" style="text-align: center;" contenteditable="true">${pageCounter}</div>
       <div class="doc-body">
-        <div contenteditable="true" class="cont-text" oninput="checkOverflow(this)" onkeydown="handleKeydown(event, this)"></div>
+        <div contenteditable="true" spellcheck="false" class="cont-text" oninput="checkOverflow(this)" onkeydown="handleKeydown(event, this)"></div>
       </div>
     `;
     
@@ -692,9 +874,9 @@ function changeFontSize(action) {
     pages.forEach((pg, idx) => {
       const hdr = pg.querySelector('.page-header');
       if (idx === 0) {
-        if (hdr && hdr.innerText.trim().startsWith('—')) hdr.innerText = 'न्यायालय किराया अधिकरण, जयपुर महानगर (द्वितीय)';
+        if (hdr && hdr.innerText.trim().startsWith('—')) hdr.innerText = 'Court name';
       } else {
-        if (hdr) hdr.innerText = `— पेज ${idx+1} —`;
+        if (hdr) hdr.innerText = `${idx+1}`;
       }
     });
   }
@@ -904,26 +1086,482 @@ function moveToPreviousPage(el) {
     speechRecog.onend = () => { isListening = false; document.getElementById('micBtn').classList.remove('active'); document.getElementById('micBtnEN').classList.remove('active'); };
     speechRecog.start();
   }
+
+
+  // 
+  const MKH_SECTIONS = [
+  {
+    name: "शब्द/क्रम",
+    keys: [
+      {label:"प्रथम", krutiInsert:"प्रथम"},{label:"द्वितीय", krutiInsert:"द्वितीय"},{label:"तृतीय", krutiInsert:"तृतीय"},
+      {label:"चतुर्थ", krutiInsert:"चतुर्थ"},{label:"क्रम", krutiInsert:"क्रम"},{label:"विरुद्ध", krutiInsert:"विरुद्ध"},
+      {label:"बनाम", krutiInsert:"बनाम"},
+      {label:"दिनांक", krutiInsert:"दिनांक"},
+      {label:"प्रकरण", krutiInsert:"प्रकरण"},
+      {label:"वाद", krutiInsert:"वाद"},
+      {label:"न्यायालय", krutiInsert:"न्यायालय"},
+      {label:"प्रार्थी", krutiInsert:"प्रार्थी"},
+      {label:"विपक्षी", krutiInsert:"विपक्षी"},
+      {label:"श्रीमती", krutiInsert:"श्रीमती"}
+    ]
+  },
+
   
+  {
+    name: "विशेष",
+    keys: [
+      {label:"प्र", krutiInsert:"प्र"},{label:"श्र", krutiInsert:"श्र"},{label:"श्री", krutiInsert:"श्री"},
+      {label:"त्र", krutiInsert:"त्र"},{label:"ज्ञ", krutiInsert:"ज्ञ"},{label:"क्ष", krutiInsert:"क्ष"},
+      {label:"द्ध", krutiInsert:"द्ध"},{label:"द्य", krutiInsert:"द्य"},{label:"द्व", krutiInsert:"द्व"},
+      {label:"।", krutiInsert:"।"},{label:"॥", krutiInsert:"॥"},{label:"( )", krutiInsert:"()"}
+    ]
+  },
+  {
+    name: "मात्राएँ",
+    keys: [
+      {label:"ा", krutiInsert:"ा"},{label:"ि", krutiInsert:"ि"},{label:"ी", krutiInsert:"ी"},
+      {label:"ु", krutiInsert:"ु"},{label:"ू", krutiInsert:"ू"},{label:"े", krutiInsert:"े"},
+      {label:"ै", krutiInsert:"ै"},{label:"ो", krutiInsert:"ो"},{label:"ौ", krutiInsert:"ौ"},
+      {label:"ं", krutiInsert:"ं"},{label:"ँ", krutiInsert:"ँ"},{label:"ः", krutiInsert:"ः"},
+      {label:"्", krutiInsert:"्"},{label:"ृ", krutiInsert:"ृ"}
+    ]
+  },
+  {
+    name: "स्वर",
+    keys: [
+      {label:"अ", krutiInsert:"अ"},{label:"आ", krutiInsert:"आ"},{label:"इ", krutiInsert:"इ"},
+      {label:"ई", krutiInsert:"ई"},{label:"उ", krutiInsert:"उ"},{label:"ऊ", krutiInsert:"ऊ"},
+      {label:"ए", krutiInsert:"ए"},{label:"ऐ", krutiInsert:"ऐ"},{label:"ओ", krutiInsert:"ओ"},
+      {label:"औ", krutiInsert:"औ"}
+    ]
+  },
+  {
+    name: "क–ञ",
+    keys: [
+      {label:"क", krutiInsert:"क"},{label:"ख", krutiInsert:"ख"},{label:"ग", krutiInsert:"ग"},
+      {label:"घ", krutiInsert:"घ"},{label:"च", krutiInsert:"च"},{label:"छ", krutiInsert:"छ"},
+      {label:"ज", krutiInsert:"ज"},{label:"झ", krutiInsert:"झ"},{label:"ञ", krutiInsert:"ञ"}
+    ]
+  },
+  {
+    name: "ट–न",
+    keys: [
+      {label:"ट", krutiInsert:"ट"},{label:"ठ", krutiInsert:"ठ"},{label:"ड", krutiInsert:"ड"},
+      {label:"ढ", krutiInsert:"ढ"},{label:"ण", krutiInsert:"ण"},{label:"त", krutiInsert:"त"},
+      {label:"थ", krutiInsert:"थ"},{label:"द", krutiInsert:"द"},{label:"ध", krutiInsert:"ध"},
+      {label:"न", krutiInsert:"न"}
+    ]
+  },
+  {
+    name: "प–ह",
+    keys: [
+      {label:"प", krutiInsert:"प"},{label:"फ", krutiInsert:"फ"},{label:"ब", krutiInsert:"ब"},
+      {label:"भ", krutiInsert:"भ"},{label:"म", krutiInsert:"म"},{label:"य", krutiInsert:"य"},
+      {label:"र", krutiInsert:"र"},{label:"ल", krutiInsert:"ल"},{label:"व", krutiInsert:"व"},
+      {label:"श", krutiInsert:"श"},{label:"ष", krutiInsert:"ष"},{label:"स", krutiInsert:"स"},
+      {label:"ह", krutiInsert:"ह"}
+    ]
+  },
+  {
+    name: "अंक",
+    keys: [
+      {label:"१",krutiInsert:"1"},{label:"२",krutiInsert:"2"},{label:"३",krutiInsert:"3"},
+      {label:"४",krutiInsert:"4"},{label:"५",krutiInsert:"5"},{label:"६",krutiInsert:"6"},
+      {label:"७",krutiInsert:"7"},{label:"८",krutiInsert:"8"},{label:"९",krutiInsert:"9"},
+      {label:"०",krutiInsert:"0"}
+    ]
+  }
+];
+  let pcKbdVisible = false;
+let mkhActiveTab = 0;
+let lastFocused = null;
+let savedRange = null;
+
+function buildMobileKeyboard() {
+  const tabsEl = document.getElementById('mkh-tabs');
+  const gridEl = document.getElementById('mkh-grid');
+
+  tabsEl.innerHTML = MKH_SECTIONS.map((s,i) =>
+    `<button class="mkh-tab${i===0?' active':''}" onclick="switchMkhTab(${i})">${s.name}</button>`
+  ).join('') + `<button class="mkh-tab" onclick="switchMkhTab(-1)" style="background:#1e3b5c;color:#93c5fd;">Eng</button>`;
+
+  renderMkhTab(0);
+}
+
+function switchMkhTab(idx) {
+  mkhActiveTab = idx;
+  document.querySelectorAll('.mkh-tab').forEach((t,i) =>
+    t.classList.toggle('active', i === idx)
+  );
+  renderMkhTab(idx);
+}
+
+function renderMkhTab(idx) {
+  const gridEl = document.getElementById('mkh-grid');
+  
+  // English Mode / Empty State
+  if (idx === -1) {
+    gridEl.innerHTML = `
+      <div style="color:#8a9bbc;font-size:12px;padding:6px;width:100%;">English mode — type with device keyboard</div>
+      <button class="mkh-key mkh-del" onpointerdown="event.preventDefault(); mkhDelete()">⌫</button>
+      <button class="mkh-key mkh-enter" onpointerdown="event.preventDefault(); mkhInsert('\\n')">↵ Enter</button>
+      <button class="mkh-key mkh-sp" onpointerdown="event.preventDefault(); mkhInsert(' ')">Space ___</button>
+    `;
+    return;
+  }
+
+  const section = MKH_SECTIONS[idx];
+  let html = '';
+  
+  // Render main keys
+  section.keys.forEach(k => {
+    // IMPORTANT: onpointerdown prevents the button from taking focus away from the page
+    html += `<button class="mkh-key" onpointerdown="event.preventDefault(); mkhInsert('${k.krutiInsert}')">${k.label}</button>`;
+  });
+  
+  // Add control keys
+  html += `<button class="mkh-key mkh-del" onpointerdown="event.preventDefault(); mkhDelete()">⌫</button>`;
+  html += `<button class="mkh-key mkh-enter" onpointerdown="event.preventDefault(); mkhInsert('\\n')">↵</button>`;
+  html += `<button class="mkh-key mkh-sp" onpointerdown="event.preventDefault(); mkhInsert(' ')">Space</button>`;
+  
+  gridEl.innerHTML = html;
+}
+function mkhInsert(text) {
+  if (!lastFocused) {
+    showMsg('लिखने के लिए पहले पेज पर क्लिक करें', 1500);
+    return;
+  }
+
+  // 1. Force focus back to the text area
+  lastFocused.focus();
+  
+  // 2. Restore the exact cursor position
+  const sel = window.getSelection();
+  if (savedRange) {
+    sel.removeAllRanges();
+    sel.addRange(savedRange);
+  }
+
+  // 3. Insert the text/character
+  if (text === '\\n' || text === '\n') {
+    document.execCommand('insertParagraph', false);
+  } else {
+    document.execCommand('insertText', false, text);
+  }
+
+  // 4. Save the new cursor position after insertion
+  if (sel.rangeCount > 0) {
+    savedRange = sel.getRangeAt(0);
+  }
+
+  // Update layout if text overflows
+  if (typeof checkOverflow === "function") {
+    checkOverflow(lastFocused);
+  }
+}
+
+
+// कर्सर पोजीशन ट्रैक करने के लिए
+document.addEventListener('mousedown', (e) => {
+    // अगर क्लिक एडिटर के अंदर है, तो उसकी पोजीशन सेव करें
+    if (e.target.getAttribute('contenteditable') === 'true') {
+        lastFocused = e.target;
+    }
+});
+
+function togglePCKeyboard() {
+    pcKbdVisible = !pcKbdVisible;
+    const panel = document.getElementById('pc-keyboard-panel');
+    panel.classList.toggle('show', pcKbdVisible);
+    document.getElementById('mkhToggle').style.background = pcKbdVisible ? '#3182ce' : '#2d3748';
+}
+
+function mkhInsert(text) {
+    if (!lastFocused) {
+        alert('लिखने के लिए पहले पेज पर क्लिक करें');
+        return;
+    }
+
+    lastFocused.focus();
+    const sel = window.getSelection();
+    
+    // अगर पुराना कर्सर पोजीशन है, तो उसे रिस्टोर करें
+    if (savedRange) {
+        sel.removeAllRanges();
+        sel.addRange(savedRange);
+    }
+
+    if (text === '\\n' || text === '\n') {
+        document.execCommand('insertParagraph', false);
+    } else {
+        document.execCommand('insertText', false, text);
+    }
+
+    // नया कर्सर पोजीशन सेव करें
+    savedRange = sel.getRangeAt(0).cloneRange();
+}
+
+function mkhDelete() {
+    if (!lastFocused) return;
+    lastFocused.focus();
+    document.execCommand('delete', false, null);
+    const sel = window.getSelection();
+    if (sel.rangeCount > 0) savedRange = sel.getRangeAt(0).cloneRange();
+}
+
+// बाकी के buildMobileKeyboard और MKH_SECTIONS फंक्शन जो आपने पहले दिए थे, 
+// उन्हें वैसे ही रखें, बस buildMobileKeyboard का नाम बदलकर initPCKeyboard कर सकते हैं।
+  // 
+
+
+  // save and load
+  // 1. SAVE WORK: Downloads a project file (.legal)
+// function saveProject() {
+//     const data = {
+//         content: document.getElementById('main-container').innerHTML,
+//         fontSize: globalFontSize,
+//         lang: currentLang
+//     };
+//     const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+//     const a = document.createElement('a');
+//     a.href = URL.createObjectURL(blob);
+//     a.download = 'My_Legal_Work.legal'; // Custom extension for your app
+//     a.click();
+//     showMsg('प्रोजेक्ट फाइल सुरक्षित की गई');
+// }
+
+// 2. LOAD WORK: Uploads the .legal file and restores the page
+// function loadProject(event) {
+//     const file = event.target.files[0];
+//     if (!file) return;
+
+//     const reader = new FileReader();
+//     reader.onload = function(e) {
+//         try {
+//             const data = JSON.parse(e.target.result);
+            
+//             // Restore content
+//             document.getElementById('main-container').innerHTML = data.content;
+            
+//             // Restore settings
+//             globalFontSize = data.fontSize || 16;
+//             currentLang = data.lang || 'hindi';
+//             document.documentElement.style.setProperty('--global-fs', globalFontSize + "pt");
+//             document.getElementById('current-fs-display').innerText = globalFontSize + "pt";
+            
+//             // Refresh UI and Listeners
+//             updateLangButtons();
+//             renumberPagesGlobal();
+//             renumberAllPoints();
+            
+//             showMsg('पुराना काम सफलतापूर्वक लोड किया गया');
+//         } catch (err) {
+//             alert('फाइल लोड करने में त्रुटि हुई!');
+//         }
+//     };
+//     reader.readAsText(file);
+// }
+
+// Function to convert Android Unicode to Kruti Dev ASCII
+function convertUnicodeToKruti(str) {
+    if (!str) return "";
+    let res = str;
+
+    // 1. Array Mapping
+    let array_one = ["क़","ख़","ग़","ज़","ड़","ढ़","फ़","य़","ऱ","ा","ि","ी","ु","ू","ृ","े","ै","ो","ौ","ं","ः","ँ","्","।","0","1","2","3","4","5","6","7","8","9","अ","आ","इ","ई","उ","ऊ","ए","ऐ","ओ","औ","क","ख","ग","घ","ङ","च","छ","ज","झ","ञ","ट","ठ","ड","ढ","ण","त","थ","द","ध","न","प","फ","ब","भ","म","य","र","ल","व","श","ष","स","ह","क्ष","त्र","ज्ञ","श्र"];
+    let array_two = ["Q","W","E","R","T","Y","U","I","O","k","f","h","m","n","v","s","S","ks","kS","a",":","A","d","|","0","1","2","3","4","5","6","7","8","9","v","vk","b","c","m","n","s","S","ks","kS","d","[k","x","?k","³","p","N","t",">","¥","V","B","M","<",".","r","Fk","n","/k","u","i","Q","c","Hk","e",";","j","y","o","'k","\"k","l","g","{k","=","K","J"];
+
+    // 2. Perform character replacement
+    for (let i = 0; i < array_one.length; i++) {
+        res = res.split(array_one[i]).join(array_two[i]);
+    }
+
+    // 3. FIX THE "f" MATRA POSITION (The most important part)
+    // This looks for any Kruti letter followed by 'f' and moves 'f' to the front
+    res = res.replace(/([k-z]|d|\[k|\[|x|c|v|b|n|m|y|j|l|p|o|i|u|t|r|e|w|q|a|s|g|h|z|{])f/g, "f$1");
+
+    // 4. Fix Reph (Z)
+    res = res.replace(/र्([क-ह])/g, "$1Z"); 
+
+    return res;
+}
+// function saveProject() {
+//     const container = document.getElementById('main-container');
+//     if(!container) return;
+
+//     showMsg("Saving file...");
+    
+//     setTimeout(() => {
+//         const data = {
+//             content: container.innerHTML,
+//             fontSize: globalFontSize,
+//             lang: currentLang,
+//             source: 'pc'
+//         };
+        
+//         const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+//         const a = document.createElement('a');
+//         a.href = URL.createObjectURL(blob);
+//         a.download = 'Legal_Work_PC.legal';
+//         a.click();
+//         showMsg('File Saved Successfully');
+//     }, 50);
+// }
+
+let currentProjectName = sessionStorage.getItem('active_project') || "Untitled";
+function saveProject() {
+    const container = document.getElementById('main-container');
+    if(!container) return;
+
+    // 1. Prompt the user for a file name
+    let customName = prompt("फ़ाइल का नाम दर्ज करें (Enter file name):", "My_Document");
+
+    // 2. If the user clicks Cancel, stop the saving process
+    if (customName === null) {
+        showMsg("सेव कैंसिल किया गया (Save Cancelled)");
+        return;
+    }
+
+    // 3. Clean up the text. If left blank, use a default name.
+    customName = customName.trim();
+    if (customName === "") {
+        customName = "Legal_Work";
+    }
+
+    // 4. Construct the final name: [User_Name]_PC.legal
+    const finalFileName = customName + "_PC.legal";
+
+    
+   currentProjectName = customName;
+    sessionStorage.setItem('active_project', currentProjectName);
+
+    showMsg("Saving file...");
+    
+    setTimeout(() => {
+        const data = {
+            content: container.innerHTML,
+            fontSize: globalFontSize,
+            lang: currentLang,
+            projectName: currentProjectName,
+            source: 'pc'
+        };
+        
+        const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        
+        // 5. Apply the custom file name here
+        a.download = finalFileName;
+        
+        a.click();
+        showMsg('File Saved Successfully');
+    }, 50);
+}
+function loadProject(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+// UPDATE: Set the project name based on the loaded file name (removing extension)
+    // currentProjectName = file.name.replace('_PC.legal', '').replace('.legal', '');
+    // Extract name from file or data
+currentProjectName = (data.projectName || file.name).replace('_PC.legal','').replace('_Mobile.legal','').replace('.legal','');
+sessionStorage.setItem('active_project', currentProjectName);
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            let tempDiv = document.createElement('div');
+            tempDiv.innerHTML = data.content;
+
+            // Detect if the file is from Android (Unicode)
+            const isUnicode = /[\u0900-\u097F]/.test(tempDiv.innerText);
+            
+            if (isUnicode) {
+                showMsg('Converting Android format...');
+                const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
+                let node;
+                while(node = walker.nextNode()) {
+                    node.nodeValue = convertUnicodeToKruti(node.nodeValue);
+                }
+            }
+
+            // Inject content and force the Kruti Dev font
+            const mainContainer = document.getElementById('main-container');
+            mainContainer.innerHTML = tempDiv.innerHTML;
+            mainContainer.style.fontFamily = " 'Mangal', 'Noto Sans Devanagari', 'Nirmala UI', 'Kruti Dev 010', 'K010', sans-serif";
+            // Restore other settings
+            if(data.fontSize) {
+                globalFontSize = data.fontSize;
+                document.documentElement.style.setProperty('--global-fs', globalFontSize + "pt");
+            }
+
+            renumberPagesGlobal();
+            renumberAllPoints();
+            showMsg(isUnicode ? 'Converted & Loaded' : 'Loaded PC File');
+            
+        } catch (err) {
+            console.error(err);
+            alert('Format Error: Make sure this is a .legal file');
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = ''; 
+}
+// हर 5 सेकंड में ऑटो-सेव करें
+setInterval(() => {
+    const container = document.getElementById('main-container');
+    if(container) {
+        const autoData = {
+            content: container.innerHTML,
+            fontSize: globalFontSize,
+            lang: currentLang,
+            projectName: currentProjectName
+        };
+        // localStorage.setItem('autosave_work', JSON.stringify(autoData));
+        // console.log("Auto-saved to browser memory");
+        // UPDATE: Key is now unique to the project
+        // UNIQUE KEY: autosave_MyFileName
+        localStorage.setItem('autosave_' + currentProjectName, JSON.stringify(autoData));
+        
+        // Remember which project this TAB is handling
+        sessionStorage.setItem('active_project', currentProjectName);
+    }
+}, 5000);
+
+// पेज लोड होते ही पुराना काम वापस लाएँ
+window.addEventListener('load', () => {
+    // 1. Check if this specific tab has an active project
+    const activeTabProject = sessionStorage.getItem('active_project');
+    
+    if (activeTabProject) {
+        const saved = localStorage.getItem('autosave_' + activeTabProject);
+        if (saved) {
+            const data = JSON.parse(saved);
+            if (confirm(`इस टैब में "${activeTabProject}" पर काम जारी रखें? \n(Continue working on "${activeTabProject}" in this tab?)`)) {
+                document.getElementById('main-container').innerHTML = data.content;
+                currentProjectName = activeTabProject;
+                return; // Stop here, we found the right file
+            }
+        }
+    }
+
+    // 2. If it's a fresh tab, see if there are ANY autosaves available
+    const allKeys = Object.keys(localStorage).filter(k => k.startsWith('autosave_'));
+    if (allKeys.length > 0) {
+        // Get the very last one modified
+        const lastKey = allKeys[allKeys.length - 1];
+        const projectName = lastKey.replace('autosave_', '');
+        
+        if (confirm(`पुराना ऑटो-सेव मिला: "${projectName}"। क्या आप इसे लोड करना चाहते हैं?`)) {
+            const data = JSON.parse(localStorage.getItem(lastKey));
+            document.getElementById('main-container').innerHTML = data.content;
+            currentProjectName = projectName;
+            sessionStorage.setItem('active_project', projectName);
+        }
+    }
+});
+  // 
   // ----- export PDF / WORD -----
-  function exportAsPDF() {
-    const element = document.getElementById('main-container');
-    const opt = { margin: [0.2,0.2,0.2,0.2], filename: 'हिंदी_कानूनी_दस्तावेज.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2.5, useCORS: true }, jsPDF: { unit: 'mm', format: 'legal', orientation: 'portrait' } };
-    showMsg('PDF तैयार हो रही है...', 1500);
-    html2pdf().set(opt).from(element).save().then(()=>showMsg('PDF सेव हो गई ✅', 3000));
-  }
-  function exportAsWord() {
-    let htmlContent = document.getElementById('main-container').cloneNode(true);
-    const style = '<style>body{font-family:"Mangal","Times New Roman";margin:2cm;} .paper{page-break-after:always;}</style>';
-    const fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Legal Document</title>${style}</head><body>${htmlContent.innerHTML}</body></html>`;
-    const blob = new Blob([fullHtml], {type: 'application/msword'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'Legal_Doc.doc';
-    a.click();
-    showMsg('Word दस्तावेज़ डाउनलोड हो रहा है', 2000);
-  }
-  
+
   const chartData = [
   {
     name: "🔢 नंबर पंक्ति",
@@ -972,7 +1610,29 @@ function moveToPreviousPage(el) {
     });
     container.innerHTML = html;
   }
-  function toggleKeyChart() { document.getElementById('key-chart').classList.toggle('show'); }
+  function toggleKeyChart() {
+   document.getElementById('key-chart').classList.toggle('show'); 
+ }
+
+ // short cut keys 
+
+ // Shortcut key: Alt + T to toggle language
+// document.addEventListener('keydown', function(e) {
+//     // Check for Alt + T (case insensitive)
+//     if (e.altKey && (e.key === 't' || e.key === 'T')) {
+//         e.preventDefault(); 
+        
+//         // Convert to lowercase before checking to avoid bugs
+//         let lowLang = currentLang.toLowerCase();
+
+//         if (lowLang === 'hindi') {
+//             setLangMode('english');
+//         } else {
+//             setLangMode('hindi');
+//         }
+//     }
+// });
+ // 
   
   // Initialization
   function init() {
@@ -980,6 +1640,7 @@ function moveToPreviousPage(el) {
     updateLangButtons();
     renumberPagesGlobal();
     renumberAllPoints();
+    buildMobileKeyboard()
     // सभी एडिटेबल एरिया में फ़ॉन्ट सेट करें
     document.querySelectorAll('[contenteditable="true"]').forEach(el => {
       if(currentLang === 'hindi') el.style.fontFamily = HINDI_FONT;
