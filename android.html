@@ -1035,8 +1035,8 @@ function loadProject(event) {
     if (!file) return;
     // UPDATE: Set the project name based on the loaded file name (removing extension)
     // currentProjectName = file.name.replace('_Mobile.legal', '').replace('.legal', '');
-    currentProjectName = (data.projectName || file.name).replace('_PC.legal','').replace('_Mobile.legal','').replace('.legal','');
-    sessionStorage.setItem('active_project', currentProjectName);
+    // currentProjectName = (data.projectName || file.name).replace('_PC.legal','').replace('_Mobile.legal','').replace('.legal','');
+    // sessionStorage.setItem('active_project', currentProjectName);
     const reader = new FileReader();
     reader.onload = function(e) {
         try {
