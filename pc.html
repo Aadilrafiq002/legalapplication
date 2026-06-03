@@ -788,6 +788,8 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
+
+
 // document.addEventListener('keydown', function(e) {
 //   const activeEl = document.activeElement;
 //   if (!activeEl || activeEl.getAttribute('contenteditable') !== 'true') return;
@@ -1743,56 +1745,53 @@ document.addEventListener('keydown', function(e) {
         }
     }
 });
+
 function loadProject(event) {
     const file = event.target.files[0];
     if (!file) return;
-// UPDATE: Set the project name based on the loaded file name (removing extension)
-    // currentProjectName = file.name.replace('_PC.legal', '').replace('.legal', '');
-//     // Extract name from file or data
-// currentProjectName = (data.projectName || file.name).replace('_PC.legal','').replace('_Mobile.legal','').replace('.legal','');
-// sessionStorage.setItem('active_project', currentProjectName);
+
     const reader = new FileReader();
     reader.onload = function(e) {
         try {
             const data = JSON.parse(e.target.result);
-            let tempDiv = document.createElement('div');
-            tempDiv.innerHTML = data.content;
-
-            // Detect if the file is from Android (Unicode)
-            const isUnicode = /[\u0900-\u097F]/.test(tempDiv.innerText);
-            
-            if (isUnicode) {
-                showMsg('Converting Android format...');
-                const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
-                let node;
-                while(node = walker.nextNode()) {
-                    node.nodeValue = convertUnicodeToKruti(node.nodeValue);
-                }
-            }
-
-            // Inject content and force the Kruti Dev font
             const mainContainer = document.getElementById('main-container');
-            mainContainer.innerHTML = tempDiv.innerHTML;
-            // mainContainer.style.fontFamily = " 'Mangal', 'Noto Sans Devanagari', 'Nirmala UI', 'Kruti Dev 010', 'K010', sans-serif";
+            if (!mainContainer) return;
 
-            mainContainer.style.fontFamily = " 'Mangal', 'Noto Sans Devanagari', sans-serif";
-            // Restore other settings
-            if(data.fontSize) {
+            // 1. Sync the project name so Auto-Save doesn't overwrite old work
+            currentProjectName = data.projectName || file.name.replace('_PC.legal', '').replace('_Mobile.legal', '').replace('.legal', '');
+            sessionStorage.setItem('active_project', currentProjectName);
+
+            // 2. Inject content directly (since files are now natively saved in pure Unicode/Mangal)
+            mainContainer.innerHTML = data.content;
+
+            // 3. Ensure uniform Unicode font structure across the editor
+            mainContainer.style.fontFamily = "'Mangal', 'Noto Sans Devanagari', sans-serif";
+            
+            // Re-verify that all editable elements respect the native Unicode fonts
+            mainContainer.querySelectorAll('[contenteditable="true"]').forEach(el => {
+                el.style.fontFamily = "'Mangal', 'Noto Sans Devanagari', sans-serif";
+            });
+
+            // 4. Restore font size configurations
+            if (data.fontSize) {
                 globalFontSize = data.fontSize;
                 document.documentElement.style.setProperty('--global-fs', globalFontSize + "pt");
+                document.getElementById('current-fs-display').innerText = globalFontSize + "pt";
             }
 
+            // 5. Refresh document structures and metrics
             renumberPagesGlobal();
             renumberAllPoints();
-            showMsg(isUnicode ? 'Converted & Loaded' : 'Loaded PC File');
+            
+            showMsg('📄 फ़ाइल सफलतापूर्वक लोड की गई (Loaded Successfully)');
             
         } catch (err) {
             console.error(err);
-            alert('Format Error: Make sure this is a .legal file');
+            alert('Format Error: Make sure this is a valid .legal file');
         }
     };
     reader.readAsText(file);
-    event.target.value = ''; 
+    event.target.value = ''; // Reset input so the same file can be re-uploaded if needed
 }
 // हर 5 सेकंड में ऑटो-सेव करें
 setInterval(() => {

@@ -407,7 +407,10 @@ button:active { background: #3a4560; transform: scale(0.97); }
   <button class="mic-btn" id="micBtn" onclick="startVoiceInput('hi')" style="font-size:12px;">🎙️ हिंदी</button>
   <button class="mic-btn" id="micBtnEN" onclick="startVoiceInput('en')" style="font-size:12px;">🎙️ Eng</button>
   <div class="sep"></div>
+
   <button onclick="saveProject()">Save</button>
+  <button onclick="saveProjectAs()">Save As</button>
+
   <button onclick="document.getElementById('uploadFile').click()">Upload</button>
   <input type="file" id="uploadFile" style="display:none" onchange="loadProject(event)" accept=".legal">
   <button onclick="window.print()" title="Print">🖨️PDF</button>
@@ -975,102 +978,335 @@ document.addEventListener('input', function(e) {
 //     }, 100);
 // }
 
+// let currentProjectName = sessionStorage.getItem('active_project') || "Untitled";
+
+// function saveProject() {
+//     const container = document.getElementById('main-container');
+//     if(!container) return;
+
+//     // 1. Prompt the user for a file name
+//     let customName = prompt("फ़ाइल का नाम दर्ज करें (Enter file name):", currentProjectName || "My_Document");
+
+//     // 2. If the user clicks Cancel, stop the saving process
+//     if (customName === null) {
+//         showMsg("सेव कैंसिल किया गया (Save Cancelled)");
+//         return;
+//     }
+
+//     // 3. Clean up the text
+//     customName = customName.trim().replace(/[/\\?%*:|"<>]/g, '-');
+//     if (customName === "") {
+//         customName = "Legal_Work_Mobile";
+//     }
+
+//     // Update global project name for unique autosaving
+//    currentProjectName = customName;
+//     sessionStorage.setItem('active_project', currentProjectName);
+
+//     // 4. Construct the final name: [User_Name]_Mobile.legal
+//     const finalFileName = customName + "_Mobile.legal";
+
+//     showMsg("Saving file...");
+    
+//     setTimeout(() => {
+//         const data = {
+//             content: container.innerHTML,
+//             fontSize: globalFontSize,
+//             lang: currentLang,
+//             source: 'android', // Identifies this as mobile source
+//             projectName: currentProjectName // Critical for cross-platform autosave
+//         };
+        
+//         const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+//         const a = document.createElement('a');
+//         a.href = URL.createObjectURL(blob);
+        
+//         // 5. Apply the custom file name here
+//         a.download = finalFileName;
+        
+//         a.click();
+
+//         // Clean up the memory
+//         setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        
+//         showMsg('File Saved Successfully');
+//     }, 50);
+// }
+// // 2. UPDATED LOAD: Active code with PC-to-Mobile conversion
+// function loadProject(event) {
+//     const file = event.target.files[0];
+//     if (!file) return;
+//     // UPDATE: Set the project name based on the loaded file name (removing extension)
+//     // currentProjectName = file.name.replace('_Mobile.legal', '').replace('.legal', '');
+//     // currentProjectName = (data.projectName || file.name).replace('_PC.legal','').replace('_Mobile.legal','').replace('.legal','');
+//     // sessionStorage.setItem('active_project', currentProjectName);
+//     const reader = new FileReader();
+//     reader.onload = function(e) {
+//         try {
+//             const data = JSON.parse(e.target.result);
+//             const tempDiv = document.createElement('div');
+//             tempDiv.innerHTML = data.content;
+
+//             // If source is PC or contains English characters (Kruti Dev), convert it
+//             if (data.source === 'pc' || /[a-zA-Z]{5,}/.test(tempDiv.innerText)) {
+//                 showMsg('PC फाइल को मोबाइल फॉर्मेट (Unicode) में बदला जा रहा है...');
+//                 const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
+//                 let node;
+//                 while(node = walker.nextNode()) {
+//                     node.nodeValue = convertKrutiToUnicode(node.nodeValue);
+//                 }
+//             }
+
+//             document.getElementById('main-container').innerHTML = tempDiv.innerHTML;
+//             globalFontSize = data.fontSize || 14;
+//             document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+//                 el.style.fontSize = globalFontSize + 'pt';
+//             });
+            
+//             updateLangButtons();
+//             renumberPagesGlobal();
+//             renumberAllPoints();
+//             showMsg('फाइल लोड हो गई');
+//         } catch (err) {
+//             showMsg('त्रुटि: फाइल सही नहीं है');
+//             console.error(err);
+//         }
+//     };
+//     reader.readAsText(file);
+// }
+// setInterval(() => {
+//     const container = document.getElementById('main-container');
+//     if(container) {
+//         const autoData = {
+//             content: container.innerHTML,
+//             fontSize: globalFontSize,
+//             lang: currentLang,
+//             projectName: currentProjectName
+//         };
+//         // localStorage.setItem('autosave_work', JSON.stringify(autoData));
+//         // console.log("Auto-saved to browser memory");
+//         // UPDATE: Key is now unique to the project
+//           localStorage.setItem('autosave_' + currentProjectName, JSON.stringify(autoData));
+        
+//         // Remember which project this TAB is handling
+//         sessionStorage.setItem('active_project', currentProjectName);
+//     }
+// }, 5000);
+
+// // पेज लोड होते ही पुराना काम वापस लाएँ
+// window.addEventListener('load', () => {
+//     // 1. Check if this specific tab has an active project
+//     const activeTabProject = sessionStorage.getItem('active_project');
+    
+//     if (activeTabProject) {
+//         const saved = localStorage.getItem('autosave_' + activeTabProject);
+//         if (saved) {
+//             const data = JSON.parse(saved);
+//             if (confirm(`इस टैब में "${activeTabProject}" पर काम जारी रखें? \n(Continue working on "${activeTabProject}" in this tab?)`)) {
+//                 document.getElementById('main-container').innerHTML = data.content;
+//                 currentProjectName = activeTabProject;
+//                 return; // Stop here, we found the right file
+//             }
+//         }
+//     }
+
+//     // 2. If it's a fresh tab, see if there are ANY autosaves available
+//     const allKeys = Object.keys(localStorage).filter(k => k.startsWith('autosave_'));
+//     if (allKeys.length > 0) {
+//         // Get the very last one modified
+//         const lastKey = allKeys[allKeys.length - 1];
+//         const projectName = lastKey.replace('autosave_', '');
+        
+//         if (confirm(`पुराना ऑटो-सेव मिला: "${projectName}"। क्या आप इसे लोड करना चाहते हैं?`)) {
+//             const data = JSON.parse(localStorage.getItem(lastKey));
+//             document.getElementById('main-container').innerHTML = data.content;
+//             currentProjectName = projectName;
+//             sessionStorage.setItem('active_project', projectName);
+//         }
+//     }
+// });
+
+// ==========================================
+// ADVANCED SAVE SYSTEM (Word-like behavior)
+// ==========================================
+
+let fileHandle = null; // Stores the physical file reference for Ctrl+S overwriting
 let currentProjectName = sessionStorage.getItem('active_project') || "Untitled";
 
-function saveProject() {
+// Helper to gather all data for saving
+function getProjectData() {
+    return JSON.stringify({
+        content: document.getElementById('main-container').innerHTML,
+        fontSize: globalFontSize,
+        lang: currentLang,
+        projectName: currentProjectName,
+        source: 'android'
+    });
+}
+
+// 1 & 2. Normal Save (or First Save)
+async function saveProject() {
     const container = document.getElementById('main-container');
-    if(!container) return;
+    if (!container) return;
 
-    // 1. Prompt the user for a file name
-    let customName = prompt("फ़ाइल का नाम दर्ज करें (Enter file name):", currentProjectName || "My_Document");
+    // If we already have a file handle (from a previous save), overwrite it silently
+    if (window.showSaveFilePicker && fileHandle) {
+        try {
+            showMsg("Saving file...");
+            const writable = await fileHandle.createWritable();
+            await writable.write(getProjectData());
+            await writable.close();
+            showMsg('✅ File Saved Successfully');
+            return;
+        } catch (err) {
+            console.error("Save failed, falling back to Save As", err);
+            // If permissions lost or error, fallback to Save As
+        }
+    }
+    
+    // If no file handle exists, it's a "First Save", so treat it as Save As
+    saveProjectAs();
+}
 
-    // 2. If the user clicks Cancel, stop the saving process
+// 3. Save As (Always prompts for a name/location)
+async function saveProjectAs() {
+    const container = document.getElementById('main-container');
+    if (!container) return;
+
+    // Use Modern File System API if supported by the browser
+    if (window.showSaveFilePicker) {
+        try {
+            fileHandle = await window.showSaveFilePicker({
+                suggestedName: currentProjectName !== "Untitled" ? `${currentProjectName}_Mobile.legal` : 'My_Document_Mobile.legal',
+                types: [{
+                    description: 'Legal Document',
+                    accept: { 'application/json': ['.legal'] },
+                }],
+            });
+            
+            // Extract the chosen name to keep Autosave synced
+            currentProjectName = fileHandle.name.replace('_Mobile.legal', '').replace('.legal', '');
+            sessionStorage.setItem('active_project', currentProjectName);
+            
+            showMsg("Saving file...");
+            const writable = await fileHandle.createWritable();
+            await writable.write(getProjectData());
+            await writable.close();
+            showMsg('✅ File Saved Successfully');
+            return;
+        } catch (err) {
+            // User cancelled the prompt, or API failed
+            if (err.name !== 'AbortError') {
+                console.error(err);
+                fallbackSave(); // Fallback if API is blocked but not cancelled
+            }
+            return;
+        }
+    } else {
+        // Fallback for older browsers
+        fallbackSave();
+    }
+}
+
+// Fallback for browsers that don't support silent overwriting (creates a download)
+function fallbackSave() {
+    let customName = prompt("फ़ाइल का नाम दर्ज करें (Enter file name):", currentProjectName !== "Untitled" ? currentProjectName : "My_Document");
+    
     if (customName === null) {
         showMsg("सेव कैंसिल किया गया (Save Cancelled)");
         return;
     }
 
-    // 3. Clean up the text
-    customName = customName.trim().replace(/[/\\?%*:|"<>]/g, '-');
-    if (customName === "") {
-        customName = "Legal_Work_Mobile";
-    }
-
-    // Update global project name for unique autosaving
-   currentProjectName = customName;
+    customName = customName.trim();
+    if (customName === "") customName = "Legal_Work";
+    
+    currentProjectName = customName;
     sessionStorage.setItem('active_project', currentProjectName);
-
-    // 4. Construct the final name: [User_Name]_Mobile.legal
-    const finalFileName = customName + "_Mobile.legal";
 
     showMsg("Saving file...");
     
     setTimeout(() => {
-        const data = {
-            content: container.innerHTML,
-            fontSize: globalFontSize,
-            lang: currentLang,
-            source: 'android', // Identifies this as mobile source
-            projectName: currentProjectName // Critical for cross-platform autosave
-        };
-        
-        const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+        const finalFileName = currentProjectName + "_Mobile.legal";
+        const blob = new Blob([getProjectData()], { type: 'application/json' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        
-        // 5. Apply the custom file name here
         a.download = finalFileName;
-        
         a.click();
-
-        // Clean up the memory
-        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-        
-        showMsg('File Saved Successfully');
+        showMsg('✅ File Saved Successfully');
     }, 50);
 }
-// 2. UPDATED LOAD: Active code with PC-to-Mobile conversion
+
+// ==========================================
+// KEYBOARD SHORTCUTS (Ctrl+S / Ctrl+Shift+S)
+// ==========================================
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+        e.preventDefault(); // Stop the browser's default "Save Page As HTML" popup
+        
+        if (e.shiftKey) {
+            saveProjectAs(); // Ctrl + Shift + S
+        } else {
+            saveProject();   // Ctrl + S
+        }
+    }
+});
+
 function loadProject(event) {
     const file = event.target.files[0];
     if (!file) return;
-    // UPDATE: Set the project name based on the loaded file name (removing extension)
-    // currentProjectName = file.name.replace('_Mobile.legal', '').replace('.legal', '');
-    // currentProjectName = (data.projectName || file.name).replace('_PC.legal','').replace('_Mobile.legal','').replace('.legal','');
-    // sessionStorage.setItem('active_project', currentProjectName);
+
     const reader = new FileReader();
     reader.onload = function(e) {
         try {
             const data = JSON.parse(e.target.result);
-            const tempDiv = document.createElement('div');
+            let tempDiv = document.createElement('div');
             tempDiv.innerHTML = data.content;
 
-            // If source is PC or contains English characters (Kruti Dev), convert it
-            if (data.source === 'pc' || /[a-zA-Z]{5,}/.test(tempDiv.innerText)) {
-                showMsg('PC फाइल को मोबाइल फॉर्मेट (Unicode) में बदला जा रहा है...');
+            // 1. Sync the project name for Mobile Auto-save
+            currentProjectName = data.projectName || file.name.replace('_PC.legal', '').replace('_Mobile.legal', '').replace('.legal', '');
+            sessionStorage.setItem('active_project', currentProjectName);
+
+            // 2. Safely detect if the file came from PC (Kruti Dev / ASCII)
+            // If it's from PC, it won't have standard Hindi Unicode characters
+            const isFromPC = data.source === 'pc' || !/[\u0900-\u097F]/.test(tempDiv.textContent);
+            
+            if (isFromPC) {
+                showMsg('Converting PC format to Mobile...');
                 const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
                 let node;
                 while(node = walker.nextNode()) {
+                    // Convert Kruti Dev to standard Unicode for Android
                     node.nodeValue = convertKrutiToUnicode(node.nodeValue);
                 }
             }
 
-            document.getElementById('main-container').innerHTML = tempDiv.innerHTML;
-            globalFontSize = data.fontSize || 14;
-            document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-                el.style.fontSize = globalFontSize + 'pt';
-            });
-            
+            // 3. Inject content
+            const mainContainer = document.getElementById('main-container');
+            mainContainer.innerHTML = tempDiv.innerHTML;
+
+            if (data.fontSize) {
+                globalFontSize = data.fontSize;
+                document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+                    el.style.fontSize = globalFontSize + 'pt';
+                });
+                const display = document.getElementById('current-fs-display');
+                if (display) display.innerText = globalFontSize + "pt";
+            }
+
             updateLangButtons();
             renumberPagesGlobal();
             renumberAllPoints();
-            showMsg('फाइल लोड हो गई');
+            showMsg(isFromPC ? 'Converted & Loaded Successfully' : 'Loaded Mobile File Successfully');
+            
         } catch (err) {
-            showMsg('त्रुटि: फाइल सही नहीं है');
             console.error(err);
+            alert('Format Error: Make sure this is a valid .legal file');
         }
     };
     reader.readAsText(file);
+    event.target.value = ''; 
 }
+// हर 5 सेकंड में ऑटो-सेव करें
 setInterval(() => {
     const container = document.getElementById('main-container');
     if(container) {
@@ -1083,7 +1319,8 @@ setInterval(() => {
         // localStorage.setItem('autosave_work', JSON.stringify(autoData));
         // console.log("Auto-saved to browser memory");
         // UPDATE: Key is now unique to the project
-          localStorage.setItem('autosave_' + currentProjectName, JSON.stringify(autoData));
+        // UNIQUE KEY: autosave_MyFileName
+        localStorage.setItem('autosave_' + currentProjectName, JSON.stringify(autoData));
         
         // Remember which project this TAB is handling
         sessionStorage.setItem('active_project', currentProjectName);
